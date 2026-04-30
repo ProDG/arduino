@@ -172,88 +172,88 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TYPE-01 | TBD | Pending |
-| TYPE-02 | TBD | Pending |
-| TYPE-03 | TBD | Pending |
-| TYPE-04 | TBD | Pending |
-| TYPE-05 | TBD | Pending |
-| TYPE-06 | TBD | Pending |
-| TYPE-07 | TBD | Pending |
-| TYPE-08 | TBD | Pending |
-| TYPE-09 | TBD | Pending |
-| TYPE-10 | TBD | Pending |
-| UKR-01 | TBD | Pending |
-| UKR-02 | TBD | Pending |
-| UKR-03 | TBD | Pending |
-| UKR-04 | TBD | Pending |
-| UKR-05 | TBD | Pending |
-| UKR-06 | TBD | Pending |
-| LAYOUT-01 | TBD | Pending |
-| LAYOUT-02 | TBD | Pending |
-| LAYOUT-03 | TBD | Pending |
-| LAYOUT-04 | TBD | Pending |
-| LAYOUT-05 | TBD | Pending |
-| LAYOUT-06 | TBD | Pending |
-| PRIM-01 | TBD | Pending |
-| PRIM-02 | TBD | Pending |
-| PRIM-03 | TBD | Pending |
-| PRIM-04 | TBD | Pending |
-| PRIM-05 | TBD | Pending |
-| PRIM-06 | TBD | Pending |
-| PRIM-07 | TBD | Pending |
-| PRIM-08 | TBD | Pending |
-| CONTRACT-01 | TBD | Pending |
-| CONTRACT-02 | TBD | Pending |
-| CONTRACT-03 | TBD | Pending |
-| CONTRACT-04 | TBD | Pending |
-| PAGE-01 | TBD | Pending |
-| PAGE-02 | TBD | Pending |
-| PAGE-03 | TBD | Pending |
-| PAGE-04 | TBD | Pending |
-| PAGE-05 | TBD | Pending |
-| PAGE-06 | TBD | Pending |
-| PAGE-07 | TBD | Pending |
-| PAGE-08 | TBD | Pending |
-| PAGE-09 | TBD | Pending |
-| PAGE-10 | TBD | Pending |
-| PAGE-11 | TBD | Pending |
-| PERF-01 | TBD | Pending |
-| PERF-02 | TBD | Pending |
-| PERF-03 | TBD | Pending |
-| PERF-04 | TBD | Pending |
-| PERF-05 | TBD | Pending |
-| PERF-06 | TBD | Pending |
-| WAGTAIL-01 | TBD | Pending |
-| WAGTAIL-02 | TBD | Pending |
-| WAGTAIL-03 | TBD | Pending |
-| WAGTAIL-04 | TBD | Pending |
-| WAGTAIL-05 | TBD | Pending |
-| WAGTAIL-06 | TBD | Pending |
-| WAGTAIL-07 | TBD | Pending |
-| WAGTAIL-08 | TBD | Pending |
-| DEPLOY-01 | TBD | Pending |
-| DEPLOY-02 | TBD | Pending |
-| DEPLOY-03 | TBD | Pending |
-| DEPLOY-04 | TBD | Pending |
-| DEPLOY-05 | TBD | Pending |
-| DEPLOY-06 | TBD | Pending |
-| DEPLOY-07 | TBD | Pending |
-| DEPLOY-08 | TBD | Pending |
-| POLISH-01 | TBD | Pending |
-| POLISH-02 | TBD | Pending |
-| POLISH-03 | TBD | Pending |
-| POLISH-04 | TBD | Pending |
-| POLISH-05 | TBD | Pending |
-| POLISH-06 | TBD | Pending |
-| POLISH-07 | TBD | Pending |
-| POLISH-08 | TBD | Pending |
-| POLISH-09 | TBD | Pending |
+| TYPE-01 | Phase 1 | Pending |
+| TYPE-02 | Phase 1 | Pending |
+| TYPE-03 | Phase 1 | Pending |
+| TYPE-04 | Phase 1 | Pending |
+| TYPE-05 | Phase 1 | Pending |
+| TYPE-06 | Phase 1 | Pending |
+| TYPE-07 | Phase 1 | Pending |
+| TYPE-08 | Phase 1 | Pending |
+| TYPE-09 | Phase 1 | Pending |
+| TYPE-10 | Phase 1 | Pending |
+| UKR-01 | Phase 1 | Pending |
+| UKR-02 | Phase 2 | Pending |
+| UKR-03 | Phase 2 | Pending |
+| UKR-04 | Phase 1 | Pending |
+| UKR-05 | Phase 1 | Pending |
+| UKR-06 | Phase 1 | Pending |
+| LAYOUT-01 | Phase 2 | Pending |
+| LAYOUT-02 | Phase 2 | Pending |
+| LAYOUT-03 | Phase 2 | Pending |
+| LAYOUT-04 | Phase 2 | Pending |
+| LAYOUT-05 | Phase 2 | Pending |
+| LAYOUT-06 | Phase 6 | Pending |
+| PRIM-01 | Phase 2 | Pending |
+| PRIM-02 | Phase 2 | Pending |
+| PRIM-03 | Phase 2 | Pending |
+| PRIM-04 | Phase 2 | Pending |
+| PRIM-05 | Phase 2 | Pending |
+| PRIM-06 | Phase 2 | Pending |
+| PRIM-07 | Phase 2 | Pending |
+| PRIM-08 | Phase 2 | Pending |
+| CONTRACT-01 | Phase 2 | Pending |
+| CONTRACT-02 | Phase 3 | Pending |
+| CONTRACT-03 | Phase 2 | Pending |
+| CONTRACT-04 | Phase 2 | Pending |
+| PAGE-01 | Phase 3 | Pending |
+| PAGE-02 | Phase 3 | Pending |
+| PAGE-03 | Phase 3 | Pending |
+| PAGE-04 | Phase 3 | Pending |
+| PAGE-05 | Phase 3 | Pending |
+| PAGE-06 | Phase 3 | Pending |
+| PAGE-07 | Phase 3 | Pending |
+| PAGE-08 | Phase 3 | Pending |
+| PAGE-09 | Phase 3 | Pending |
+| PAGE-10 | Phase 3 | Pending |
+| PAGE-11 | Phase 3 | Pending |
+| PERF-01 | Phase 3 | Pending |
+| PERF-02 | Phase 3 | Pending |
+| PERF-03 | Phase 3 | Pending |
+| PERF-04 | Phase 3 | Pending |
+| PERF-05 | Phase 3 | Pending |
+| PERF-06 | Phase 3 | Pending |
+| WAGTAIL-01 | Phase 4 | Pending |
+| WAGTAIL-02 | Phase 4 | Pending |
+| WAGTAIL-03 | Phase 4 | Pending |
+| WAGTAIL-04 | Phase 4 | Pending |
+| WAGTAIL-05 | Phase 4 | Pending |
+| WAGTAIL-06 | Phase 4 | Pending |
+| WAGTAIL-07 | Phase 4 | Pending |
+| WAGTAIL-08 | Phase 4 | Pending |
+| DEPLOY-01 | Phase 5 | Pending |
+| DEPLOY-02 | Phase 5 | Pending |
+| DEPLOY-03 | Phase 5 | Pending |
+| DEPLOY-04 | Phase 5 | Pending |
+| DEPLOY-05 | Phase 5 | Pending |
+| DEPLOY-06 | Phase 5 | Pending |
+| DEPLOY-07 | Phase 5 | Pending |
+| DEPLOY-08 | Phase 5 | Pending |
+| POLISH-01 | Phase 6 | Pending |
+| POLISH-02 | Phase 6 | Pending |
+| POLISH-03 | Phase 6 | Pending |
+| POLISH-04 | Phase 6 | Pending |
+| POLISH-05 | Phase 6 | Pending |
+| POLISH-06 | Phase 6 | Pending |
+| POLISH-07 | Phase 6 | Pending |
+| POLISH-08 | Phase 6 | Pending |
+| POLISH-09 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 76 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 76 ⚠️ (will be populated by roadmap)
+- Mapped to phases: 76
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-04-30 after initial definition*
+*Last updated: 2026-04-30 after roadmap creation (traceability populated)*
