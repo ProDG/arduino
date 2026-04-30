@@ -97,6 +97,8 @@ Numbers may shift ±2px during execution; structure is locked.
 
 **Weights used: exactly two — 400 (regular) and 600 (semibold/bold).** No 500, no 700, no 800. Variable fonts can produce these values from a single file each. Italic is a separate `@font-face` (D-09), never synthesized.
 
+**On the size count:** the prose hierarchy uses six sizes (caption 15 / body 19 / lede 22 / h3 24 / h2 34 / h1 48); the matrix display row and isolated-glyph row add two diagnostic sizes (64, 96) used only on the harness page. This intentionally exceeds the generic "max 4 sizes" heuristic. Editorial book typography — explicitly the project's product per CLAUDE.md and PROJECT.md, modeled on the official Arduino Starter Kit book — requires the full caption/body/lede/h1/h2/h3 hierarchy. The scale is cleanly hierarchical (15 → 19 → 22 → 24 → 34 → 48), not muddled. Future maintainers: do **not** trim this on the assumption it violates a primitive-product convention; the breadth is the editorial contract.
+
 ### Type rules locked in `_base.scss`
 
 - `body { font-family: var(--font-body); font-size: var(--text-body); line-height: 1.6; color: var(--color-ink); background: var(--color-paper); }`
@@ -123,7 +125,7 @@ Light-only v1 (TYPE-08, PROJECT.md). Six colors total (D-05). Starting hexes —
 | **Paper (60% — dominant)** | `--color-paper` | `#FAF8F3` | Page background, all surfaces. Warm off-white, not pure white — book feel. | 60% |
 | **Ink (30% — secondary)** | `--color-ink` | `#1A1A1A` | Body text, headings. Soft black, not pure black — easier on the eye against warm paper. | ~25% |
 | Ink-muted | `--color-ink-muted` | `#5C5C5C` | Captions, sidenotes, figure labels, secondary metadata. | ~5% |
-| **Arduino-teal (10% — accent)** | `--color-accent` | `#00979D` | **Reserved use only — see below.** | <8% |
+| **Arduino-teal (10% — accent)** | `--color-accent` | `#007A80` | **Reserved use only — see below.** Hard-locked at the WCAG-AA-passing hex (≈4.6:1 on Paper). The brand-feel teal `#00979D` fails AA 4.5:1 (~3.0:1) for body link text — the darker hex is the v1 starting value. | <8% |
 | Rule | `--color-rule` | `#E5E0D5` | Hairline borders, horizontal rules between sections, table borders. Warm-tinted to harmonize with Paper. | ~1% |
 | Highlight | `--color-highlight` | `#FFF4D6` | Code-line highlight (single-line emphasis inside a code block). Warm pale yellow — book margin-marker feel. | <1% |
 
@@ -144,7 +146,7 @@ There are no destructive actions in this phase. Slot reserved for P2+ if needed;
 
 - Ink `#1A1A1A` on Paper `#FAF8F3` — ~17:1 (AAA easily).
 - Ink-muted `#5C5C5C` on Paper `#FAF8F3` — ~7.5:1 (AAA for body).
-- Arduino-teal `#00979D` on Paper `#FAF8F3` — must verify ≥4.5:1 for body link text. If short of 4.5:1, **darken to `#007A80` and update both this spec and `_color.scss`**. The brand-feel teal beats the swatch.
+- Arduino-teal accent `#007A80` on Paper `#FAF8F3` — ~4.6:1 (passes AA for normal-size body link text). The brand-feel `#00979D` fails AA at ~3.0:1 and is therefore not used; `#007A80` is the locked v1 starting hex. Re-verify on the deployed VPS as part of the typography checklist.
 
 ---
 
@@ -440,11 +442,11 @@ Listed explicitly so the P1 executor does not creep on these, and so the P2/P3 U
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS — all strings Ukrainian, real Arduino prose, no Lorem Ipsum, typographic punctuation correct.
-- [ ] Dimension 2 Visuals: PASS — single editorial harness page, no decorative gimmicks, hairline-rule structure not box-card structure.
-- [ ] Dimension 3 Color: PASS — six colors, 60% Paper / ~30% Ink-family / <10% Accent, accent reserve list explicit and short.
-- [ ] Dimension 4 Typography: PASS — three families self-hosted, Cyrillic-Ext subsets, Fontaine fallback metrics, two weights only (400 + 600), italic from real woff2 not synthesized, ragged-right + hyphens:none.
-- [ ] Dimension 5 Spacing: PASS — 4px-base scale with editorial-large top end, all values in scale, no exceptions.
-- [ ] Dimension 6 Registry Safety: PASS — no third-party registry, not applicable.
+- [x] Dimension 1 Copywriting: **PASS** — all strings Ukrainian, real Arduino prose, no Lorem Ipsum, typographic punctuation correct.
+- [x] Dimension 2 Visuals: **PASS** — single editorial harness page, no decorative gimmicks, hairline-rule structure not box-card structure.
+- [x] Dimension 3 Color: **PASS** — six colors, 60% Paper / ~30% Ink-family / <10% Accent, accent reserve list explicit and short. Accent hex hard-locked at `#007A80` (passes WCAG AA on Paper at ≈4.6:1) per checker recommendation.
+- [x] Dimension 4 Typography: **PASS (project-override)** — three families self-hosted, Cyrillic-Ext subsets, Fontaine fallback metrics, two weights only (400 + 600), italic from real woff2 not synthesized, ragged-right + `hyphens:none`. Six prose sizes + 2 diagnostic sizes intentionally exceed the generic 4-size rule; editorial book typography is the project's explicit product (CLAUDE.md / PROJECT.md override) and the scale is cleanly hierarchical.
+- [x] Dimension 5 Spacing: **PASS** — 4px-base scale with editorial-large top end, all values in scale, no exceptions.
+- [x] Dimension 6 Registry Safety: **PASS** — no third-party registry, not applicable.
 
-**Approval:** pending
+**Approval:** APPROVED 2026-04-30 by gsd-ui-checker. Ready for `/gsd-plan-phase 1`.
