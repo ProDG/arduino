@@ -81,10 +81,40 @@ Phase: 01 — Foundation & Typography Gate. Routes in scope: `/`,
 - [ ] `grep -rnE 'new Intl\.[A-Z][A-Za-z]*' src/ --include='*.ts'` returns ONLY hits inside `src/lib/intl.ts`.
 - [ ] `pnpm lint:verify-rule` exits 0 with `PASS: rule fired on synthetic violation` (the structural guardrail is live).
 
-## Phase 2 scope (placeholder)
+## Phase 2 scope — Primitives showcase
 
-Add checklist items as primitives land — every primitive that renders
-text or a date must register here.
+Phase: 02 — primitives-two-column-layout-page-model-contract.
+Routes in scope: `/dev/primitives` (showcase surface).
+Prior P1 routes (`/`, `/dev/glyph-audit`) remain in scope as regression
+checks but are not re-walked here.
+
+### P2 force-en checklist
+
+Procedure: load `/dev/primitives` under `pnpm start` with browser locale
+forced to `en-US` (Chrome DevTools → ⋮ → More tools → Sensors → Locale =
+`en-US`, OR `--lang=en-US` flag). Reload after locale change. Verify:
+
+- [ ] `<html lang="uk">` is preserved on `/dev/primitives` (View Source).
+- [ ] `<title>` reads `Примітиви — Arduino UA` exactly. NOT `Primitives — Arduino UA`.
+- [ ] All Cyrillic strings on the page render unchanged: showcase H1 `Showcase примітивів`, lede, Ukrainian Arduino prose in TwoColumn, Cyrillic comment `// блимаємо світлодіодом` in basic CodeBlock, all aside copy, all sidenote copy, all annotation prose, the force-en footer paragraph.
+- [ ] Quotes in body prose render as `«…»` (verbatim from authored content; per D-PRE-01..05 there is no transformation function — fixtures ship typeset).
+- [ ] Em-dashes `—` and en-dashes `–` (e.g., `1200–1280`, `5–7`) render correctly.
+- [ ] Apostrophes in Ukrainian words (`пʼять`, `підʼєднано`, `зʼїжджає`) render as U+02BC modifier-letter apostrophe — NOT replaced by ASCII `'` or curly typographer's apostrophe.
+- [ ] No `April` / `May` / `June` / `Mon` / `Tue` / etc. literal substrings anywhere in DOM (DevTools → Elements → Cmd-F).
+- [ ] No date or number formatting on the page leaks to English. (P2 showcase does not render dates or `Intl.NumberFormat` outputs by default; if `Дані фікстури:` line shows the lesson title, it should remain `Перший блимаючий світлодіод`.)
+- [ ] Browser locale toggle from `uk-UA` → `en-US` → reload produces ZERO visible English regression.
+
+### Result row
+
+To be filled in after the user walks the page:
+
+| Phase | Date | Result | Notes |
+| ----- | ---- | ------ | ----- |
+| 02    | TBD  | PENDING | Awaiting user manual walk during Plan 02-06 checkpoint |
+
+## Phase 3 scope (placeholder)
+
+Add checklist items as page templates land.
 
 ## Phase 3 scope (placeholder)
 
