@@ -44,10 +44,7 @@ function findSmellsInString(value) {
   const findings = [];
 
   // 1. ASCII " between Cyrillic letters or surrounded by whitespace.
-  const straightQuotes = [
-    new RegExp(`(${CYR})"(${CYR})`, 'gu'),
-    new RegExp(`(\\s)"(\\s|$)`, 'gu'),
-  ];
+  const straightQuotes = [new RegExp(`(${CYR})"(${CYR})`, 'gu'), new RegExp(`(\\s)"(\\s|$)`, 'gu')];
   for (const re of straightQuotes) {
     if (re.test(value)) findings.push({ kind: 'straight-quote', snippet: clip(value) });
   }
@@ -71,10 +68,7 @@ function findSmellsInString(value) {
   // letter. Case-sensitive: capital «В» (unit symbol for volts) is not a
   // preposition. Sentence-initial capitalized prepositions are rare and
   // can be styled at the discretion of the editor.
-  const prepRe = new RegExp(
-    `(?:^|[\\s.,;:«»()])(${PREP_GROUP}) (${CYR})`,
-    'gu',
-  );
+  const prepRe = new RegExp(`(?:^|[\\s.,;:«»()])(${PREP_GROUP}) (${CYR})`, 'gu');
   if (prepRe.test(value)) {
     findings.push({ kind: 'preposition-no-nbsp', snippet: clip(value) });
   }
@@ -124,9 +118,7 @@ function checkContentGates(parsed, kind, fileLabel) {
   const allStrings = [];
   walkStrings(parsed, [], (s) => allStrings.push(s));
   const allText = allStrings.join('\n');
-  const htmlText = allStrings
-    .filter((s) => /<[^>]+>/.test(s))
-    .join('\n');
+  const htmlText = allStrings.filter((s) => /<[^>]+>/.test(s)).join('\n');
 
   if (!allText.includes('ґ')) {
     violations.push({ kind: 'gate-no-g-with-upturn', message: 'no «ґ» in any body string' });
@@ -143,18 +135,30 @@ function checkContentGates(parsed, kind, fileLabel) {
     violations.push({ kind: 'gate-no-en-dash-range', message: 'no «N–M» en-dash numeric range' });
   }
   if (!/<code\b[^>]*>/.test(htmlText)) {
-    violations.push({ kind: 'gate-no-inline-code', message: 'no <code> HTML tag in any html-bearing field' });
+    violations.push({
+      kind: 'gate-no-inline-code',
+      message: 'no <code> HTML tag in any html-bearing field',
+    });
   }
 
   if (kind === 'lesson') {
     const body = Array.isArray(parsed?.body) ? parsed.body : [];
     const has = (t) => body.some((b) => b && b.type === t);
     if (!has('sidenote'))
-      violations.push({ kind: 'gate-lesson-no-sidenote', message: 'lesson body[] missing a sidenote block' });
+      violations.push({
+        kind: 'gate-lesson-no-sidenote',
+        message: 'lesson body[] missing a sidenote block',
+      });
     if (!has('figure'))
-      violations.push({ kind: 'gate-lesson-no-figure', message: 'lesson body[] missing a figure block' });
+      violations.push({
+        kind: 'gate-lesson-no-figure',
+        message: 'lesson body[] missing a figure block',
+      });
     if (!has('code'))
-      violations.push({ kind: 'gate-lesson-no-code', message: 'lesson body[] missing a code block' });
+      violations.push({
+        kind: 'gate-lesson-no-code',
+        message: 'lesson body[] missing a code block',
+      });
   }
 
   return violations.map((v) => ({ ...v, file: fileLabel }));
@@ -244,7 +248,9 @@ function main(argv) {
     const tail = v.message ? `: ${v.message}` : v.snippet ? `: «${v.snippet}»` : '';
     process.stderr.write(`${v.file}:${v.line}: [${v.kind}]${tail}\n`);
   }
-  process.stderr.write(`\nlint-fixtures: ${violations.length} violation(s) across ${fixtures.length} fixture(s).\n`);
+  process.stderr.write(
+    `\nlint-fixtures: ${violations.length} violation(s) across ${fixtures.length} fixture(s).\n`,
+  );
   return 1;
 }
 

@@ -15,10 +15,7 @@ const PREPS = ['а', 'в', 'до', 'за', 'з', 'і', 'й', 'на', 'не', 'о
 const PREP_GROUP = PREPS.join('|');
 const NBSP = ' ';
 // Lowercase only — capital «В» is a unit symbol (volts), not a preposition.
-const RE = new RegExp(
-  `(^|[\\s.,;:«»()])(${PREP_GROUP}) (\\p{Script=Cyrillic})`,
-  'gu',
-);
+const RE = new RegExp(`(^|[\\s.,;:«»()])(${PREP_GROUP}) (\\p{Script=Cyrillic})`, 'gu');
 
 const args = process.argv.slice(2);
 if (args.length === 0) {
