@@ -27,6 +27,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { imageSize } from 'image-size';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
@@ -111,6 +112,47 @@ function findLineForString(rawText, needle) {
   const idx = rawText.indexOf(JSON.stringify(needle).slice(1, -1));
   if (idx < 0) return 1;
   return rawText.slice(0, idx).split('\n').length;
+}
+
+function checkImageDimensions(parsed, fileLabel) {
+  const violations = [];
+  function walk(obj) {
+    if (!obj || typeof obj !== 'object') return;
+    if (Array.isArray(obj)) { obj.forEach(walk); return; }
+    if (obj.type === 'figure' || obj.type === 'pinout') {
+      if (typeof obj.width !== 'number' || typeof obj.height !== 'number') {
+        violations.push({
+          kind: 'missing-dimension',
+          file: fileLabel,
+          message: `${obj.type} block missing width or height (src: ${obj.src})`,
+        });
+        return;
+      }
+      if (obj.src) {
+        const imgPath = join(REPO_ROOT, 'src', obj.src.replace(/^\//, ''));
+        try {
+          const buf = readFileSync(imgPath);
+          const actual = imageSize(buf);
+          if (actual.width !== obj.width || actual.height !== obj.height) {
+            violations.push({
+              kind: 'dimension-mismatch',
+              file: fileLabel,
+              message: `${obj.type} declared ${obj.width}×${obj.height}, actual ${actual.width}×${actual.height} (${obj.src})`,
+            });
+          }
+        } catch {
+          violations.push({
+            kind: 'image-not-found',
+            file: fileLabel,
+            message: `${obj.type} src not found on disk: ${obj.src}`,
+          });
+        }
+      }
+    }
+    for (const v of Object.values(obj)) walk(v);
+  }
+  walk(parsed);
+  return violations;
 }
 
 function checkContentGates(parsed, kind, fileLabel) {
@@ -207,6 +249,10 @@ function lintOne(filePath, kind) {
       });
     }
   });
+
+  for (const g of checkImageDimensions(parsed, rel)) {
+    violations.push({ file: rel, line: 1, kind: g.kind, message: g.message });
+  }
 
   for (const g of checkContentGates(parsed, kind, rel)) {
     violations.push({ file: rel, line: 1, kind: g.kind, message: g.message });

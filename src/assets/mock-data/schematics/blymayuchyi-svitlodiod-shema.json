@@ -7,7 +7,9 @@
     "src": "/assets/mock-data/figures/blymayuchyi-svitlodiod-shema.svg",
     "alt": "Принципова схема: Arduino Uno, світлодіод, резистор 220 Ом",
     "captionHtml": "Базова схема для уроку «Перший блимаючий світлодіод» — три компоненти, два дроти, два контакти на платі.",
-    "fullBleed": true
+    "fullBleed": true,
+    "width": 800,
+    "height": 500
   },
   "explanation": [
     {

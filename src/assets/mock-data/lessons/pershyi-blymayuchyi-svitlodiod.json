@@ -8,11 +8,28 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      { "name": "Плата Arduino Uno R3", "quantity": 1 },
-      { "name": "Світлодіод", "quantity": 1, "note": "будь-якого кольору" },
-      { "name": "Резистор 220 Ом", "quantity": 1, "note": "діапазон 220–330 Ом" },
-      { "name": "Макетна плата", "quantity": 1 },
-      { "name": "Дроти-перемички", "quantity": 2 }
+      {
+        "name": "Плата Arduino Uno R3",
+        "quantity": 1
+      },
+      {
+        "name": "Світлодіод",
+        "quantity": 1,
+        "note": "будь-якого кольору"
+      },
+      {
+        "name": "Резистор 220 Ом",
+        "quantity": 1,
+        "note": "діапазон 220–330 Ом"
+      },
+      {
+        "name": "Макетна плата",
+        "quantity": 1
+      },
+      {
+        "name": "Дроти-перемички",
+        "quantity": 2
+      }
     ]
   },
   "body": [
@@ -46,9 +63,16 @@
       "src": "/assets/mock-data/figures/blymayuchyi-shema.svg",
       "alt": "Схема: Arduino Uno, світлодіод, резистор 220 Ом",
       "captionHtml": "Підключення світлодіода до <code>pin 13</code> через обмежувальний резистор.",
-      "fullBleed": false
+      "fullBleed": false,
+      "width": 800,
+      "height": 500
     },
-    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Код",
+      "id": "kod"
+    },
     {
       "type": "code",
       "language": "arduino",

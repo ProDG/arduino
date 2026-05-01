@@ -72,6 +72,9 @@ importers:
       fontaine:
         specifier: 0.8.0
         version: 0.8.0
+      image-size:
+        specifier: ^2.0.2
+        version: 2.0.2
       jsdom:
         specifier: ^28.0.0
         version: 28.1.0
@@ -2509,6 +2512,11 @@ packages:
   image-size@0.5.5:
     resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
     engines: {node: '>=0.10.0'}
+    hasBin: true
+
+  image-size@2.0.2:
+    resolution: {integrity: sha512-IRqXKlaXwgSMAMtpNzZa1ZAe8m+Sa1770Dhk8VkSsP9LS+iHD62Zd8FQKs8fbPiagBE7BzoFX23cxFnwshpV6w==}
+    engines: {node: '>=16.x'}
     hasBin: true
 
   immutable@5.1.5:
@@ -6195,6 +6203,8 @@ snapshots:
 
   image-size@0.5.5:
     optional: true
+
+  image-size@2.0.2: {}
 
   immutable@5.1.5: {}
 

@@ -11,6 +11,8 @@ export type Block =
       alt: string;
       captionHtml?: string;
       fullBleed: boolean;
+      width: number;
+      height: number;
     }
   | {
       type: 'code';
@@ -21,6 +23,7 @@ export type Block =
       highlightLines: number[];
       diffMode: boolean;
       annotations: { line: number; html: string }[];
+      tokens?: string;
     }
   | { type: 'diff'; before: string; after: string }
   | {
@@ -28,6 +31,8 @@ export type Block =
       src: string;
       alt: string;
       pins: { x: number; y: number; label: string; role: string }[];
+      width: number;
+      height: number;
     }
   | {
       type: 'parts-list';

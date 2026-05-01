@@ -8,12 +8,32 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      { "name": "Плата Arduino Uno R3", "quantity": 1 },
-      { "name": "Потенціометр 10 кОм", "quantity": 1, "note": "лінійний, поворотний" },
-      { "name": "Світлодіод", "quantity": 1, "note": "будь-якого кольору" },
-      { "name": "Резистор 220 Ом", "quantity": 1 },
-      { "name": "Макетна плата", "quantity": 1 },
-      { "name": "Дроти-перемички", "quantity": 5 }
+      {
+        "name": "Плата Arduino Uno R3",
+        "quantity": 1
+      },
+      {
+        "name": "Потенціометр 10 кОм",
+        "quantity": 1,
+        "note": "лінійний, поворотний"
+      },
+      {
+        "name": "Світлодіод",
+        "quantity": 1,
+        "note": "будь-якого кольору"
+      },
+      {
+        "name": "Резистор 220 Ом",
+        "quantity": 1
+      },
+      {
+        "name": "Макетна плата",
+        "quantity": 1
+      },
+      {
+        "name": "Дроти-перемички",
+        "quantity": 5
+      }
     ]
   },
   "body": [
@@ -47,9 +67,16 @@
       "src": "/assets/mock-data/figures/potentsiometr-shema.svg",
       "alt": "Схема: потенціометр на A0, світлодіод на pin 9 через резистор 220 Ом",
       "captionHtml": "Потенціометр як дільник напруги (центральний відвід — на <code>A0</code>) керує яскравістю світлодіода через ШІМ-вихід <code>pin 9</code>.",
-      "fullBleed": false
+      "fullBleed": false,
+      "width": 800,
+      "height": 500
     },
-    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Код",
+      "id": "kod"
+    },
     {
       "type": "code",
       "language": "arduino",

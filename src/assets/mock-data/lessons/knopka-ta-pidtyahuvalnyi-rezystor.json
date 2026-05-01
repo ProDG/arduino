@@ -8,13 +8,36 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      { "name": "Плата Arduino Uno R3", "quantity": 1 },
-      { "name": "Тактова кнопка", "quantity": 1, "note": "звичайна 4-пінова" },
-      { "name": "Резистор 10 кОм", "quantity": 1, "note": "діапазон 4,7–22 кОм" },
-      { "name": "Світлодіод", "quantity": 1 },
-      { "name": "Резистор 220 Ом", "quantity": 1 },
-      { "name": "Макетна плата", "quantity": 1 },
-      { "name": "Дроти-перемички", "quantity": 5 }
+      {
+        "name": "Плата Arduino Uno R3",
+        "quantity": 1
+      },
+      {
+        "name": "Тактова кнопка",
+        "quantity": 1,
+        "note": "звичайна 4-пінова"
+      },
+      {
+        "name": "Резистор 10 кОм",
+        "quantity": 1,
+        "note": "діапазон 4,7–22 кОм"
+      },
+      {
+        "name": "Світлодіод",
+        "quantity": 1
+      },
+      {
+        "name": "Резистор 220 Ом",
+        "quantity": 1
+      },
+      {
+        "name": "Макетна плата",
+        "quantity": 1
+      },
+      {
+        "name": "Дроти-перемички",
+        "quantity": 5
+      }
     ]
   },
   "body": [
@@ -48,9 +71,16 @@
       "src": "/assets/mock-data/figures/knopka-shema.svg",
       "alt": "Схема: Arduino, кнопка, резистор 10 кОм, світлодіод, резистор 220 Ом",
       "captionHtml": "Кнопка з підтягувальним резистором на <code>pin 2</code> керує світлодіодом на <code>pin 13</code>.",
-      "fullBleed": false
+      "fullBleed": false,
+      "width": 800,
+      "height": 500
     },
-    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Код",
+      "id": "kod"
+    },
     {
       "type": "code",
       "language": "arduino",
