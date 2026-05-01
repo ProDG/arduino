@@ -1,10 +1,11 @@
 ---
 phase: 3
 slug: page-templates-routing-static-build
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-05-01
+reviewed_at: 2026-05-01
 ---
 
 # Phase 3 — UI Design Contract
@@ -643,11 +644,11 @@ These are decisions where the researcher locked a default rather than ask intera
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: pending — every chrome string, page title, meta string, error path, and empty state defined in Ukrainian; punctuation rules inherited; no English in user-visible strings.
-- [ ] Dimension 2 Visuals: pending — chrome composition declared, `BlockRenderer` dispatch table locked, eight page templates structurally specified, no decorative gimmicks introduced.
-- [ ] Dimension 3 Color: pending — no new colors; accent reserve list extended with eight explicit P3 additions; `--color-rule` additions enumerated.
-- [ ] Dimension 4 Typography: pending — no new sizes or weights; full inheritance from P1 + P2; per-template usage map declared.
-- [ ] Dimension 5 Spacing: pending — inherited unchanged; six new layout dimensions declared as layout tokens not spacing tokens.
-- [ ] Dimension 6 Registry Safety: pending — no third-party registry, not applicable.
+- [x] Dimension 1 Copywriting: PASS — every chrome string, page title, meta string, error path, and empty state defined in Ukrainian; punctuation rules inherited; no English in user-visible strings.
+- [x] Dimension 2 Visuals: PASS — chrome composition declared, `BlockRenderer` dispatch table locked, eight page templates structurally specified, no decorative gimmicks introduced.
+- [x] Dimension 3 Color: PASS — no new colors; accent reserve list extended with eight explicit P3 additions; `--color-rule` additions enumerated.
+- [x] Dimension 4 Typography: PASS — no new sizes or weights; full inheritance from P1 + P2; per-template usage map declared.
+- [x] Dimension 5 Spacing: PASS — inherited unchanged; six new layout dimensions declared as layout tokens not spacing tokens.
+- [x] Dimension 6 Registry Safety: PASS — no third-party registry, not applicable.
 
-**Approval:** pending — awaiting `gsd-ui-checker` review.
+**Approval:** APPROVED 2026-05-01 by `gsd-ui-checker` — 6/6 dimensions pass, no recommendations.
