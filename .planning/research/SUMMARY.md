@@ -1,7 +1,7 @@
 # Project Research Summary
 
 **Project:** Arduino Learning Hub (Ukrainian)
-**Domain:** Editorial-quality, Ukrainian-language headless content/learning site (Wagtail 7.4 LTS + Angular 21, Dockerized single VPS)
+**Domain:** Editorial-quality, Ukrainian-language headless content/learning site (Wagtail 7.3 + Angular 21, Dockerized single VPS)
 **Researched:** 2026-04-30 — updated 2026-05-01 for Docker/Traefik/MinIO architecture and SSG-only lock.
 **Confidence:** HIGH overall (one MEDIUM area: annotated code-block StreamField modeling)
 
@@ -9,7 +9,7 @@
 
 This is a niche editorial publication that happens to be a learning site — the design thesis (book-grade typography, two-column body+margin layout, annotated code blocks, Ukrainian-first) is the product, not the wrapper. Experts build sites of this class by treating typography and layout as load-bearing engineering: hand-authored SCSS with a token system, self-hosted variable woff2 fonts subset to Cyrillic + Cyrillic-Ext, a typed page-model contract owned by the frontend, and CMS choices (Wagtail DRF v2, StreamField as a typed discriminated union of blocks) that *match* that contract rather than dictate it. The Tufte/Gwern/Ciechanowski lineage is the canonical reference set; the Adafruit/Sparkfun/arduino.cc sites are functionally complete but typographically utilitarian — the empty intersection is exactly where this project lives.
 
-The recommended approach is **frontend-first, mock-data-driven, SSG-only**: build the design system, primitives, and page templates against typed JSON fixtures; lock the contract; only then bring up Wagtail 7.4 LTS (Dockerized) to *conform* to that contract. Stack: Angular 21 zoneless + signals + SSG prerender (no Node SSR — ever), Source Serif 4 + Inter + JetBrains Mono (Pairing A) self-hosted, Shiki at build-time for syntax highlighting + diff + line annotations, Wagtail 7.4 LTS + Django 5.2 LTS + PostgreSQL 17 + MinIO (S3-compatible) + Traefik (auto-TLS) all running in Docker Compose on a single Ubuntu 24.04 VPS, uv + Ruff for Python tooling inside the wagtail image, pnpm + Vitest for FE (host-native dev — no FE container).
+The recommended approach is **frontend-first, mock-data-driven, SSG-only**: build the design system, primitives, and page templates against typed JSON fixtures; lock the contract; only then bring up Wagtail 7.3 (Dockerized) to *conform* to that contract. Stack: Angular 21 zoneless + signals + SSG prerender (no Node SSR — ever), Source Serif 4 + Inter + JetBrains Mono (Pairing A) self-hosted, Shiki at build-time for syntax highlighting + diff + line annotations, Wagtail 7.3 + Django 5.2 LTS + PostgreSQL 17 + MinIO (S3-compatible) + Traefik (auto-TLS) all running in Docker Compose on a single Ubuntu 24.04 VPS, uv + Ruff for Python tooling inside the wagtail image, pnpm + Vitest for FE (host-native dev — no FE container).
 
 The dominant risks are typographic-Ukrainian (a font with a missing or fallback `ґ`, late-discovered quotation/dash/NBSP conventions, Latin Lorem Ipsum hiding measure problems), contract drift between mock JSON and real Wagtail StreamField shape, and editorial polish leaking English (locale defaults, month names, decimal separators). All are addressable by sequencing: typography gate before any templates; contract lockdown between design and FE; explicit `uk-UA` everywhere on day zero; static-first rendering until preview/autosave actually need a Node process.
 
@@ -17,13 +17,13 @@ The dominant risks are typographic-Ukrainian (a font with a missing or fallback 
 
 ### Recommended Stack
 
-The supporting stack around the locked choices (Angular 21 zoneless, SCSS-only, Wagtail 7.4 LTS, single VPS, Ukrainian-only) is the 2026 lean default for self-hosted editorial sites. Self-host everything; avoid Docker, Node SSR runtime, GraphQL, Tailwind, and Google Fonts CDN.
+The supporting stack around the locked choices (Angular 21 zoneless, SCSS-only, Wagtail 7.3, single VPS, Ukrainian-only) is the 2026 lean default for self-hosted editorial sites. Self-host everything; avoid Docker, Node SSR runtime, GraphQL, Tailwind, and Google Fonts CDN.
 
 **Core technologies:**
 - **Source Serif 4 + Inter + JetBrains Mono (variable woff2, self-hosted)** — body serif / sans / mono — verified Ukrainian glyph quality including `ґ`, `ї`, `є`, `і`; subset to Cyrillic + Cyrillic-Ext; Fontaine-generated fallback metrics to eliminate CLS.
 - **Angular 21.2.x zoneless + signals + Vitest 3 + `@angular/ssr`** — locked; `outputMode: "static"` (pure SSG, no Node SSR runtime — ever).
 - **Shiki 3 + `@shikijs/transformers` (build-time)** — syntax highlighting, diff, line highlights, margin annotations via meta parsing; zero client JS for highlighting.
-- **Wagtail 7.4 LTS + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2** — all LTS-aligned; built-in REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview` for editor preview; `django-storages[s3]` + `boto3` against MinIO for media.
+- **Wagtail 7.3 + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2** — all LTS-aligned; built-in REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview` for editor preview; `django-storages[s3]` + `boto3` against MinIO for media.
 - **Docker Compose + Traefik 3 + MinIO + Ubuntu 24.04** — Traefik for auto-TLS via Let's Encrypt and label-driven routing; MinIO for media + image renditions; single host systemd unit `docker-compose@arduino.service`. No bare-metal Wagtail/gunicorn/Caddy/Postgres.
 - **uv (Python, inside the wagtail image) + pnpm 10 (Node, on host for FE dev) + Ruff + ESLint 9 + Stylelint 16** — 2026 default tooling.
 
@@ -137,8 +137,8 @@ These touch nearly every phase:
 **DESIGN FREEZE CHECKPOINT** at end of Phase 3.
 
 ### Phase 4: Wagtail Backend Skeleton + Contract Match (Dockerized)
-**Rationale:** Wagtail conforms to the locked FE contract. Phase begins after Wagtail 7.4 LTS releases (2026-05-04). Preview is P0. BE runs in Docker from day one.
-**Delivers:** `compose.yml` + `compose.dev.yml` defining `wagtail`, `postgres`, `minio` services with healthchecks and named volumes; Wagtail 7.4 + Django 5.2 + Python 3.13 + PG17 + psycopg 3.2 + uv + Ruff inside the wagtail image; apps (`lessons`, `articles`, `datasheets`, `schematics`, `content_blocks`); page models matching `content/models/*.ts` 1:1; `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` validated by spike; DRF v2 with `expand_db_html` server-side; `wagtail-headless-preview` + `HeadlessPreviewMixin` on every page model; `django-storages[s3]` + `boto3` against MinIO (uploads, renditions, collectstatic); `WagtailContentApi`; one lesson migrated mock→Wagtail with image renditions verified to land in MinIO; Django `LANGUAGE_CODE = 'uk'`, `TIME_ZONE = 'Europe/Kyiv'`; day-zero security (`.env` gitignored, `gitleaks`, `DEBUG=False`, explicit `ALLOWED_HOSTS`).
+**Rationale:** Wagtail conforms to the locked FE contract. Phase 4 builds against Wagtail 7.3 (GA today) with a planned one-line bump to 7.4 LTS on its 2026-05-04 release. Preview is P0. BE runs in Docker from day one.
+**Delivers:** `compose.yml` + `compose.dev.yml` defining `wagtail`, `postgres`, `minio` services with healthchecks and named volumes; Wagtail 7.3 + Django 5.2 + Python 3.13 + PG17 + psycopg 3.2 + uv + Ruff inside the wagtail image; apps (`lessons`, `articles`, `datasheets`, `schematics`, `content_blocks`); page models matching `content/models/*.ts` 1:1; `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` validated by spike; DRF v2 with `expand_db_html` server-side; `wagtail-headless-preview` + `HeadlessPreviewMixin` on every page model; `django-storages[s3]` + `boto3` against MinIO (uploads, renditions, collectstatic); `WagtailContentApi`; one lesson migrated mock→Wagtail with image renditions verified to land in MinIO; Django `LANGUAGE_CODE = 'uk'`, `TIME_ZONE = 'Europe/Kyiv'`; day-zero security (`.env` gitignored, `gitleaks`, `DEBUG=False`, explicit `ALLOWED_HOSTS`).
 **Avoids:** Pitfalls 5, 8, 14, 18, 20.
 
 ### Phase 5: Single-VPS Deployment (Docker Compose)
@@ -154,16 +154,16 @@ These touch nearly every phase:
 - **Typography before everything** — load-bearing decision; mid-template glyph discovery is a redo.
 - **Contract phase between design and FE** — most expensive avoidable bug class is mock-shape divergence; 30-min Wagtail spike is cheap insurance.
 - **FE before BE with static build** — PROJECT.md mandates FE-first; SSG resolution means Phase 3 has zero backend dependency.
-- **BE in Phase 4 (post-2026-05-04)** — building against unreleased LTS is avoidable risk.
+- **BE in Phase 4 (Wagtail 7.3 today; bump to 7.4 LTS on 2026-05-04)** — switched from "wait for LTS" to "build on 7.3, bump at LTS release" because 7.3→7.4 is a minor-release upgrade with no breaking changes; unblocks Phase 4 immediately and lands on LTS within a week.
 - **Deployment in Phase 5** — backups-before-content discipline; Docker Compose + Traefik + MinIO topology locked.
 - **Content + polish + differentiators in Phase 6** — additive without rework.
 
 ### Research Flags
 
 Phases likely needing deeper research during planning:
-- **Phase 2:** annotated-CodeBlock StreamField design is MEDIUM in ARCHITECTURE.md — no canonical pattern. Run 30–60 min spike at Phase 2/4 boundary against Wagtail 7.4's actual block API.
+- **Phase 2:** annotated-CodeBlock StreamField design is MEDIUM in ARCHITECTURE.md — no canonical pattern. Run 30–60 min spike at Phase 2/4 boundary against Wagtail 7.3's actual block API.
 - **Phase 3:** margin-annotation alignment CSS (vertical alignment of margin notes to specific code lines, three-breakpoint) has no canonical implementation. Worth a focused `/gsd-research-phase` on CSS `anchor-name` / `position-anchor` (Chrome 125+).
-- **Phase 4:** "Universal Listings API" in Wagtail 7.4 unverified — recheck final 7.4 release notes 2026-05-04. Default to `/api/v2/pages/`.
+- **Phase 4:** "Universal Listings API" in Wagtail 7.3 unverified — recheck final 7.4 release notes 2026-05-04. Default to `/api/v2/pages/`.
 - **Phase 4:** `pillow-avif-plugin` longevity — Pillow may have native AVIF by mid-2026; switch if so.
 - **Phase 6:** Source Serif 4 vs Literata A/B test in real two-column layout — Pairing A vs C is taste-dependent.
 
@@ -175,7 +175,7 @@ Phases with standard patterns (lighter-touch research):
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Variable woff2, Angular 21 zoneless, Wagtail 7.4 LTS, Caddy/gunicorn/systemd, uv/pnpm/Ruff are 2026-validated official defaults. MEDIUM sub-area: Pairing A vs C resolves in Phase 6 A/B. |
+| Stack | HIGH | Variable woff2, Angular 21 zoneless, Wagtail 7.3, Caddy/gunicorn/systemd, uv/pnpm/Ruff are 2026-validated official defaults. MEDIUM sub-area: Pairing A vs C resolves in Phase 6 A/B. |
 | Features | HIGH for editorial typography (Tufte/Gwern/Distill canonical); MEDIUM for Arduino-domain UX (observable but not formalized); MEDIUM for Ukrainian-specific typography (linguistic + style-guide sources). |
 | Architecture | HIGH on FE structure, ContentApi seam, monorepo, single-VPS, REST-vs-GraphQL. MEDIUM on annotated-CodeBlock StreamField (opinionated synthesis). MEDIUM on rendering strategy — RESOLVED above. |
 | Pitfalls | HIGH for Cyrillic/typography (Wikipedia, TypeDrawers, caniuse); HIGH for Angular 21 zoneless and Wagtail headless (official + community); MEDIUM for VPS-ops (third-party guides cross-referenced). |
@@ -184,11 +184,11 @@ Phases with standard patterns (lighter-touch research):
 
 ### Gaps to Address
 
-- Annotated CodeBlock StreamField schema — validate via 30-min Wagtail 7.4 spike at Phase 2/4 boundary.
+- Annotated CodeBlock StreamField schema — validate via 30-min Wagtail 7.3 spike at Phase 2/4 boundary.
 - Margin-annotation CSS alignment across breakpoints — no canonical implementation; Phase 3 may need focused research-phase on CSS `anchor-name` / `position-anchor`.
-- "Universal Listings API" in Wagtail 7.4 — verify against 2026-05-04 release notes.
+- "Universal Listings API" in Wagtail 7.3 — verify against 2026-05-04 release notes.
 - Source Serif 4 vs Literata final pick — Phase 1 builds against Pairing A; revisit at Phase 6.
-- Preview UX with Wagtail 7.4 autosave — measure in Phase 4; SSG-only is locked, so any preview-ergonomics issues will be solved with CSR autosave-polling (poll the preview-token endpoint at 1–2s during editor focus), NOT by introducing SSR.
+- Preview UX with Wagtail 7.3 autosave — measure in Phase 4; SSG-only is locked, so any preview-ergonomics issues will be solved with CSR autosave-polling (poll the preview-token endpoint at 1–2s during editor focus), NOT by introducing SSR.
 - Browser hyphenation reliability for `lang="uk"` — recommendation is ragged-right body to sidestep.
 - Ukrainian Arduino vocabulary glossary — seed in Phase 1 samples; formalize in Phase 6.
 

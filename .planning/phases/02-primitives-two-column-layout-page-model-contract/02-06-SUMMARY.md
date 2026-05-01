@@ -156,7 +156,7 @@ None.
 - **Shiki integration replaces plain monospace in `CodeBlock`.** P2 ships the frame, line numbers, copy interaction, diff visuals, and annotation alignment — all as plain monospace text. P3 adds Shiki at build-time (per STACK.md) so the `language` field on `Block.code` actually drives syntax tokens. The `CodeBlock` component's public API does not change.
 - **Real SVG / PNG figure assets replace placeholders.** The three placeholders at `src/assets/mock-data/figures/` are intentional stand-ins; they live at the same paths and have the same alt text, so the swap to real assets is a file-replace operation with no template changes.
 - **`Figure` primitive may grow a `wide` variant separately** if Phase 3 / Phase 6 content needs an intermediate width between body-measure and `[fullBleed]`. Out of scope for now — `[fullBleed]` and body-measure cover all P2 showcase needs.
-- **Wagtail spike at P3 exit (post 2026-05-04):** validates `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` produces a serialized shape byte-compatible with `Block.code`. Run before any P4 work begins.
+- **Wagtail spike at P3 exit (Wagtail 7.3 today, re-validate vs 7.4 LTS in Phase 4):** validates `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` produces a serialized shape byte-compatible with `Block.code`. Run before any P4 work begins.
 
 ## Self-Check: PASSED
 

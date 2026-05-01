@@ -64,7 +64,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Page-Model Contract & Mock Data
 
 - [x] **CONTRACT-01**: TypeScript content models locked: `Lesson`, `Article`, `Datasheet`, `Schematic`, with shared `Block` discriminated union covering all StreamField block types (paragraph, heading, sidenote, figure, code, diff, pinout, parts-list)
-- [ ] **CONTRACT-02**: `CodeBlock` model includes `language`, `code`, and `annotations: { line: number; html: string }[]` shape verified by a 30–60 minute Wagtail 7.4 spike
+- [ ] **CONTRACT-02**: `CodeBlock` model includes `language`, `code`, and `annotations: { line: number; html: string }[]` shape verified by a 30–60 minute Wagtail 7.3 spike
 - [x] **CONTRACT-03**: `ContentApi` interface defined; `MockContentApi` implementation reads from `/assets/mock-data/*.json`
 - [x] **CONTRACT-04**: Mock JSON populated with at least 3 real Ukrainian-language lessons, 1 article, 2 datasheets, 1 schematic — content drives design calibration, not Latin filler
 
@@ -91,9 +91,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PERF-05**: All in-page imagery uses NgOptimizedImage; figures enforce explicit dimensions
 - [ ] **PERF-06**: Static build deploys as a folder of HTML/JS/CSS/woff2 — no runtime Node dependency
 
-### Wagtail Backend (post 2026-05-04)
+### Wagtail Backend (Wagtail 7.3 → bump to 7.4 LTS on 2026-05-04 release)
 
-- [ ] **WAGTAIL-01**: Wagtail 7.4 LTS installed with Django 5.2 LTS, Python 3.13, PostgreSQL 17, psycopg 3.2; Python tooling via `uv` + `Ruff`
+- [ ] **WAGTAIL-01**: Wagtail 7.3 installed with Django 5.2 LTS, Python 3.13, PostgreSQL 17, psycopg 3.2; Python tooling via `uv` + `Ruff`
 - [ ] **WAGTAIL-02**: Page models for `Lesson`, `Article`, `Datasheet`, `Schematic` match the FE TypeScript content models 1:1 (field names and shapes)
 - [ ] **WAGTAIL-03**: StreamField block types implemented for all `Block` discriminated-union variants, including `CodeBlock` as `StructBlock(language, code, annotations=ListBlock({line, note}))`
 - [ ] **WAGTAIL-04**: Wagtail REST API v2 (`/api/v2/pages/`) exposes content; custom serializers expand rich-text HTML server-side (`expand_db_html`); response shape matches the `ContentApi` contract exactly

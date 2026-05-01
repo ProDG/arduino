@@ -1,6 +1,6 @@
 # Pitfalls Research
 
-**Domain:** Editorial-quality Ukrainian Arduino learning site (Angular 21 + Wagtail 7.4 LTS, Dockerized single VPS, solo dev)
+**Domain:** Editorial-quality Ukrainian Arduino learning site (Angular 21 + Wagtail 7.3, Dockerized single VPS, solo dev)
 **Researched:** 2026-04-30 — updated 2026-05-01 for Docker/Traefik/MinIO architecture and SSG-only lock.
 **Confidence:** HIGH for typography/Cyrillic, Angular 21 zoneless, Wagtail headless; MEDIUM for VPS ops specifics
 
@@ -229,7 +229,7 @@ The author types content in Wagtail admin, hits Preview, gets either nothing, th
 2. Use `wagtail-headless-preview` (mature, recommended by Wagtail itself); add `HeadlessPreviewMixin` to every page model from the start.
 3. Build the Angular `/preview/<contentType>/<token>` route as part of the page-template scaffold for each template.
 4. Test preview for every page type and every StreamField block. If a block renders differently in preview vs. live, fix it.
-5. Bonus: live-update preview on autosave (Wagtail 7.4 LTS adds autosave — leverage it).
+5. Bonus: live-update preview on autosave (Wagtail 7.3 adds autosave — leverage it).
 
 **Warning signs:**
 - "We'll add preview at the end"
@@ -481,10 +481,10 @@ Single-accent palettes invite over-application; the Starter Kit book is *exactly
 
 ---
 
-### Pitfall 18: Wagtail-grapple lagging on Wagtail 7.4
+### Pitfall 18: Wagtail-grapple lagging on Wagtail 7.3
 
 **What goes wrong:**
-You commit to GraphQL via wagtail-grapple. Wagtail 7.4 LTS releases 2026-05-04. Grapple maintainer is volunteer-paced and the 7.4-compatible release lands months later. You're stuck on Wagtail 7.3 or running an unreleased grapple commit.
+You commit to GraphQL via wagtail-grapple. Wagtail 7.3 releases 2026-05-04. Grapple maintainer is volunteer-paced and the 7.4-compatible release lands months later. You're stuck on Wagtail 7.3 or running an unreleased grapple commit.
 
 **Why it happens:**
 Grapple is third-party; Wagtail core releases on its own schedule. Historically grapple has lagged.
@@ -699,7 +699,7 @@ Wagtail uploads succeed, but image renditions render as broken images in the FE.
 - [Angular Image Optimization: Master NgOptimizedImage](https://sweawreed.medium.com/your-angular-apps-lcp-is-still-too-slow-here-s-how-to-master-ngoptimizedimage-333f8e6da1b7)
 
 **Wagtail / headless:**
-- [Wagtail 7.4a Headless support docs](https://docs.wagtail.org/en/latest/advanced_topics/headless.html)
+- [Wagtail 7.3a Headless support docs](https://docs.wagtail.org/en/latest/advanced_topics/headless.html)
 - [Headless Wagtail pain points (DEV)](https://dev.to/tommasoamici/headless-wagtail-what-are-the-pain-points-ji4)
 - [torchbox/wagtail-headless-preview](https://github.com/torchbox/wagtail-headless-preview)
 - [LearnWagtail: Serializing RichText Blocks](https://learnwagtail.com/tutorials/headless-cms-serializing-richtext-blocks/)

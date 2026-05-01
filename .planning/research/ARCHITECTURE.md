@@ -1,6 +1,6 @@
 # Architecture Research
 
-**Domain:** Headless editorial site (Wagtail 7.4 LTS BE + Angular 21 zoneless FE, Dockerized single VPS)
+**Domain:** Headless editorial site (Wagtail 7.3 BE + Angular 21 zoneless FE, Dockerized single VPS)
 **Researched:** 2026-04-30 — last updated 2026-05-01 to reflect locked architecture changes (Docker for BE, MinIO for media, SSG-only / no SSR).
 **Confidence:** HIGH on FE structure and topology; MEDIUM-HIGH on Wagtail headless choices (verified against current Wagtail 7.x docs); MEDIUM on annotated-code StreamField modeling (no canonical pattern in docs — recommendation is opinionated).
 
@@ -61,7 +61,7 @@ AND at runtime (CSR for /preview/* and any client-side fetches).
 | **fe-static (container)** | Serves the prerendered Angular bundle on port 80 (Traefik provides TLS upstream); SPA fallback to `index.html`; long-cache headers for `/assets/*` and `/fonts/*` | `caddy:alpine` with a 10-line Caddyfile; mounts `/srv/arduino/fe-bundle` read-only |
 | **Angular (build-time prerender + runtime CSR)** | All public routes prerendered at build (`outputMode: "static"`); `/preview/*` runs CSR-only inside the same static bundle | `@angular/ssr` configured for SSG; **no Node SSR runtime** |
 | **ContentApi service (Angular)** | Single typed seam between FE and content source; swappable mock ↔ Wagtail | Interface + two implementations (`MockContentApi`, `WagtailContentApi`) |
-| **Wagtail 7.4 LTS (container)** | Page models, StreamField content, admin UX, image renditions stored in MinIO, autosave, preview | Django + Wagtail in `python:3.13-slim` image; gunicorn 23 as PID 1; DRF v2 for read API |
+| **Wagtail 7.3 (container)** | Page models, StreamField content, admin UX, image renditions stored in MinIO, autosave, preview | Django + Wagtail in `python:3.13-slim` image; gunicorn 23 as PID 1; DRF v2 for read API |
 | **wagtail-headless-preview** | Bridge editor preview → Angular `/preview/*` route renders draft via signed token | Official Torchbox package, redirect-mode (Wagtail 7.1+) |
 | **PostgreSQL 17 (container)** | Pages, revisions, users, search index | Internal Docker network only; data on host-bound named volume `/srv/arduino/postgres-data` |
 | **MinIO (container)** | S3-compatible object storage for media originals + Wagtail renditions + collected static admin assets | `minio/minio:latest`; data on host-bound named volume `/srv/arduino/minio-data`; reachable internally as `http://minio:9000`; via Traefik externally as `/media/*` |
@@ -117,7 +117,7 @@ arduino-hub/
 │   │   └── schematics/
 │   └── angular.json
 │
-├── backend/                       # Wagtail 7.4 LTS Django project (Phase 4+)
+├── backend/                       # Wagtail 7.3 Django project (Phase 4+)
 │   ├── arduino_hub/               # settings, urls, wsgi
 │   ├── apps/
 │   │   ├── lessons/               # LessonPage, LessonIndexPage
@@ -403,7 +403,7 @@ This is the section that drives the roadmap. Each phase produces concrete artifa
 
 ### Phase 4 — Wagtail backend skeleton (Dockerized)
 **Artifacts produced:**
-- Wagtail 7.4 LTS project with apps: `lessons`, `articles`, `datasheets`, `schematics`, `content_blocks`
+- Wagtail 7.3 project with apps: `lessons`, `articles`, `datasheets`, `schematics`, `content_blocks`
 - `compose.yml` + `compose.dev.yml` defining `wagtail`, `postgres`, `minio` services with healthchecks; FE remains on the host (`pnpm start`)
 - Page models with fields matching `content/models/*.ts` (1:1 — this is enforced)
 - StreamField blocks matching the FE `Block` union, including `CodeBlock` with `annotations` ListBlock
@@ -517,7 +517,7 @@ DRF v2 N+1 queries on richly-nested StreamField pages. Mitigation: `select_relat
 
 - **HIGH:** Angular 21 zoneless + signals + SSR patterns; FE folder layout; ContentApi seam; single-VPS topology with Caddy/systemd; Wagtail DRF v2 as the headless choice.
 - **MEDIUM-HIGH:** Page-model contract structure — confidence is high in the *approach* (FE owns the shape, Wagtail conforms); medium on exact field names, which will refine in Phase 2.
-- **MEDIUM:** Annotated CodeBlock StreamField design. There is no canonical Wagtail pattern for line-level annotations published in docs. The recommendation (StructBlock + ListBlock of {line, note}) is an opinionated synthesis. Worth a 30-minute spike at Phase 4 start to validate against Wagtail 7.4's actual block API.
+- **MEDIUM:** Annotated CodeBlock StreamField design. There is no canonical Wagtail pattern for line-level annotations published in docs. The recommendation (StructBlock + ListBlock of {line, note}) is an opinionated synthesis. Worth a 30-minute spike at Phase 4 start to validate against Wagtail 7.3's actual block API.
 - **LOCKED (2026-05-01):** SSG-only — no Node SSR, ever. Angular ships as `outputMode: "static"`; Wagtail REST API v2 → Angular consumes (build-time prerender for public routes, runtime CSR for `/preview/*` and any client-side fetches). The earlier note recommending SSR is superseded by an explicit user decision: SSR is not on the roadmap. Editor preview ergonomics are addressed via CSR + autosave polling against the preview-token endpoint, not by introducing a Node runtime. Trigger to revisit: never within v1 scope; would require a new architectural ADR.
 
 ---

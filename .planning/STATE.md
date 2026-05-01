@@ -21,7 +21,7 @@ progress:
 ## Project Reference
 
 - **Core value:** Reading and learning here feels as good as reading a beautifully typeset book — design, typography, and visual structure are the primary product.
-- **Stack:** Angular 21 (zoneless, Signal Forms, Vitest) + SCSS + self-hosted variable woff2 (Source Serif 4 + Inter + JetBrains Mono, Pairing A) + Wagtail 7.4 LTS (post 2026-05-04) + Django 5.2 LTS + PostgreSQL 17 + MinIO (S3-compatible) + Traefik (auto-TLS) running in Docker Compose on a single Ubuntu 24.04 VPS.
+- **Stack:** Angular 21 (zoneless, Signal Forms, Vitest) + SCSS + self-hosted variable woff2 (Source Serif 4 + Inter + JetBrains Mono, Pairing A) + Wagtail 7.3 (post 2026-05-04) + Django 5.2 LTS + PostgreSQL 17 + MinIO (S3-compatible) + Traefik (auto-TLS) running in Docker Compose on a single Ubuntu 24.04 VPS.
 - **Build order:** FE-first with mocked data → contract lockdown → SSG-only static build → Wagtail BE in Docker conforms to FE contract → Dockerized VPS deploy → content + polish.
 - **Rendering strategy:** SSG (`outputMode: "static"`) — no Node SSR ever; CSR-only `/preview/*`.
 - **Language:** Ukrainian only, no i18n architecture.
@@ -87,7 +87,7 @@ All five Phase 2 success criteria verified PASS. `core-ui` library, layout primi
 |----------|-------|-----------|
 | FE-first with mocked data, BE second | PROJECT.md | Lock design quality without CMS data model leaking into UI decisions |
 | Angular 21 zoneless + SCSS, no Tailwind | PROJECT.md | Editorial design wants bespoke CSS |
-| Wagtail 7.4 LTS for BE | PROJECT.md | LTS support window + autosave; phase scheduled post 2026-05-04 |
+| Wagtail 7.3 for BE, planned bump to 7.4 LTS on 2026-05-04 | PROJECT.md, CLAUDE.md | Switched 2026-05-01 — unblocks Phase 4 immediately; 7.3→7.4 is a minor-release upgrade with no breaking changes; lands on LTS within a week |
 | Ukrainian only, no i18n architecture | PROJECT.md | Explicit scope decision |
 | Single VPS hosting | PROJECT.md | Cost + control; small audience scale |
 | SSG-only for v1 (no Node SSR) | research/SUMMARY.md | Eliminates a failure surface; CSR-only preview is acceptable v1 |
@@ -114,7 +114,7 @@ All five Phase 2 success criteria verified PASS. `core-ui` library, layout primi
 
 ### Blockers
 
-- **Phase 4 cannot start before 2026-05-04** (Wagtail 7.4 LTS release date). Phases 2–3 are unblocked and can proceed immediately.
+- (None) Phase 4 was previously blocked on Wagtail 7.4 LTS release; switched target to Wagtail 7.3 (2026-05-01) — Phase 4 is now unblocked. Plan a one-line version pin bump to 7.4 LTS on its 2026-05-04 release inside Phase 4.
 
 ### Open hand-offs
 
@@ -125,9 +125,9 @@ All five Phase 2 success criteria verified PASS. `core-ui` library, layout primi
 
 - Final Source Serif 4 vs Literata A/B test in real two-column layout — revisit at Phase 6.
 - Margin-annotation CSS alignment across breakpoints — may warrant `/gsd-research-phase` on CSS `anchor-name` / `position-anchor` at start of Phase 3.
-- "Universal Listings API" in Wagtail 7.4 — verify against final 2026-05-04 release notes; default to `/api/v2/pages/`.
+- "Universal Listings API" in Wagtail 7.3/7.4 — verify against 7.4 LTS release notes on 2026-05-04; default to `/api/v2/pages/` until then.
 - `pillow-avif-plugin` longevity — re-check at Phase 4; switch to native Pillow AVIF if available.
-- Preview UX with Wagtail 7.4 autosave — measure in Phase 4; SSG is locked, so any preview ergonomics issues will be solved with CSR autosave-polling against the preview-token endpoint, not by introducing SSR.
+- Preview UX with Wagtail 7.3 autosave — measure in Phase 4; SSG is locked, so any preview ergonomics issues will be solved with CSR autosave-polling against the preview-token endpoint, not by introducing SSR.
 
 ## Session Continuity
 

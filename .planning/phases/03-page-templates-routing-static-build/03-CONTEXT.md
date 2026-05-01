@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Wire up all eight public page templates (`LessonPage`, `ArticlePage`, `DatasheetPage`, `SchematicPage`, `LessonLibraryPage`, `HomePage`, `AboutPage`, `NotFoundPage`) plus the `/preview/*` CSR stub, the global `SiteHeader`/`SiteFooter`/`SiteNav` chrome, the `BlockRenderer` dispatcher, the routing surface and `getPrerenderParams()` plumbing for SSG output, the Shiki build-time syntax-highlighting integration, the `NgOptimizedImage` swap (with the `width`/`height` Block-model amendment), the Lighthouse performance gate on a representative lesson, and the 30–60 minute Wagtail 7.4 StreamField spike at phase exit.
+Wire up all eight public page templates (`LessonPage`, `ArticlePage`, `DatasheetPage`, `SchematicPage`, `LessonLibraryPage`, `HomePage`, `AboutPage`, `NotFoundPage`) plus the `/preview/*` CSR stub, the global `SiteHeader`/`SiteFooter`/`SiteNav` chrome, the `BlockRenderer` dispatcher, the routing surface and `getPrerenderParams()` plumbing for SSG output, the Shiki build-time syntax-highlighting integration, the `NgOptimizedImage` swap (with the `width`/`height` Block-model amendment), the Lighthouse performance gate on a representative lesson, and the 30–60 minute Wagtail 7.3 StreamField spike at phase exit.
 
 Phase 3 does **not** ship any backend (`MockContentApi` continues to serve), real preview-token wiring, drop caps / hanging punctuation / glossary tooltips / pin cross-refs / figure cross-refs / RSS / JSON-LD / OG tags / print stylesheet / dark mode / `/articles` library page / WCAG AA full audit. Those belong to P4–P6.
 
@@ -28,8 +28,8 @@ The 03-UI-SPEC.md (APPROVED 2026-05-01) locks ~95% of design decisions: chrome c
   6. Shiki build-time integration
   7. `NgOptimizedImage` swap across `Figure` + `Pinout`
   8. Phase-exit audits (own plan) — three-breakpoint walk + `docs/typography-checklist.md` P3 rows + `docs/force-en-audit.md` P3 row + Lighthouse gate
-  9. Wagtail 7.4 StreamField spike (CONTRACT-02), blocking phase exit
-- **D-SEQ-02:** The Wagtail spike is the **last plan** and **blocks phase exit**. Matches UI-SPEC §Wagtail Spike: design-freeze checkpoint; FE contract becomes immutable across P3→P4 once it passes. Cannot run before 2026-05-04 (Wagtail 7.4 LTS release).
+  9. Wagtail 7.3 StreamField spike (CONTRACT-02), blocking phase exit
+- **D-SEQ-02:** The Wagtail spike is the **last plan** and **blocks phase exit**. Matches UI-SPEC §Wagtail Spike: design-freeze checkpoint; FE contract becomes immutable across P3→P4 once it passes. Runs immediately on Wagtail 7.3 (GA today); Phase 4 will re-run the same shape diff against 7.4 LTS after the 2026-05-04 bump.
 - **D-SEQ-03:** `LessonPage` is built before its siblings because every other template is a structural simplification of it (no parts list, no prev/next, no in-page TOC margin variant). Settling LessonPage first de-risks the whole template group.
 - **D-SEQ-04:** Phase-exit audits are their own plan (matches the P1 "Day-zero security + audit docs" and P2 "showcase + audit" pattern), not folded into the Lighthouse plan.
 
@@ -100,7 +100,7 @@ The 03-UI-SPEC.md (APPROVED 2026-05-01) locks ~95% of design decisions: chrome c
 - `NgOptimizedImage` — Angular docs for `priority`, `ngSrc`, dimensions.
 - Shiki + `@shikijs/transformers` — official docs (theme JSON, custom theme loading, no client-side bundle).
 - TextMate theme JSON spec — for hand-authoring `arduino-paper.json`.
-- Wagtail 7.4 LTS StreamField + REST API v2 docs — needed only for the spike plan, on or after 2026-05-04.
+- Wagtail 7.3 StreamField + REST API v2 docs — needed only for the spike plan, immediately (7.3 is GA today).
 - Lighthouse CLI — desktop and mobile profile flags.
 
 </canonical_refs>

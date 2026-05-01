@@ -4,7 +4,7 @@
 **Researched:** 2026-04-30 — last updated 2026-05-01 to reflect locked architecture changes (Docker for BE, MinIO for media, SSG-only / no SSR).
 **Confidence:** HIGH overall (locked choices verified current; supporting stack widely-used 2026 defaults; one MEDIUM area: typography selection is opinionated)
 
-> Locked choices (NOT re-litigated, only validated for version-pinning): Angular 21 (zoneless, Signal Forms, Vitest), SCSS only, Wagtail 7.4 LTS, single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO), SSG-only (no Node SSR — ever), Ukrainian only. This document recommends the supporting stack around them.
+> Locked choices (NOT re-litigated, only validated for version-pinning): Angular 21 (zoneless, Signal Forms, Vitest), SCSS only, Wagtail 7.3, single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO), SSG-only (no Node SSR — ever), Ukrainian only. This document recommends the supporting stack around them.
 
 ---
 
@@ -233,15 +233,15 @@ Keep all components consuming **Signals** of the domain shape, not raw HTTP. The
 
 ---
 
-## 3. Wagtail 7.4 LTS Specifics
+## 3. Wagtail 7.3 Specifics
 
 ### Versions (verified)
 
 | Component | Pin | Why |
 |-----------|-----|-----|
-| **Wagtail** | `7.4.x` (LTS, releases 2026-05-04) | User-locked. 12-month security updates minimum. |
-| **Django** | `5.2.x` LTS | Wagtail 7.4 requires Django 5.2 or 6.0. **5.2 is LTS (security updates ≥3 years from Apr 2025).** Django 6.0 is current but not LTS — pick 5.2 for stability alignment with Wagtail LTS. |
-| **Python** | `3.13.x` | Wagtail 7.4 supports 3.10 → 3.14. 3.13 is the sweet spot — production-stable, JIT-ready, broad ecosystem support. **Avoid 3.14** (released Oct 2025; some C-extension wheels may lag) for a solo deployment. |
+| **Wagtail** | `7.3.x` today; planned bump to `7.4.x` LTS on its 2026-05-04 release | User-locked. 7.3 unblocks Phase 4 immediately; 7.3→7.4 is a minor-release upgrade with no breaking changes to StreamField or REST API v2. 7.4 LTS gets ≥12 months of security updates. |
+| **Django** | `5.2.x` LTS | Wagtail 7.3 requires Django 5.2 or 6.0. **5.2 is LTS (security updates ≥3 years from Apr 2025).** Django 6.0 is current but not LTS — pick 5.2 for stability alignment with Wagtail LTS. |
+| **Python** | `3.13.x` | Wagtail 7.3 supports 3.10 → 3.14. 3.13 is the sweet spot — production-stable, JIT-ready, broad ecosystem support. **Avoid 3.14** (released Oct 2025; some C-extension wheels may lag) for a solo deployment. |
 | **PostgreSQL** | `17.x` (or `16.x`) | Django 5.2 requires PostgreSQL 14+. PG17 is current stable as of late 2025; PG16 also fine. **Avoid PG13/14** (PG13 EOL Nov 2025, PG14 EOL Nov 2026). PostgreSQL also unlocks Wagtail's fuzzy search (new in 7.4 via Modelsearch 1.3). |
 
 ### Headless setup — recommendation
@@ -255,7 +255,7 @@ Reasoning:
 4. Angular at the build-time prerender step calls a handful of endpoints (`/api/v2/pages/?type=lessons.LessonPage&fields=...`) — REST is fine.
 5. wagtail-grapple's HTML pre-rendering of rich text is *also* available via REST with `?fields=*,body` and the right block serializers.
 
-**The "Universal Listings API"** mentioned in the question: I could not verify a feature by that exact name in Wagtail 7.4 release notes (search returned nothing definitive; it may be a planned/internal name for an upcoming admin API or a misnomer for `/api/v2/pages/`). **Treat it as not-available unless 7.4 final release notes on 2026-05-04 confirm otherwise.** CONFIDENCE: LOW on the existence of a feature called "Universal Listings API"; HIGH that the standard `/api/v2/pages/` endpoints will cover all needs.
+**The "Universal Listings API"** mentioned in the question: I could not verify a feature by that exact name in Wagtail 7.3 release notes (search returned nothing definitive; it may be a planned/internal name for an upcoming admin API or a misnomer for `/api/v2/pages/`). **Treat it as not-available unless 7.4 final release notes on 2026-05-04 confirm otherwise.** CONFIDENCE: LOW on the existence of a feature called "Universal Listings API"; HIGH that the standard `/api/v2/pages/` endpoints will cover all needs.
 
 ### StreamField patterns for the four page types
 
@@ -286,7 +286,7 @@ class PinoutBlock(blocks.StructBlock):  # for datasheets
     pins = blocks.ListBlock(PinBlock())
 ```
 
-Then on each page type, `body = StreamField([...])` with the appropriate subset. **Per-page-type subsets** rather than one universal block list — keeps editor UX tight. This aligns with Wagtail 7.4's improved StreamField validation (deferred validation lets editors save partial blocks).
+Then on each page type, `body = StreamField([...])` with the appropriate subset. **Per-page-type subsets** rather than one universal block list — keeps editor UX tight. This aligns with Wagtail 7.3's improved StreamField validation (deferred validation lets editors save partial blocks).
 
 ### Media handling — renditions, WebP, AVIF
 
@@ -332,7 +332,7 @@ This works with REST (no GraphQL needed). CONFIDENCE: HIGH.
 ### Wagtail packages to install
 
 ```
-wagtail==7.4.*
+wagtail==7.3.*
 django==5.2.*
 psycopg[binary]==3.2.*       # not psycopg2; psycopg 3 is the modern driver
 pillow                       # core image handling
@@ -345,7 +345,7 @@ whitenoise==6.*              # static-file serving (Wagtail admin assets)
 ```
 
 **Sources:**
-- [Wagtail 7.4 LTS release notes](https://docs.wagtail.org/en/latest/releases/7.4.html) — HIGH (in-development docs; release 2026-05-04)
+- [Wagtail 7.3 release notes](https://docs.wagtail.org/en/latest/releases/7.4.html) — HIGH (in-development docs; release 2026-05-04)
 - [Wagtail headless support](https://docs.wagtail.org/en/latest/advanced_topics/headless.html) — HIGH
 - [Django 5.2 release notes](https://docs.djangoproject.com/en/6.0/releases/5.2/) — HIGH
 - [Wagtail WebP/AVIF blog](https://wagtail.org/blog/greener-images-with-webp/) — HIGH
@@ -587,7 +587,7 @@ pnpm add -D fonttools-bin                           # subsetting via Python; or 
 
 ```bash
 uv init wagtail-arduino && cd wagtail-arduino
-uv add 'wagtail==7.4.*' 'django==5.2.*' 'psycopg[binary]==3.2.*' \
+uv add 'wagtail==7.3.*' 'django==5.2.*' 'psycopg[binary]==3.2.*' \
        pillow pillow-avif-plugin 'gunicorn==23.*' \
        'django-cors-headers==4.*' 'wagtail-headless-preview==0.8.*' \
        'django-storages[s3]' 'boto3'
@@ -661,9 +661,9 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 | Package A | Compatible With | Notes |
 |-----------|-----------------|-------|
-| Wagtail 7.4 | Django 5.2 LTS, Django 6.0 | Pick 5.2 LTS for alignment |
+| Wagtail 7.3 | Django 5.2 LTS, Django 6.0 | Pick 5.2 LTS for alignment |
 | Django 5.2 | Python 3.10–3.14, PostgreSQL 14+ | 3.13 + PG17 recommended |
-| Wagtail 7.4 | Python 3.10–3.14 | 3.13 recommended |
+| Wagtail 7.3 | Python 3.10–3.14 | 3.13 recommended |
 | Angular 21 | Node 20.19+ / 22.12+ | Use 22 LTS |
 | `psycopg[binary]` 3.2 | Django 5.2 | Replaces psycopg2 |
 | Shiki 3 | Node 20+ | Build-time only |
@@ -678,7 +678,7 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 |---------|------------|-------|
 | Typography pipeline & font picks | HIGH on technical (woff2, subsetting, fallback metrics); MEDIUM on the specific A/C aesthetic call (taste-dependent) |
 | Angular 21 strategy (SSG, NgOptimizedImage, Shiki, mock layer) | HIGH |
-| Wagtail 7.4 setup, REST vs GraphQL, StreamField patterns, preview | HIGH (REST recommendation is well-supported); LOW on the specific naming of "Universal Listings API" (couldn't verify; recommend defaulting to standard `/api/v2/pages/`) |
+| Wagtail 7.3 setup, REST vs GraphQL, StreamField patterns, preview | HIGH (REST recommendation is well-supported); LOW on the specific naming of "Universal Listings API" (couldn't verify; recommend defaulting to standard `/api/v2/pages/`) |
 | VPS deployment (Caddy + gunicorn + systemd + PG17) | HIGH |
 | Tooling (uv, pnpm, Ruff, Vitest, Stylelint) | HIGH |
 
@@ -686,7 +686,7 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 ## Open Questions for Phase-Specific Research Later
 
-1. **"Universal Listings API" in Wagtail 7.4:** verify against final release notes on 2026-05-04. If it ships, evaluate whether it simplifies the Angular index-page queries. (Phase: BE integration.)
+1. **"Universal Listings API" in Wagtail 7.3:** verify against final release notes on 2026-05-04. If it ships, evaluate whether it simplifies the Angular index-page queries. (Phase: BE integration.)
 2. **Final font A/B test:** Source Serif 4 vs Literata in a real two-column lesson layout with Ukrainian content. Decision belongs in the design-locking phase, not now.
 3. **Arduino TextMate grammar source:** confirm a maintained grammar exists in `arduino/vscode-arduino` or pick `cpp` and accept slightly less Arduino-specific tokenization. (Phase: code-block component.)
 4. **Caddy → fronting CDN:** revisit Cloudflare or Bunny CDN if traffic grows beyond ~1k uniques/day. (Post-launch.)

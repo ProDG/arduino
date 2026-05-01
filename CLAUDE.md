@@ -4,7 +4,7 @@ This file is read by Claude Code at the start of every session in this repo. Kee
 
 ## Project
 
-Editorial-quality Ukrainian-language Arduino learning website. Lessons, articles, schematics, datasheets. **Design and typography are the product**, not decoration — inspired by the official Arduino Starter Kit book. Built FE-first with mocked data (Angular 21 + SCSS), then a Wagtail 7.4 LTS backend (Dockerized) conforms to the locked frontend contract. Single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO). Ukrainian only — no i18n.
+Editorial-quality Ukrainian-language Arduino learning website. Lessons, articles, schematics, datasheets. **Design and typography are the product**, not decoration — inspired by the official Arduino Starter Kit book. Built FE-first with mocked data (Angular 21 + SCSS), then a Wagtail 7.3 backend (Dockerized) conforms to the locked frontend contract; planned bump to Wagtail 7.4 LTS on its 2026-05-04 release. Single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO). Ukrainian only — no i18n.
 
 **Core value:** Reading and learning here feels as good as reading a beautifully typeset book.
 
@@ -32,7 +32,7 @@ This project uses Get Shit Done (GSD) for planning and execution. Key files in `
 - **Frontend:** Angular 21.2.x (zoneless, Signal Forms, Vitest), SCSS (no Tailwind), `@angular/ssr` with `outputMode: "static"` (pure SSG, no Node SSR runtime — ever)
 - **Typography:** Source Serif 4 (body) + Inter (UI) + JetBrains Mono (code), self-hosted variable woff2, subset Cyrillic + Cyrillic-Ext, Fontaine fallback metrics
 - **Code rendering:** Shiki at build-time with `@shikijs/transformers` for diff and line-anchored margin annotations
-- **Backend:** Wagtail 7.4 LTS (releases 2026-05-04) + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2; REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview`; `django-storages[s3]` + `boto3` against MinIO for media + image renditions.
+- **Backend:** Wagtail 7.3 (planned bump to 7.4 LTS on 2026-05-04) + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2; REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview`; `django-storages[s3]` + `boto3` against MinIO for media + image renditions.
 - **Tooling:** pnpm 10 + ESLint 9 + Stylelint 16 (FE); uv + Ruff + mypy + pytest (BE); pre-commit + gitleaks
 - **Containerization:** Docker (Compose) for BE + Postgres + MinIO in dev AND prod. Dev parity: same compose file with dev overrides. **FE is NOT containerized in dev** — Angular runs directly on the host (`pnpm start`); the FE bundle is built locally/CI and rsynced to the VPS for prod.
 - **Deployment:** Single Ubuntu 24.04 VPS — Traefik (label-driven auto-TLS via Let's Encrypt, in container) + Wagtail/gunicorn + Postgres + MinIO + a tiny `caddy:alpine` container that serves the prerendered Angular FE bundle on `:80` (Traefik handles TLS upstream). No bare-metal systemd units except a single `docker-compose@arduino.service`.
@@ -63,4 +63,4 @@ Tailwind, Google Fonts CDN, Material Design, GraphQL/wagtail-grapple, dark mode 
 - Commit messages: lowercase imperative summary; reference REQ-IDs where relevant.
 
 ---
-*Last updated: 2026-05-01 — switched to Docker (Traefik + Wagtail + Postgres + MinIO) for BE, MinIO for media, no Node SSR ever.*
+*Last updated: 2026-05-01 — switched to Docker (Traefik + Wagtail + Postgres + MinIO) for BE, MinIO for media, no Node SSR ever; switched Wagtail target to 7.3 with planned bump to 7.4 LTS on 2026-05-04.*

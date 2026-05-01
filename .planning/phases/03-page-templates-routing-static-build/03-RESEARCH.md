@@ -1,8 +1,8 @@
 # Phase 3: Page Templates, Routing & Static Build — Research
 
 **Researched:** 2026-05-01
-**Domain:** Angular 21 SSG (`outputMode: "static"`) + parameterized prerender + zoneless page templates + build-time Shiki + NgOptimizedImage + Lighthouse gate + Wagtail 7.4 StreamField spike
-**Confidence:** HIGH on Angular 21 SSG mechanics, NgOptimizedImage, Shiki integration, force-en audit pattern; MEDIUM on exact Wagtail 7.4 REST v2 nested-StreamField JSON shape (resolved empirically by the phase-exit spike — that is its purpose); HIGH on every guardrail because P1+P2 already proved them.
+**Domain:** Angular 21 SSG (`outputMode: "static"`) + parameterized prerender + zoneless page templates + build-time Shiki + NgOptimizedImage + Lighthouse gate + Wagtail 7.3 StreamField spike
+**Confidence:** HIGH on Angular 21 SSG mechanics, NgOptimizedImage, Shiki integration, force-en audit pattern; MEDIUM on exact Wagtail 7.3 REST v2 nested-StreamField JSON shape (resolved empirically by the phase-exit spike — that is its purpose); HIGH on every guardrail because P1+P2 already proved them.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Phase 3 is mostly **glue** on a foundation that's already locked. The hard work 
 - Force-en audit and typography checklist accumulate per phase (P1+P2).
 - `_typography.scss` is the single font-pairing swap target; `src/lib/intl.ts` is the only `Intl.*` callsite.
 
-What Phase 3 actually adds: (1) `getPrerenderParams()` on each dynamic route — which requires a build-time fixture loader because `inject(ContentApi)` is unavailable in a static-prerender callback when the API does network I/O; (2) a tiny **CSR opt-out** for `/preview/*` matching the existing `/dev/primitives` pattern; (3) `BlockRenderer` as an `@switch (block().type)` dispatcher with sidenote/parts-list extraction handled by the parent template (locked in 03-UI-SPEC); (4) `<img ngSrc>` with explicit `width`/`height` (a `Block` model amendment, not a redesign); (5) build-time Shiki tokenization writing a `code.tokens` cache field into fixtures (no client bundle); (6) a manual `pnpm lighthouse:lesson` script as the phase-exit gate; (7) a 30–60 min Wagtail 7.4 StreamField throwaway spike on/after 2026-05-04.
+What Phase 3 actually adds: (1) `getPrerenderParams()` on each dynamic route — which requires a build-time fixture loader because `inject(ContentApi)` is unavailable in a static-prerender callback when the API does network I/O; (2) a tiny **CSR opt-out** for `/preview/*` matching the existing `/dev/primitives` pattern; (3) `BlockRenderer` as an `@switch (block().type)` dispatcher with sidenote/parts-list extraction handled by the parent template (locked in 03-UI-SPEC); (4) `<img ngSrc>` with explicit `width`/`height` (a `Block` model amendment, not a redesign); (5) build-time Shiki tokenization writing a `code.tokens` cache field into fixtures (no client bundle); (6) a manual `pnpm lighthouse:lesson` script as the phase-exit gate; (7) a 30–60 min Wagtail 7.3 StreamField throwaway spike (runs immediately; re-validated against 7.4 LTS after the 2026-05-04 bump in Phase 4).
 
 **Primary recommendation:** Keep Phase 3 prescriptive and additive. The 03-UI-SPEC + 03-CONTEXT have already eliminated almost all design optionality. Researcher's job here is to nail the Angular 21 SSG mechanics, document the byte-level prerender output expectation, lock the `getPrerenderParams` plumbing pattern, and pre-cache the Wagtail spike protocol so the executor can run it inside the 60-minute timebox.
 
@@ -31,7 +31,7 @@ What Phase 3 actually adds: (1) `getPrerenderParams()` on each dynamic route —
   6. Shiki build-time integration (theme + tokenize script + prebuild hook)
   7. `NgOptimizedImage` swap on `Figure` + `Pinout`
   8. Phase-exit audits — own plan: 3-breakpoint walk, typography-checklist P3 rows, force-en P3 row, Lighthouse gate
-  9. Wagtail 7.4 StreamField spike (CONTRACT-02) — last, blocks phase exit, cannot run before 2026-05-04
+  9. Wagtail 7.3 StreamField spike (CONTRACT-02) — last, blocks phase exit, runs immediately on Wagtail 7.3 (re-validate vs 7.4 LTS in Phase 4)
 - `LessonPage` built before siblings (de-risks the whole template group).
 - Phase-exit audits are their own plan (P1+P2 pattern).
 - Wagtail spike is the **last plan** and **blocks phase exit**.
@@ -102,7 +102,7 @@ None — discussion stayed strictly within phase scope. The 12 "Open Decisions C
 | PAGE-09 | Routing covers `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`, `/about` | §Standard Stack (Angular 21 SSR) + §Architecture Patterns |
 | PAGE-10 | `BlockRenderer` dispatches `Block` discriminated union to right primitive | §Block-Rendering Dispatch |
 | PAGE-11 | All pages consume content via `ContentApi` (no direct HTTP) | §Content Source Architecture |
-| CONTRACT-02 | `CodeBlock` model `{language, code, annotations: {line, html}[]}` verified by Wagtail 7.4 spike | §Wagtail 7.4 StreamField Spike Protocol |
+| CONTRACT-02 | `CodeBlock` model `{language, code, annotations: {line, html}[]}` verified by Wagtail 7.3 spike | §Wagtail 7.3 StreamField Spike Protocol |
 | PERF-01 | Angular 21.2.x zoneless, Signal Forms, Vitest, `@angular/ssr` `outputMode: "static"` | §Standard Stack |
 | PERF-02 | All public routes prerendered; `getPrerenderParams()` for dynamic; no Node SSR | §Routing & Per-Route Data Loading |
 | PERF-03 | `/preview/<contentType>/<token>` CSR-only | §CSR Opt-Out for `/preview/*` |
@@ -782,11 +782,11 @@ The Block model amendment (`width`/`height` on figure + pinout) does require a o
 **How to avoid:** `lint-fixtures.mjs` image-dimension verification (D-AMEND-02) catches mismatches at commit time. Lighthouse run catches anything missed.
 **Warning signs:** Dev console NgOptimizedImage warnings; CLS audit row > 0.1.
 
-### Pitfall F: Wagtail spike runs before 2026-05-04
+### Pitfall F: Wagtail 7.3 spike contract drifts at the 7.4 LTS bump
 
-**What goes wrong:** Trying to install Wagtail 7.4 LTS before the LTS release branch is out gives you a 7.3 fallback or an unstable nightly.
-**How to avoid:** Plan 03-09 explicitly checks the date. The CONTEXT D-SEQ-02 says "cannot run before 2026-05-04". Today is 2026-05-01 — plan can be written, executed only on/after 2026-05-04.
-**Warning signs:** `pip install wagtail==7.4.*` resolves to a non-final tag.
+**What goes wrong:** The 03-10 spike is run against Wagtail 7.3 (GA today). Phase 4 will bump to 7.4 LTS on 2026-05-04. If the StreamField/REST API v2 serialization changes between 7.3 and 7.4 (unlikely — minor release, no breaking changes documented — but possible), the design-freeze sign-off from P3 silently goes stale.
+**How to avoid:** Phase 4's first task after the version pin bump re-runs the same shape diff (CodeBlock + FigureBlock) against 7.4 LTS. If it still PASSes, the design freeze stays signed off; if it FAILs, the diff is the change list and we update the FE model or Wagtail serializer accordingly before the rest of P4 builds on it.
+**Warning signs:** `pip install wagtail==7.4.*` succeeds in P4 but the captured JSON shape diff differs from the P3 spike report.
 
 ### Pitfall G: `<title>` and `<html lang>` mismatch in CSR shell for `/preview/*`
 
@@ -907,18 +907,18 @@ The 03-UI-SPEC fully specifies each template. This research adds only **executio
 - **`NotFoundPage`** — wildcard `**` route. Renders `404` numeral + accent hairline rule + lede + body. Centered vertically via `min-height: calc(100vh - …); display: grid; place-content: center;`.
 - **`PreviewStubPage`** — CSR-only. Reads `:contentType` and `:token` from `ActivatedRoute` params, renders editorial panel with locked Ukrainian copy; the params are echoed in a small `<pre>` for P4 author wiring verification. **Must NOT call `ContentApi`** in P3.
 
-## Wagtail 7.4 StreamField Spike Protocol
+## Wagtail 7.3 StreamField Spike Protocol
 
-> Plan 03-09. **Cannot run before 2026-05-04.** Today is 2026-05-01.
+> Plan 03-10. Runs immediately on Wagtail 7.3 (GA today). Phase 4 will re-run the same shape diff against 7.4 LTS after the 2026-05-04 bump.
 
-**Goal:** Empirically validate that the FE `Block.code` shape `{language, code, annotations: {line, html}[]}` is byte-compatible with what Wagtail 7.4 LTS REST API v2 emits for the equivalent StreamField.
+**Goal:** Empirically validate that the FE `Block.code` shape `{language, code, annotations: {line, html}[]}` is byte-compatible with what Wagtail 7.3 REST API v2 emits for the equivalent StreamField.
 
 **Throwaway project setup (60 minutes total budget):**
 
 ```bash
 # Outside the main repo — a separate folder, NEVER committed
 mkdir -p /tmp/wagtail-spike && cd /tmp/wagtail-spike
-uv init && uv add 'wagtail==7.4.*' 'django==5.2.*' 'psycopg[binary]==3.2.*' pillow
+uv init && uv add 'wagtail==7.3.*' 'django==5.2.*' 'psycopg[binary]==3.2.*' pillow
 
 # Bootstrap a Wagtail project (5–10 min)
 uv run wagtail start spike .
@@ -1060,7 +1060,7 @@ Open `spike-response.json` and inspect the `body` array. Expected shape (per Wag
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
 | A1 | Shiki 3.x exposes `createHighlighter` (vs older `getHighlighter`) | Pattern 6 | Tokenize script needs API name swap — 3-line change, no impact on architecture |
-| A2 | Wagtail 7.4 v2 API emits `{type, value, id}` envelope for StreamField blocks | Wagtail Spike Protocol | None — spike's empirical purpose is to verify. Divergence is the deliverable, not a failure |
+| A2 | Wagtail 7.3 v2 API emits `{type, value, id}` envelope for StreamField blocks | Wagtail Spike Protocol | None — spike's empirical purpose is to verify. Divergence is the deliverable, not a failure |
 | A3 | `RichTextBlock` serializes to expanded HTML by default in v2 API | Wagtail Spike Protocol | Spike may need to install custom serializer; budget allows the 60-min timebox to absorb a 10-min serializer add |
 | A4 | `image-size` / equivalent zero-dep image-header reader handles SVG via XML parse + viewBox | Pattern 7 / D-AMEND-02 | If chosen lib doesn't support SVG, fallback is a 20-line custom SVG `viewBox` regex; planner picks lib accordingly |
 | A5 | Lighthouse INP audit (lab) is unavailable; TBT is the conservative proxy | Pattern 8 | If newer Lighthouse exposes a lab INP audit, swap the metric; doesn't change the gate philosophy |
@@ -1104,12 +1104,12 @@ Open `spike-response.json` and inspect the `body` array. Expected shape (per Wag
 | Node 20.19+ / 22.x | Angular 21, Shiki, all build scripts | Likely (project already builds) | check via `node --version` | none — required |
 | pnpm 10.x | Package management (locked in P1) | Likely (project already uses pnpm) | check via `pnpm --version` | none |
 | Chrome/Chromium for Lighthouse | `lighthouse` CLI headless run | macOS dev environment usually has Chrome installed; CI N/A (manual run) | check via `which google-chrome` or `which chromium` | If missing, install Chrome OR use `puppeteer`-bundled Chromium |
-| Python 3.13 + uv (for Wagtail spike only) | Plan 03-09 spike, on/after 2026-05-04 | check via `uv --version` | If missing, install uv |
-| Internet access at spike time | `pip install wagtail==7.4.*` | check at spike time | none — required |
+| Python 3.13 + uv (for Wagtail spike only) | Plan 03-10 spike, runs immediately | check via `uv --version` | If missing, install uv |
+| Internet access at spike time | `pip install wagtail==7.3.*` | check at spike time | none — required |
 
 **Missing dependencies with no fallback:** None expected on the dev machine.
 
-**Verification step before Plan 03-09 execution:** confirm Wagtail 7.4 LTS is published. Check `pip index versions wagtail` (or PyPI) for a non-pre-release `7.4.0`.
+**Verification step before Plan 03-09 execution:** confirm Wagtail 7.3 is published. Check `pip index versions wagtail` (or PyPI) for a non-pre-release `7.4.0`.
 
 ## Validation Architecture
 
@@ -1183,7 +1183,7 @@ Open `spike-response.json` and inspect the `body` array. Expected shape (per Wag
 - [CITED: https://docs.wagtail.org/en/stable/advanced_topics/api/v2/configuration.html] Wagtail v2 API basic configuration.
 
 ### Tertiary (LOW confidence — flagged for spike or runtime verification)
-- Wagtail 7.4 LTS exact final release-date API surface — must be confirmed on/after 2026-05-04.
+- Wagtail 7.3 → 7.4 LTS shape stability — re-validated in Phase 4 after the 2026-05-04 version bump.
 - Shiki 3.x exact final API name (`createHighlighter` vs older `getHighlighter`) — verified at `pnpm add` time.
 - Lighthouse 12.x lab `experimental-interaction-to-next-paint` audit availability — verified at first `pnpm lighthouse:lesson` run.
 
@@ -1196,4 +1196,4 @@ Open `spike-response.json` and inspect the `body` array. Expected shape (per Wag
 - Wagtail spike outcome: MEDIUM — empirical step by definition; assumptions documented and the 60-min budget includes time to write up the structural deltas.
 
 **Research date:** 2026-05-01
-**Valid until:** 2026-06-01 for the SSG mechanics; the Wagtail spike portion is bounded — re-verify on 2026-05-04 (Wagtail 7.4 LTS release) and at spike-execution time.
+**Valid until:** 2026-06-01 for the SSG mechanics; the Wagtail spike portion is bounded — re-verify the 7.3→7.4 shape diff in Phase 4 after the 2026-05-04 LTS bump.

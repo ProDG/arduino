@@ -31,7 +31,7 @@ A Ukrainian-language learning website dedicated to Arduino — lessons, courses,
 - [ ] Responsive behavior: usable on phones, polished on laptops, gorgeous on FHD+ displays
 - [ ] Frontend built with Angular 21 (zoneless, Signal Forms, Vitest) and SCSS — no Tailwind
 - [ ] Mock data layer driving the FE so design can be locked before BE work begins
-- [ ] Wagtail CMS backend (7.4 LTS, releasing 2026-05-04) with page models matching the FE templates: lessons, articles, datasheets, schematics
+- [ ] Wagtail CMS backend (7.3 today, planned bump to 7.4 LTS on 2026-05-04 release) with page models matching the FE templates: lessons, articles, datasheets, schematics
 - [ ] Editor experience suitable for a single author/admin to publish and update content
 - [ ] Self-hosted deployment on a single VPS via Docker Compose: Traefik (auto-TLS) + Wagtail/gunicorn + PostgreSQL + MinIO (S3-compatible media) + a static-FE container serving the prerendered Angular bundle. FE dev runs on the host (`pnpm start`), not in Docker.
 
@@ -62,7 +62,7 @@ A Ukrainian-language learning website dedicated to Arduino — lessons, courses,
 ## Constraints
 
 - **Tech stack — Frontend:** Angular 21 (currently 21.2.10 as of 2026-04-30). Use zoneless change detection (default in v21), Signal Forms, Vitest as test runner, and Angular Aria where accessibility primitives help. No Tailwind. SCSS only. Follow Angular AI guidance from https://angular.dev/ai/develop-with-ai for codegen prompts and conventions.
-- **Tech stack — Backend:** Wagtail CMS 7.4 LTS (release date 2026-05-04), Dockerized. BE phase is scheduled to start *after* the FE design phase, so 7.4 LTS will be available; benefits include autosave and LTS support window.
+- **Tech stack — Backend:** Wagtail CMS 7.3 (Dockerized) with a planned one-line bump to 7.4 LTS on its 2026-05-04 release. 7.3→7.4 is a minor-release upgrade with no breaking changes to StreamField or REST API v2; building against 7.3 unblocks Phase 4 immediately. Benefits at the LTS bump: autosave + 12-month security support window.
 - **Tech stack — Styling:** SCSS, hand-authored. Editorial typography requires bespoke styles, not utility classes.
 - **Typography:** fonts must support full extended Cyrillic. Display, body, and monospace selections all subject to this constraint.
 - **Containerization:** Docker Compose for BE (Wagtail, Postgres, MinIO, Traefik, FE-static-server) in both dev and prod. **FE dev runs on the host** (`pnpm start`), not in Docker. The FE bundle is built locally/CI and rsynced to the VPS for prod.
@@ -78,7 +78,7 @@ A Ukrainian-language learning website dedicated to Arduino — lessons, courses,
 |----------|-----------|---------|
 | Build FE first with mocked data, BE second | Lock design quality without CMS data model leaking into UI decisions | — Pending |
 | Angular 21 (zoneless, Signal Forms) + SCSS, no Tailwind | User preference; editorial design wants bespoke CSS, not utilities | — Pending |
-| Wagtail 7.4 LTS for BE | Latest LTS lands within 5 days; BE phase is later anyway; gets autosave + extended support | — Pending |
+| Wagtail 7.3 for BE, plan one-line bump to 7.4 LTS on 2026-05-04 | Unblocks Phase 4 immediately; minor-release upgrade is no-cost; lands on LTS within a week of release | — Pending |
 | Ukrainian only, no i18n architecture | Explicit scope decision; avoids translation infrastructure entirely | — Pending |
 | Distinct identity inspired by Arduino book, not Arduino-branded | Own colors and wordmark; uses Arduino teal as one accent | — Pending |
 | Single VPS hosting | Cost and control; small audience scale fits single-server topology | — Pending |

@@ -23,7 +23,7 @@ This phase ships:
 - Shiki integration inside the existing P2 `CodeBlock` frame — build-time syntax highlighting for `cpp` / `arduino` / `plaintext` / `diff` against the locked editorial palette (PRIM-04 finalization).
 - `NgOptimizedImage` swap on every `<img>` inside `Figure` and `Pinout` (PERF-05).
 - Lighthouse gates on a representative lesson (PERF-04).
-- The 30–60 minute Wagtail 7.4 StreamField spike at phase exit (CONTRACT-02) — design-freeze checkpoint, executed on or after 2026-05-04.
+- The 30–60 minute Wagtail 7.3 StreamField spike at phase exit (CONTRACT-02) — design-freeze checkpoint, executed immediately (7.3 is GA today).
 
 Phase 3 does **not** ship: real Wagtail backend, real preview wiring with token auth, drop caps, glossary tooltips, pin/peripheral cross-refs, figure cross-refs (`див. рис. N`), pinout hover hotspots, hanging punctuation, RSS, JSON-LD, OG tags, print stylesheet, dark mode (those are P4, P5, P6).
 
@@ -467,7 +467,7 @@ Run on a representative lesson — locked: `pershyi-blymayuchyi-svitlodiod`. Pro
 
 ## Wagtail StreamField Spike (CONTRACT-02, phase exit)
 
-**When:** at the end of P3, on or after **2026-05-04** (Wagtail 7.4 LTS release date).
+**When:** at the end of P3, immediately (Wagtail 7.3 is GA today). Re-validate the same shape diff against 7.4 LTS after the 2026-05-04 bump in Phase 4.
 
 **Duration:** 30–60 minutes. This is a **timeboxed spike**, not a feature.
 

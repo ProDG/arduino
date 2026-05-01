@@ -13,7 +13,7 @@
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Plan sequencing & spike timing | Plan ordering + 2026-05-04 spike timing | ✓ |
+| Plan sequencing & spike timing | Plan ordering + spike runs immediately on Wagtail 7.3 | ✓ |
 | Shiki build-time mechanics | Where pre-tokenization runs, theme source, lint policy | ✓ |
 | Block amendment + prerender plumbing | `width`/`height` CONTRACT change + `getPrerenderParams()` helper | ✓ |
 | Lighthouse gate enforcement | CI vs. manual, fail behavior, thresholds, profiles | ✓ |
@@ -40,8 +40,8 @@ Note: most of P3's typical "gray areas" (chrome composition, color, copy, layout
 | Option | Description | Selected |
 |--------|-------------|----------|
 | Last plan, blocking exit | Spike is final plan; phase cannot close until PASS | ✓ (Recommended) |
-| Run after Lighthouse, parallel to polish | Spike runs after 2026-05-04 but doesn't block exit | |
-| Run early, before templates settle | Spike first after 2026-05-04 | |
+| Run after Lighthouse, parallel to polish | Spike runs immediately on Wagtail 7.3; doesn't block exit | |
+| Run early, before templates settle | Spike runs immediately on Wagtail 7.3 | |
 
 **User's choice:** Last plan, blocking exit (Recommended)
 **Notes:** Matches UI-SPEC §Wagtail Spike — design-freeze checkpoint, FE contract becomes immutable across P3→P4 once it passes.

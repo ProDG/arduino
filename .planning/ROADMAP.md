@@ -1,17 +1,17 @@
 # Roadmap: Arduino Learning Hub (Ukrainian)
 
 **Created:** 2026-04-30
-**Last updated:** 2026-05-01 — switched BE/deployment topology to Docker (Traefik + Wagtail + Postgres + MinIO); added WAGTAIL-09/10; rewrote DEPLOY-01..08; locked SSG-only / no-SSR-ever.
+**Last updated:** 2026-05-01 — switched BE/deployment topology to Docker (Traefik + Wagtail + Postgres + MinIO); added WAGTAIL-09/10; rewrote DEPLOY-01..08; locked SSG-only / no-SSR-ever; switched Wagtail target to 7.3 (planned bump to 7.4 LTS on 2026-05-04 release) — Phase 4 and the Phase 3 spike are no longer date-gated.
 **Granularity:** coarse (6 phases — solo developer pacing)
 **Coverage:** 78 / 78 v1 requirements mapped
-**Build order:** FE-first with mocked data → contract lockdown → static page templates → Wagtail BE in Docker (post 2026-05-04) → Dockerized single-VPS deployment → content + polish.
+**Build order:** FE-first with mocked data → contract lockdown → static page templates → Wagtail BE in Docker (Wagtail 7.3 → bump to 7.4 LTS on 2026-05-04) → Dockerized single-VPS deployment → content + polish.
 
 ## Phases
 
 - [x] **Phase 1: Foundation & Typography Gate** — Day-zero locale + secrets discipline; self-hosted Cyrillic-complete font stack; SCSS token system; Ukrainian glyph audit harness page; light-only-v1 commitment. **CLOSED 2026-05-01.**
 - [x] **Phase 2: Primitives, Two-Column Layout & Page-Model Contract** — `core-ui` primitives (Heading, Body, Aside, Sidenote, Figure, CodeBlock with diff/annotations, Pinout, PageShell, TwoColumn, MarginRail); three-breakpoint sidenote behavior; TypeScript content models locked; `ContentApi` interface + `MockContentApi` with real Ukrainian fixtures. **CLOSED 2026-05-01** (user-approved).
 - [ ] **Phase 3: Page Templates, Routing & Static Build** — All page templates (lesson/article/datasheet/schematic/library/home/about/404); routing; SSG prerender via `outputMode: "static"`; CSR-only `/preview/*` stub; Lighthouse gates met; **30–60 min Wagtail StreamField spike at phase exit** validates contract before BE work begins.
-- [ ] **Phase 4: Wagtail Backend Skeleton & Contract Match** — Wagtail 7.4 LTS conforms 1:1 to FE contract; DRF v2 with server-side `expand_db_html`; `wagtail-headless-preview` wired; `WagtailContentApi` flips mock→real. **Cannot start before 2026-05-04** (Wagtail 7.4 LTS release).
+- [ ] **Phase 4: Wagtail Backend Skeleton & Contract Match** — Wagtail 7.3 conforms 1:1 to FE contract; DRF v2 with server-side `expand_db_html`; `wagtail-headless-preview` wired; `WagtailContentApi` flips mock→real. Plan a one-line bump to Wagtail 7.4 LTS on its 2026-05-04 release.
 - [ ] **Phase 5: Single-VPS Deployment** — Caddy + gunicorn + systemd + PostgreSQL 17 on Ubuntu 24.04; auto-TLS; off-site backups with tested restore drill before any content publishes; `ufw` lockdown; reproducible `deploy.sh`.
 - [ ] **Phase 6: Content Migration, Differentiators & Editorial Polish** — All initial content in Wagtail; drop caps; glossary tooltips; pin/peripheral references; numbered figure cross-refs; pinout hover hotspots; SEO/JSON-LD; RSS feed; print stylesheet; full WCAG AA pass; final force-en locale audit.
 
@@ -56,7 +56,7 @@
 **UI hint**: yes
 
 ### Phase 3: Page Templates, Routing & Static Build
-**Goal**: Every public route is a real, prerendered page consuming the `ContentApi`; the build ships as a static folder of HTML/JS/CSS/woff2 with no runtime Node dependency; the Wagtail spike at phase exit confirms the locked contract is buildable in Wagtail 7.4 before any BE work starts.
+**Goal**: Every public route is a real, prerendered page consuming the `ContentApi`; the build ships as a static folder of HTML/JS/CSS/woff2 with no runtime Node dependency; the Wagtail spike at phase exit confirms the locked contract is buildable in Wagtail 7.3 before any BE work starts.
 **Depends on**: Phase 2
 **Requirements**: PAGE-01, PAGE-02, PAGE-03, PAGE-04, PAGE-05, PAGE-06, PAGE-07, PAGE-08, PAGE-09, PAGE-10, PAGE-11, CONTRACT-02, PERF-01, PERF-02, PERF-03, PERF-04, PERF-05, PERF-06
 **Success Criteria** (what must be TRUE):
@@ -64,7 +64,7 @@
   2. The lesson library renders as a typographic table-of-contents (NOT a card grid), with optional difficulty markers and Ukrainian-formatted estimated read time; all pages consume content via `ContentApi` (no direct HTTP).
   3. `ng build` produces a folder of static HTML/JS/CSS/woff2 — no `arduino-ssr.service`, no Node runtime needed; `/preview/<contentType>/<token>` is present as a CSR-only stub inside the same static bundle.
   4. Lighthouse on a representative lesson page meets LCP < 2.5s, CLS < 0.1, INP < 200ms; every figure on every template uses NgOptimizedImage with explicit dimensions; force-en locale audit passes for all templates.
-  5. A 30–60 minute Wagtail 7.4 StreamField spike (executed at phase exit, on or after 2026-05-04) confirms `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` produces a serialized shape that matches `Block.code` in `content/models/*.ts` — design freeze checkpoint signed off.
+  5. A 30–60 minute Wagtail 7.3 StreamField spike (executed at phase exit) confirms `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` produces a serialized shape that matches `Block.code` in `content/models/*.ts` — design freeze checkpoint signed off. (Re-validate against 7.4 LTS after the 2026-05-04 bump in Phase 4.)
 **Plans**: 10 plans
   - [ ] 03-01-PLAN.md — Block model amendment (width/height + tokens?) + ContentSource interface + FixtureContentSource + lint extension
   - [ ] 03-02-PLAN.md — Chrome: SiteHeader + SiteFooter + SiteNav + new layout tokens
@@ -75,15 +75,15 @@
   - [ ] 03-07-PLAN.md — Routing + SSG plumbing + getPrerenderParams + PreviewStubPage CSR
   - [ ] 03-08-PLAN.md — Shiki build-time integration + arduino-paper.json + NgOptimizedImage swap
   - [ ] 03-09-PLAN.md — Phase-exit audits: Lighthouse gate + 3-breakpoint walk + force-en P3 row
-  - [ ] 03-10-PLAN.md — Wagtail 7.4 StreamField spike (CONTRACT-02) — date-gated, on/after 2026-05-04
+  - [ ] 03-10-PLAN.md — Wagtail 7.3 StreamField spike (CONTRACT-02) — runs immediately; bump check against 7.4 LTS in Phase 4
 **UI hint**: yes
 
 ### Phase 4: Wagtail Backend Skeleton & Contract Match (Dockerized)
-**Goal**: Wagtail 7.4 LTS is the source of truth for content, runs in Docker against Postgres + MinIO, conforms 1:1 to the FE-locked contract, and the editor can preview unpublished drafts via the Angular `/preview/*` route (CSR). The mock→real swap is one DI configuration change.
-**Depends on**: Phase 3 (FE contract locked + spike validated). **External dependency: Wagtail 7.4 LTS release on 2026-05-04 — phase cannot start before this date.**
+**Goal**: Wagtail 7.3 is the source of truth for content, runs in Docker against Postgres + MinIO, conforms 1:1 to the FE-locked contract, and the editor can preview unpublished drafts via the Angular `/preview/*` route (CSR). The mock→real swap is one DI configuration change.
+**Depends on**: Phase 3 (FE contract locked + spike validated). Wagtail 7.3 is built against immediately; the 7.4 LTS bump (2026-05-04) is a one-line version pin update + re-validation step inside this phase.
 **Requirements**: WAGTAIL-01, WAGTAIL-02, WAGTAIL-03, WAGTAIL-04, WAGTAIL-05, WAGTAIL-06, WAGTAIL-07, WAGTAIL-08, WAGTAIL-09, WAGTAIL-10
 **Success Criteria** (what must be TRUE):
-  1. Wagtail 7.4 LTS + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2 is up inside Docker Compose (services: `wagtail`, `postgres`, `minio`); `uv` + `Ruff` manage Python tooling inside the wagtail image; page models for `Lesson`, `Article`, `Datasheet`, `Schematic` exist with field names matching `content/models/*.ts` exactly.
+  1. Wagtail 7.3 + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2 is up inside Docker Compose (services: `wagtail`, `postgres`, `minio`); `uv` + `Ruff` manage Python tooling inside the wagtail image; page models for `Lesson`, `Article`, `Datasheet`, `Schematic` exist with field names matching `content/models/*.ts` exactly.
   2. The Wagtail REST API v2 returns a serialized lesson whose JSON shape is byte-compatible with `MockContentApi`'s fixture for the same slug — verified by a contract test that runs both APIs and diffs the response; rich-text HTML is `expand_db_html`-resolved server-side. Image renditions resolve through MinIO URLs (presigned where appropriate; public-read for the renditions prefix).
   3. `django-storages[s3]` + `boto3` are configured against the MinIO container; uploading an image via Wagtail admin places original + generated renditions in the MinIO bucket, NOT on the local filesystem (verified by `mc ls` against the bucket).
   4. An editor can edit a draft lesson in the Wagtail admin, click Preview, and see the unpublished content render through the Angular `/preview/<contentType>/<token>` route (CSR-only) via `wagtail-headless-preview` redirect mode.
@@ -124,7 +124,7 @@
 | 1. Foundation & Typography Gate | 6/6 | **Complete** | 2026-05-01 |
 | 2. Primitives, Two-Column Layout & Page-Model Contract | 6/6 | **Complete** | 2026-05-01 |
 | 3. Page Templates, Routing & Static Build | 0/10 | Planned, ready to execute (`/gsd-execute-phase 3`) | - |
-| 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Blocked: awaiting Wagtail 7.4 LTS (2026-05-04) | - |
+| 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Unblocked (Wagtail 7.3 in use; bump to 7.4 LTS on 2026-05-04) | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
 | 6. Content Migration, Differentiators & Editorial Polish | 0/0 | Not started | - |
 
