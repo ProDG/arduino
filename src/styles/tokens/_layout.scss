@@ -13,4 +13,7 @@ $container-max: 1200px;
   --container-pad-mobile: 16px;
   --container-pad-tablet: 32px;
   --container-pad-desktop: 48px;
+  --margin-rail-width: 18rem;
+  --margin-rail-gap: var(--space-6);
+  --sidenote-stack-gap: var(--space-5);
 }

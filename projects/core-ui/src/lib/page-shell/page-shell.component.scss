@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad-mobile);
+}
+
+@media (width >= 768px) {
+  :host {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  :host {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.page-shell__main {
+  display: block;
+}

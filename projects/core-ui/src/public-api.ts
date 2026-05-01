@@ -8,6 +8,8 @@ export * from './lib/figure-caption/figure-caption.component';
 export * from './lib/figure/figure.component';
 export * from './lib/heading/heading.component';
 export * from './lib/lede/lede.component';
+export * from './lib/margin-rail/margin-rail.component';
+export * from './lib/page-shell/page-shell.component';
 export * from './lib/pinout/pinout.component';
 export * from './lib/sidenote-ref/sidenote-ref.component';
 export * from './lib/sidenote/sidenote.component';
