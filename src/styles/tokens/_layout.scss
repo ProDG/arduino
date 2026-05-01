@@ -1,4 +1,5 @@
 // Breakpoints, measure (~62ch), container widths (D-07).
+// P3 additions: chrome padding and lesson layout dimensions.
 
 $bp-tablet: 768px;
 $bp-desktop: 1200px;
@@ -16,4 +17,10 @@ $container-max: 1200px;
   --margin-rail-width: 18rem;
   --margin-rail-gap: var(--space-6);
   --sidenote-stack-gap: var(--space-5);
+  --header-height: auto;
+  --header-pad-block: var(--space-6);
+  --footer-pad-block: var(--space-7);
+  --toc-rail-width: var(--margin-rail-width);
+  --lesson-row-gap: var(--space-7);
+  --page-section-gap: var(--space-9);
 }

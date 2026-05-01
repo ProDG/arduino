@@ -1,0 +1,25 @@
+.site-nav {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.site-nav__link {
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  font-weight: 400;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.04em;
+}
+
+.site-nav__link--active {
+  text-decoration-thickness: 0.12em;
+}
+
+@media (width < 768px) {
+  .site-nav__link--about {
+    display: none;
+  }
+}
