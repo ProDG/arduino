@@ -1,0 +1,165 @@
+:host {
+  display: block;
+}
+
+.code-block {
+  position: relative;
+  margin-block: var(--space-5);
+}
+
+.code-block__filename {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.code-block__frame {
+  position: relative;
+}
+
+.code-block__pre {
+  /* _base.scss `pre` rule already styles padding, border, radius, font, paper bg, scroll. */
+  position: relative;
+  margin: 0;
+}
+
+.code-block__pre code {
+  display: block;
+}
+
+.code-line {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  column-gap: var(--space-3);
+}
+
+.code-block__pre--no-gutter .code-line {
+  grid-template-columns: auto 1fr;
+}
+
+.code-line__num {
+  user-select: none;
+  text-align: right;
+  min-width: 3ch;
+  color: var(--color-ink-muted);
+  font-size: 0.85em;
+  font-family: var(--font-mono);
+}
+
+.code-line__diff-glyph {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.code-line__diff-glyph--add {
+  color: var(--color-accent);
+}
+.code-line__diff-glyph--remove {
+  color: var(--color-ink-muted);
+}
+
+.code-line__content {
+  white-space: pre;
+}
+
+.code-line--added {
+  background: var(--color-highlight);
+}
+.code-line--removed {
+  color: var(--color-ink-muted);
+  text-decoration: line-through;
+}
+.code-line--highlighted {
+  background: var(--color-highlight);
+}
+
+.code-block__copy {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: transparent;
+  border: 0;
+  padding: var(--space-1) var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-ink-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+}
+.code-block__copy:hover,
+.code-block__copy:focus-visible {
+  color: var(--color-accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Annotations — desktop: absolute-positioned <small> boxes set up by placeAnnotations() */
+.code-block__annotations[data-mode='desktop'] {
+  position: relative;
+}
+.code-block__annotation {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  max-width: var(--margin-rail-width);
+}
+.code-block__annotation-line {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  margin-right: var(--space-2);
+}
+
+/* Annotations — tablet: definition list below the block */
+.code-block__annotations[data-mode='tablet'] dl {
+  margin-top: var(--space-3);
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-3);
+}
+.code-block__annotations[data-mode='tablet'] dt {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+}
+.code-block__annotations[data-mode='tablet'] dd {
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+/* Annotations — mobile: same dl wrapped in <details> */
+.code-block__annotations[data-mode='mobile'] details > summary {
+  font-size: var(--text-caption);
+  color: var(--color-accent);
+  cursor: pointer;
+  margin-block: var(--space-2);
+}
+
+@media (width >= 1200px) {
+  /* Desktop: place the annotations slot to the right of the frame using grid on the figure */
+  .code-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--margin-rail-gap) var(--margin-rail-width);
+  }
+  .code-block__filename,
+  .code-block__frame {
+    grid-column: 1;
+  }
+  .code-block__annotations {
+    grid-column: 3;
+  }
+}

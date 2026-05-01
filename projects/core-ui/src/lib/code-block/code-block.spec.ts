@@ -1,10 +1,20 @@
+// @vitest-environment jsdom
 import { TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CodeBlockComponent } from './code-block.component';
 
 const SAMPLE_CODE = 'void setup() {\n  pinMode(LED_BUILTIN, OUTPUT);\n}\n';
 
 describe('CodeBlockComponent — copy-to-clipboard interaction', () => {
+  beforeAll(() => {
+    try {
+      TestBed.initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
+    } catch {
+      // already initialized
+    }
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
     TestBed.configureTestingModule({});

@@ -3,6 +3,7 @@
  */
 export * from './lib/aside/aside.component';
 export * from './lib/body/body.component';
+export * from './lib/code-block/code-block.component';
 export * from './lib/diff/diff.component';
 export * from './lib/figure-caption/figure-caption.component';
 export * from './lib/figure/figure.component';
