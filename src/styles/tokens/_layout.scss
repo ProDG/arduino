@@ -1,0 +1,16 @@
+// Breakpoints, measure (~62ch), container widths (D-07).
+
+$bp-tablet: 768px;
+$bp-desktop: 1200px;
+$measure-prose: 62ch;
+$container-max: 1200px;
+
+:root {
+  --bp-tablet: #{$bp-tablet};
+  --bp-desktop: #{$bp-desktop};
+  --measure-prose: #{$measure-prose};
+  --container-max: #{$container-max};
+  --container-pad-mobile: 16px;
+  --container-pad-tablet: 32px;
+  --container-pad-desktop: 48px;
+}

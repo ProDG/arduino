@@ -2,6 +2,11 @@
   "extends": ["stylelint-config-standard-scss"],
   "rules": {
     "selector-class-pattern": null,
-    "scss/at-use-no-unnamespaced": null
+    "scss/at-use-no-unnamespaced": null,
+    "value-keyword-case": null,
+    "font-family-name-quotes": null,
+    "scss/comment-no-empty": null,
+    "rule-empty-line-before": null,
+    "custom-property-empty-line-before": null
   }
 }

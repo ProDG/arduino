@@ -1,0 +1,18 @@
+// Six-color light-only palette (D-05). UI-SPEC §"Color" hexes verbatim,
+// including the WCAG-AA-locked accent #007A80 — NOT the brand #00979D.
+
+$paper: #faf8f3;
+$ink: #1a1a1a;
+$ink-muted: #5c5c5c;
+$accent: #007a80;
+$rule: #e5e0d5;
+$highlight: #fff4d6;
+
+:root {
+  --color-paper: #{$paper};
+  --color-ink: #{$ink};
+  --color-ink-muted: #{$ink-muted};
+  --color-accent: #007a80;
+  --color-rule: #{$rule};
+  --color-highlight: #{$highlight};
+}

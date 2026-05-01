@@ -1,0 +1,109 @@
+// THE single-file font-pairing swap target (D-03, TYPE-06).
+//
+// Order:
+//   (a) Three Fontaine fallback @font-face blocks at the top (D-14)
+//       — values inlined verbatim from
+//       .planning/phases/01-foundation-typography-gate/fontaine-metrics.json
+//   (b) Six real-font @font-face blocks (D-09, D-12) — every one ships
+//       font-display: swap (FOUT not FOIT — TYPE-03), explicit weight
+//       range, explicit style, format('woff2-variations'). Single subset
+//       per file (D-11) — see scripts/fonts/subset.mjs.
+//   (c) Family stacks + type scale on :root.
+
+// (a) Fontaine fallback @font-face blocks --------------------------------
+
+@font-face {
+  font-family: 'Source Serif 4 Fallback';
+  src: local('Georgia');
+  ascent-override: 102.6332%;
+  descent-override: 33.1874%;
+  line-gap-override: 0%;
+  size-adjust: 100.9419%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90.4365%;
+  descent-override: 22.518%;
+  line-gap-override: 0%;
+  size-adjust: 107.1194%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New');
+  ascent-override: 102.0166%;
+  descent-override: 30.0049%;
+  line-gap-override: 0%;
+  size-adjust: 99.9837%;
+}
+
+// (b) Real-font @font-face blocks ----------------------------------------
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 200 900;
+  src: url('/fonts/source-serif-4-roman.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: italic;
+  font-weight: 200 900;
+  src: url('/fonts/source-serif-4-italic.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/fonts/inter-roman.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/fonts/inter-italic.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  src: url('/fonts/jetbrains-mono-roman.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  src: url('/fonts/jetbrains-mono-italic.woff2') format('woff2-variations');
+  font-display: swap;
+}
+
+// (c) Family stacks + type scale -----------------------------------------
+
+:root {
+  --font-body: 'Source Serif 4', 'Source Serif 4 Fallback', Georgia, 'Times New Roman', serif;
+  --font-ui:
+    'Inter', 'Inter Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-body: 19px;
+  --text-lede: 22px;
+  --text-caption: 15px;
+  --text-mono: 15px;
+  --text-h3: 24px;
+  --text-h2: 34px;
+  --text-h1: 48px;
+  --text-display-xl: 64px;
+  --text-glyph: 96px;
+}
