@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready for `/gsd-plan-phase 1`
-last_updated: "2026-05-01T01:01:36.463Z"
+status: Phase 1 complete — ready for `/gsd-plan-phase 2`
+last_updated: "2026-05-01T05:25:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 6
-  completed_plans: 0
-  percent: 0
+  completed_plans: 6
+  percent: 17
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -29,21 +29,37 @@ progress:
 ## Current Position
 
 - **Milestone:** v1 (initial release)
-- **Phase:** Not started — roadmap just created
-- **Next phase:** Phase 1 — Foundation & Typography Gate
+- **Phase:** 01 — Foundation & Typography Gate — **COMPLETE** (closed 2026-05-01, user-approved)
+- **Next phase:** Phase 2 — Primitives (`Heading`, `Body`, `CodeBlock`, `TwoColumn`, `Sidenote`, etc.)
 - **Plan:** None active
-- **Status:** Ready for `/gsd-plan-phase 1`
-- **Progress:** 0 / 6 phases complete (0%)
+- **Status:** Ready for `/gsd-plan-phase 2`
+- **Progress:** 1 / 6 phases complete (17%)
 
 ```
-[          ] 0/6 phases
+[█▒▒▒▒▒▒▒▒▒] 1/6 phases
 ```
+
+## Phase 1 — Foundation & Typography Gate — closed
+
+All five Phase 1 success criteria verified PASS. Foundation locked.
+
+| # | Criterion | Evidence |
+|---|-----------|----------|
+| 1 | Glyph matrix renders Ukrainian critical glyphs (`і ї є ґ Ї Є Ґ ʼ`) across 12 cells (3 families × 4 styles); italic Cyrillic real, no tofu | User-approved visual checkpoint at PLAN 05; `docs/typography-checklist.md` Phase 1 run record |
+| 2 | Real-prose specimen ~62ch, ragged-right, no FOIT, CLS<0.05 | `docs/typography-checklist.md` Specimen checks |
+| 3 | Single-file font-pairing swap | `.planning/phases/01-foundation-typography-gate/font-swap-dry-run.md` — `TYPE-06 holds` |
+| 4 | `<html lang="uk">`, `LOCALE_ID = 'uk-UA'`, force-en regression clean | `docs/force-en-audit.md` Phase 1 run record (10/10 PASS) |
+| 5 | `.env` gitignored, gitleaks pre-commit installed and tested, force-en doc filled and run once | gitleaks blocked an AKIA-pattern key; `docs/force-en-audit.md` Phase 1 run record |
+
+**Commits (8):** `3c56b19` scaffold → `6297fdb` font pipeline → `f938219` SCSS tokens + base → `4b18d7f` locale + intl → `1956c16` glyph-audit harness → `5ba8307` CI + security + phase-exit docs → `2076ea4` CI fix (drop pnpm version, opt actions to Node 24). Plus two `chore:` commits dropping stale `.gitkeep` files.
+
+**Requirements shipped:** TYPE-01..10, UKR-01, UKR-04, UKR-05, UKR-06 (14 / 78).
 
 ## Performance Metrics
 
-- Phases completed: 0
-- Plans completed: 0
-- Requirements shipped: 0 / 78
+- Phases completed: 1
+- Plans completed: 6
+- Requirements shipped: 14 / 78
 
 ## Accumulated Context
 
@@ -66,14 +82,22 @@ progress:
 | MinIO (S3-compatible, containerized) for media + Wagtail renditions + collectstatic | PROJECT.md, REQUIREMENTS.md WAGTAIL-09 | `django-storages[s3]` + `boto3`; same backend dev/prod (different bucket); off-site backup via `mc mirror` to B2; prevents disk-fill from media taking down Postgres. Locked 2026-05-01. |
 | SSG-only — no Node SSR EVER (upgraded from "v1 only") | PROJECT.md, CLAUDE.md, research/SUMMARY.md | Wagtail REST API v2 → Angular consumes (build-time prerender + CSR for `/preview/*`). Preview ergonomics solved via CSR autosave-polling, NOT SSR. Locked 2026-05-01. |
 | Backups: `pg_dump → restic` + `mc mirror`, both off-site to B2 | REQUIREMENTS.md DEPLOY-04, research/STACK.md §4 | Different shapes (relational vs blob) warrant different tools. Restore drill before content publish. Locked 2026-05-01. |
+| Phase 1: `_typography.scss` is the single-file font-pairing swap target | 01-CONTEXT.md D-03, font-swap-dry-run.md | Proven by dry-run (TYPE-06). Future font A/B (e.g., Source Serif 4 vs Literata in Phase 6 polish) edits this file only. |
+| Phase 1: `src/lib/intl.ts` is the only Intl.* call site | 01-CONTEXT.md D-28, force-en-audit.md "Intl wrapper policy" | Bare `toLocale*` blocked by no-restricted-syntax ESLint rule + synthetic violation fixture. Audited zero violations on phase exit. |
+| Phase 1: Source Serif 4 ships with `opsz` axis (380KB ceiling, not 250KB) | 01-02-SUMMARY.md | The `opsz` axis is the editorial driver of this project (body vs display optical sizing); dropping it to fit a heuristic ceiling would amputate the design intent. Inter / JBM keep tighter ceilings. |
 
 ### Active Todos
 
-(None — phase planning has not started)
+(None — Phase 1 closed; ready for Phase 2 planning.)
 
 ### Blockers
 
-- **Phase 4 cannot start before 2026-05-04** (Wagtail 7.4 LTS release date). Phases 1–3 are unblocked and can proceed immediately.
+- **Phase 4 cannot start before 2026-05-04** (Wagtail 7.4 LTS release date). Phases 2–3 are unblocked and can proceed immediately.
+
+### Open hand-offs
+
+- **CI verified green on first push.** First-push failures (pnpm version conflict + Node 20 deprecation warning) were filed as commit `2076ea4` and re-pushed; user confirmed `phase 1 approved`. Hand-off closed.
+- **Phase 2 — Primitives — will be tested against the harness page.** Any primitive whose typography drifts from `/dev/glyph-audit` is wrong. The two phase-exit checklists (`docs/force-en-audit.md` and `docs/typography-checklist.md`) accumulate scope per phase — Phase 2 must add primitive-specific items.
 
 ### Open Questions (deferred to phase planning)
 
@@ -85,11 +109,9 @@ progress:
 
 ## Session Continuity
 
-- **Last session:** --stopped-at
-- **Files just written:** `.planning/ROADMAP.md`, `.planning/STATE.md`, traceability table updated in `.planning/REQUIREMENTS.md`.
-- **Next action:** `/gsd-plan-phase 1` — plan Phase 1 (Foundation & Typography Gate).
+- **Last session:** Phase 1 fully executed and approved 2026-05-01. Commits `3c56b19` → `2076ea4` on master.
+- **Files just written:** `.planning/phases/01-foundation-typography-gate/01-{01..06}-SUMMARY.md`, `font-swap-dry-run.md`, `docs/force-en-audit.md`, `docs/typography-checklist.md`, full Angular SSG app + woff2 pipeline + tokens + harness.
+- **Next action:** `/gsd-plan-phase 2` — plan Phase 2 (Primitives).
 
 ---
-*State initialized: 2026-04-30*
-
-**Planned Phase:** 01 (Foundation & Typography Gate) — 6 plans — 2026-05-01T01:01:36.459Z
+*State initialized: 2026-04-30 — Phase 1 closed: 2026-05-01.*
