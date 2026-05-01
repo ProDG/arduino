@@ -76,6 +76,8 @@ describe('Block discriminated union', () => {
         alt: string;
         captionHtml?: string;
         fullBleed: boolean;
+        width: number;
+        height: number;
       }>();
     }
   });
@@ -92,6 +94,7 @@ describe('Block discriminated union', () => {
         highlightLines: number[];
         diffMode: boolean;
         annotations: { line: number; html: string }[];
+        tokens?: string;
       }>();
     }
   });
@@ -115,6 +118,8 @@ describe('Block discriminated union', () => {
         src: string;
         alt: string;
         pins: { x: number; y: number; label: string; role: string }[];
+        width: number;
+        height: number;
       }>();
     }
   });

@@ -10,7 +10,7 @@ const MOCK_ROOT = join(process.cwd(), 'src', 'assets', 'mock-data');
 async function listSlugs(kind: string): Promise<string[]> {
   const dir = join(MOCK_ROOT, kind);
   const entries = await readdir(dir);
-  return entries.filter((e) => e.endsWith('.json')).map((e) => e.slice(0, -5));
+  return entries.filter((e: string) => e.endsWith('.json')).map((e: string) => e.slice(0, -5));
 }
 
 async function loadJson<T>(kind: string, slug: string): Promise<T> {

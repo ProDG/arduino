@@ -119,6 +119,7 @@ interface Line {
 export class CodeBlockComponent {
   readonly language = input.required<'cpp' | 'arduino' | 'plaintext' | 'diff'>();
   readonly code = input.required<string>();
+  readonly tokens = input<string | undefined>(undefined);
   readonly annotations = input<{ line: number; html: string }[]>([]);
   readonly showLineNumbers = input<boolean>(true);
   readonly highlightLines = input<number[]>([]);
