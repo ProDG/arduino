@@ -3,6 +3,24 @@ import eslint from '@eslint/js';
 import angular from 'angular-eslint';
 import tseslint from 'typescript-eslint';
 
+const NO_BARE_LOCALE_FORMATTERS = [
+  {
+    selector: "CallExpression[callee.property.name='toLocaleDateString']",
+    message:
+      'Use formatDateUk from src/lib/intl.ts — bare toLocaleDateString leaks the browser locale.',
+  },
+  {
+    selector: "CallExpression[callee.property.name='toLocaleString']",
+    message:
+      'Use formatNumberUk or formatDateUk from src/lib/intl.ts — bare toLocaleString leaks the browser locale.',
+  },
+  {
+    selector: "CallExpression[callee.property.name='toLocaleTimeString']",
+    message:
+      'Use formatDateUk from src/lib/intl.ts — bare toLocaleTimeString leaks the browser locale.',
+  },
+];
+
 export default tseslint.config(
   {
     files: ['**/*.ts'],
@@ -22,8 +40,15 @@ export default tseslint.config(
         'error',
         { type: 'element', prefix: 'app', style: 'kebab-case' },
       ],
-      // TODO(PLAN 04 / UKR-06 / D-28): ban bare `toLocaleDateString` /
-      // `toLocaleString` calls via custom rule + no-restricted-syntax.
+    },
+  },
+  // UKR-06 / D-28 — ban bare locale formatters across project source.
+  // src/lib/intl.ts is exempt (it is the legitimate Intl.* wrapper).
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/lib/intl.ts'],
+    rules: {
+      'no-restricted-syntax': ['error', ...NO_BARE_LOCALE_FORMATTERS],
     },
   },
   {
@@ -32,6 +57,16 @@ export default tseslint.config(
     rules: {},
   },
   {
-    ignores: ['dist/', 'node_modules/', '.angular/', 'coverage/', 'public/'],
+    // Default lint ignores. The synthetic violation fixture is excluded
+    // here so day-to-day `pnpm lint` stays clean; `pnpm lint:verify-rule`
+    // targets it explicitly with --no-ignore to assert the rule fires.
+    ignores: [
+      'dist/',
+      'node_modules/',
+      '.angular/',
+      'coverage/',
+      'public/',
+      'src/__synthetic__/**',
+    ],
   },
 );

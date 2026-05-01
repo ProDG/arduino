@@ -15,6 +15,7 @@
     "lint": "eslint . && stylelint \"src/**/*.scss\"",
     "lint:js": "eslint .",
     "lint:scss": "stylelint \"src/**/*.scss\"",
+    "lint:verify-rule": "bash -c 'eslint --no-ignore src/__synthetic__/eslint-violation-fixture.ts; if [ $? -ne 0 ]; then echo \"PASS: rule fired on synthetic violation\"; exit 0; else echo \"FAIL: rule did not fire on synthetic violation\"; exit 1; fi'",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fonts:subset": "node scripts/fonts/subset.mjs",
