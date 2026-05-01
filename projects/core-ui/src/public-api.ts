@@ -15,3 +15,4 @@ export * from './lib/sidenote-ref/sidenote-ref.component';
 export * from './lib/sidenote/sidenote.component';
 export { computeSidenoteStack } from './lib/two-column/measure';
 export type { SidenoteInput, SidenotePlacement } from './lib/two-column/measure';
+export * from './lib/two-column/two-column.component';
