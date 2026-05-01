@@ -1070,32 +1070,32 @@ Open `spike-response.json` and inspect the `body` array. Expected shape (per Wag
 
 **The spike is *expected* to falsify A2 and A3 in some way. That's its job. The plan must allocate 10–15 min of the 60-min spike budget to writing the structural-delta findings into the report.**
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Exact Shiki 3.x API for custom TM theme loading**
    - What we know: `createHighlighter({themes:[...]})` accepts theme JSON objects directly.
-   - What's unclear: Whether Shiki 3.x renames `loadTheme` or accepts inline JSON for custom themes via a different method.
-   - Recommendation: Planner verifies via `npm view shiki@latest` + a quick `node --eval` smoke test inside Plan 03-06 (Shiki integration). 5-min cost.
+   - What was unclear: Whether Shiki 3.x renames `loadTheme` or accepts inline JSON for custom themes via a different method.
+   - RESOLVED: Use `createHighlighter({themes:[themeJson], langs:['cpp']})` with the theme JSON imported via `node:fs/promises`. Plan 03-08 Task 1 includes a `node --eval` smoke test against `shiki@latest` at install time to confirm the API name; if `getHighlighter` is the current export instead, swap the call site (one-line change). 5-min budget already allocated in 03-08.
 
 2. **`arduino` language registration in Shiki**
    - What we know: VS Code's Arduino extension uses a TextMate grammar that aliases to C++.
-   - What's unclear: Whether Shiki 3.x ships an `arduino` grammar by default or whether it must be aliased.
-   - Recommendation: Easiest path — register `arduino` as `cpp` alias in the highlighter config. Tokenization output is identical for `setup()`/`loop()` etc. If the executor wants Arduino-specific keywords, ship a small TM grammar JSON later.
+   - What was unclear: Whether Shiki 3.x ships an `arduino` grammar by default or whether it must be aliased.
+   - RESOLVED: Register `arduino` as a `cpp` alias in the highlighter config (`langAlias: { arduino: 'cpp' }`). Tokenization output is identical for `setup()`/`loop()`/`pinMode()` etc. Arduino-specific keyword highlighting is deferred to Phase 6 polish if the editorial review demands it.
 
 3. **Image dimension lint for SVG fixtures**
    - What we know: PNG/JPG headers carry width/height in the first 24 bytes; `image-size` handles them.
-   - What's unclear: SVG dimensions are encoded in `<svg width="…" height="…">` or `viewBox`. Some pure-JS image-size readers handle SVG; others don't.
-   - Recommendation: Planner picks an `image-size` library that supports SVG (the popular `image-size` npm package does, as of recent majors). Verify before locking.
+   - What was unclear: SVG dimensions are encoded in `<svg width="…" height="…">` or `viewBox`. Some pure-JS image-size readers handle SVG; others don't.
+   - RESOLVED: Use the `image-size` npm package (current major supports SVG via `viewBox` parsing). Plan 03-01 Task 2 pins the version and verifies SVG support against the `pinout-led.svg` fixture as part of the lint extension's smoke test.
 
 4. **Whether to use Angular Title service or route `data.title` for `<title>`**
    - What we know: `app.routes.ts` already uses route `title:` field for static routes (P1 P2 pattern).
-   - What's unclear: For dynamic routes, the title needs to interpolate the lesson/article title; the route-level static `title:` doesn't support this. Need either `Title` service injection inside the page or a `TitleStrategy` provider.
-   - Recommendation: Use `inject(Title).setTitle(...)` in each dynamic page's constructor, derived from the resolved data. Matches Angular 21 idiom.
+   - What was unclear: For dynamic routes, the title needs to interpolate the lesson/article title; the route-level static `title:` doesn't support this.
+   - RESOLVED: Use `inject(Title).setTitle(\`${doc.title} — Arduino Hub\`)` inside each dynamic page component (Lesson/Article/Datasheet/Schematic) after the resolved data is bound. Matches Angular 21 idiom. Static routes (home, library, about, 404) keep the route-level `title:` field.
 
 5. **Shiki theme background and CSS variable resolution**
    - What we know: Shiki theme JSON encodes hex colors. SCSS variables are evaluated at FE build, not at fixture-tokenize time.
-   - What's unclear: How to keep `arduino-paper.json` colors in sync with `--color-paper`/`--color-ink` tokens.
-   - Recommendation: Hand-author the theme JSON with **fixed** hex values matching the P1 token resolved values (e.g., `#FAF7F2` for paper, `#1B1B1B` for ink). Document the sync rule in `docs/typography-checklist.md`. If P1 tokens change, theme JSON updates too — single-file edit.
+   - What was unclear: How to keep `arduino-paper.json` colors in sync with `--color-paper`/`--color-ink` tokens.
+   - RESOLVED: Hand-author `src/assets/shiki/arduino-paper.json` with **fixed** hex values matching the P1 resolved token values (`#FAF7F2` paper, `#1B1B1B` ink, plus the syntax palette listed in 03-UI-SPEC §Shiki spec). Document the sync rule in `docs/typography-checklist.md` Phase 3 section: any change to `_color.scss` paper/ink values requires a matching edit to `arduino-paper.json` in the same commit. Single-file edit, surfaced by code review.
 
 ## Environment Availability
 
