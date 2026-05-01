@@ -5,6 +5,13 @@ on:
     branches: [main, master]
   pull_request:
 
+# Opt every action into Node.js 24 now — actions/checkout@v4 and
+# pnpm/action-setup@v4 still ship their JS on Node 20, which GitHub
+# deprecated 2025-09-19. June 2026 is the cutoff. Setting this here
+# keeps the deprecation warning silent and is forward-safe.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -14,9 +21,10 @@ jobs:
           # gitleaks needs full history to scan the diff.
           fetch-depth: 0
 
+      # No `version:` here — `packageManager: pnpm@10.x.y` in
+      # package.json is the single source of truth, and pnpm/action-setup
+      # errors when both are specified (ERR_PNPM_BAD_PM_VERSION).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
