@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready for `/gsd-plan-phase 2`
-last_updated: "2026-05-01T07:12:36.215Z"
+status: executing
+last_updated: "2026-05-01T08:02:22.961Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 12
-  completed_plans: 6
-  percent: 50
+  completed_plans: 9
+  percent: 75
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -28,12 +28,15 @@ progress:
 
 ## Current Position
 
+Phase: 02 (primitives-two-column-layout-page-model-contract) — EXECUTING
+Plan: 1 of 6
+
 - **Milestone:** v1 (initial release)
 - **Phase:** 01 — Foundation & Typography Gate — **COMPLETE** (closed 2026-05-01, user-approved)
 - **Next phase:** Phase 2 — Primitives (`Heading`, `Body`, `CodeBlock`, `TwoColumn`, `Sidenote`, etc.)
 - **Plan:** None active
-- **Status:** Ready for `/gsd-plan-phase 2`
-- **Progress:** 1 / 6 phases complete (17%)
+- **Status:** Executing Phase 02
+- **Progress:** [████████░░] 75%
 
 ```
 [█▒▒▒▒▒▒▒▒▒] 1/6 phases
@@ -85,6 +88,7 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 | Phase 1: `_typography.scss` is the single-file font-pairing swap target | 01-CONTEXT.md D-03, font-swap-dry-run.md | Proven by dry-run (TYPE-06). Future font A/B (e.g., Source Serif 4 vs Literata in Phase 6 polish) edits this file only. |
 | Phase 1: `src/lib/intl.ts` is the only Intl.* call site | 01-CONTEXT.md D-28, force-en-audit.md "Intl wrapper policy" | Bare `toLocale*` blocked by no-restricted-syntax ESLint rule + synthetic violation fixture. Audited zero violations on phase exit. |
 | Phase 1: Source Serif 4 ships with `opsz` axis (380KB ceiling, not 250KB) | 01-02-SUMMARY.md | The `opsz` axis is the editorial driver of this project (body vs display optical sizing); dropping it to fit a heuristic ceiling would amputate the design intent. Inter / JBM keep tighter ceilings. |
+| Phase 02 P03 | 8m | 2 tasks | 23 files |
 
 ### Active Todos
 
@@ -109,7 +113,7 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 
 ## Session Continuity
 
-- **Last session:** --stopped-at
+- **Last session:** 2026-05-01T08:02:22.957Z
 - **Files just written:** `.planning/phases/01-foundation-typography-gate/01-{01..06}-SUMMARY.md`, `font-swap-dry-run.md`, `docs/force-en-audit.md`, `docs/typography-checklist.md`, full Angular SSG app + woff2 pipeline + tokens + harness.
 - **Next action:** `/gsd-plan-phase 2` — plan Phase 2 (Primitives).
 
