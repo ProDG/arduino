@@ -3,6 +3,7 @@ import type { Article } from '../models/article';
 import type { Datasheet } from '../models/datasheet';
 import type { Lesson } from '../models/lesson';
 import type { Schematic } from '../models/schematic';
+import { FixtureContentSource } from './fixture-content-source';
 import { MockContentApi } from './mock-content-api';
 
 const fixtureLesson: Lesson = {
@@ -105,5 +106,37 @@ describe('MockContentApi', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false } as Response);
     const api = new MockContentApi();
     await expect(api.getLesson('missing')).rejects.toThrow(/Mock fixture not found/);
+  });
+});
+
+describe('slug-drift guard', () => {
+  it('MockContentApi hardcoded lesson slugs match FixtureContentSource.listLessonSlugs()', async () => {
+    const source = new FixtureContentSource();
+    const fsSlugs = (await source.listLessonSlugs()).sort();
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      const slug = String(url).replace('/assets/mock-data/lessons/', '').replace('.json', '');
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          type: 'lesson',
+          slug,
+          title: '',
+          deck: '',
+          estimatedMinutes: 1,
+          difficulty: 'beginner' as const,
+          partsList: { type: 'parts-list' as const, items: [] },
+          body: [],
+          publishedAt: '',
+          updatedAt: '',
+        }),
+      } as unknown as Response);
+    });
+
+    const api = new MockContentApi();
+    const listed = await api.listLessons();
+    const apiSlugs = listed.map((l) => l.slug).sort();
+
+    expect(apiSlugs).toEqual(fsSlugs);
   });
 });
