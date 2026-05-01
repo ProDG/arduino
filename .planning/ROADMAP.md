@@ -65,7 +65,17 @@
   3. `ng build` produces a folder of static HTML/JS/CSS/woff2 — no `arduino-ssr.service`, no Node runtime needed; `/preview/<contentType>/<token>` is present as a CSR-only stub inside the same static bundle.
   4. Lighthouse on a representative lesson page meets LCP < 2.5s, CLS < 0.1, INP < 200ms; every figure on every template uses NgOptimizedImage with explicit dimensions; force-en locale audit passes for all templates.
   5. A 30–60 minute Wagtail 7.4 StreamField spike (executed at phase exit, on or after 2026-05-04) confirms `CodeBlock = StructBlock(language, code, annotations=ListBlock({line, note}))` produces a serialized shape that matches `Block.code` in `content/models/*.ts` — design freeze checkpoint signed off.
-**Plans**: TBD
+**Plans**: 10 plans
+  - [ ] 03-01-PLAN.md — Block model amendment (width/height + tokens?) + ContentSource interface + FixtureContentSource + lint extension
+  - [ ] 03-02-PLAN.md — Chrome: SiteHeader + SiteFooter + SiteNav + new layout tokens
+  - [ ] 03-03-PLAN.md — BlockRenderer dispatcher (@switch on block.type) + DIFFICULTY_LABELS_UK
+  - [ ] 03-04-PLAN.md — LessonPage (heaviest template: parts list + in-page TOC + prev/next nav)
+  - [ ] 03-05-PLAN.md — ArticlePage + DatasheetPage + SchematicPage (structural simplifications)
+  - [ ] 03-06-PLAN.md — LessonLibraryPage + HomePage + AboutPage + NotFoundPage
+  - [ ] 03-07-PLAN.md — Routing + SSG plumbing + getPrerenderParams + PreviewStubPage CSR
+  - [ ] 03-08-PLAN.md — Shiki build-time integration + arduino-paper.json + NgOptimizedImage swap
+  - [ ] 03-09-PLAN.md — Phase-exit audits: Lighthouse gate + 3-breakpoint walk + force-en P3 row
+  - [ ] 03-10-PLAN.md — Wagtail 7.4 StreamField spike (CONTRACT-02) — date-gated, on/after 2026-05-04
 **UI hint**: yes
 
 ### Phase 4: Wagtail Backend Skeleton & Contract Match (Dockerized)
@@ -113,7 +123,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation & Typography Gate | 6/6 | **Complete** | 2026-05-01 |
 | 2. Primitives, Two-Column Layout & Page-Model Contract | 6/6 | **Complete** | 2026-05-01 |
-| 3. Page Templates, Routing & Static Build | 0/0 | Ready to plan (`/gsd-plan-phase 3`) | - |
+| 3. Page Templates, Routing & Static Build | 0/10 | Planned, ready to execute (`/gsd-execute-phase 3`) | - |
 | 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Blocked: awaiting Wagtail 7.4 LTS (2026-05-04) | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
 | 6. Content Migration, Differentiators & Editorial Polish | 0/0 | Not started | - |
