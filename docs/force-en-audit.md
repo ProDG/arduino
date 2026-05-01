@@ -94,23 +94,21 @@ Procedure: load `/dev/primitives` under `pnpm start` with browser locale
 forced to `en-US` (Chrome DevTools → ⋮ → More tools → Sensors → Locale =
 `en-US`, OR `--lang=en-US` flag). Reload after locale change. Verify:
 
-- [ ] `<html lang="uk">` is preserved on `/dev/primitives` (View Source).
-- [ ] `<title>` reads `Примітиви — Arduino UA` exactly. NOT `Primitives — Arduino UA`.
-- [ ] All Cyrillic strings on the page render unchanged: showcase H1 `Showcase примітивів`, lede, Ukrainian Arduino prose in TwoColumn, Cyrillic comment `// блимаємо світлодіодом` in basic CodeBlock, all aside copy, all sidenote copy, all annotation prose, the force-en footer paragraph.
-- [ ] Quotes in body prose render as `«…»` (verbatim from authored content; per D-PRE-01..05 there is no transformation function — fixtures ship typeset).
-- [ ] Em-dashes `—` and en-dashes `–` (e.g., `1200–1280`, `5–7`) render correctly.
-- [ ] Apostrophes in Ukrainian words (`пʼять`, `підʼєднано`, `зʼїжджає`) render as U+02BC modifier-letter apostrophe — NOT replaced by ASCII `'` or curly typographer's apostrophe.
-- [ ] No `April` / `May` / `June` / `Mon` / `Tue` / etc. literal substrings anywhere in DOM (DevTools → Elements → Cmd-F).
-- [ ] No date or number formatting on the page leaks to English. (P2 showcase does not render dates or `Intl.NumberFormat` outputs by default; if `Дані фікстури:` line shows the lesson title, it should remain `Перший блимаючий світлодіод`.)
-- [ ] Browser locale toggle from `uk-UA` → `en-US` → reload produces ZERO visible English regression.
+- [x] `<html lang="uk">` is preserved on `/dev/primitives` (View Source).
+- [x] `<title>` reads `Примітиви — Arduino UA` exactly. NOT `Primitives — Arduino UA`.
+- [x] All Cyrillic strings on the page render unchanged: showcase H1 `Showcase примітивів`, lede, Ukrainian Arduino prose in TwoColumn, Cyrillic comment `// блимаємо світлодіодом` in basic CodeBlock, all aside copy, all sidenote copy, all annotation prose, the force-en footer paragraph.
+- [x] Quotes in body prose render as `«…»` (verbatim from authored content; per D-PRE-01..05 there is no transformation function — fixtures ship typeset).
+- [x] Em-dashes `—` and en-dashes `–` (e.g., `1200–1280`, `5–7`) render correctly.
+- [x] Apostrophes in Ukrainian words (`пʼять`, `підʼєднано`, `зʼїжджає`) render as U+02BC modifier-letter apostrophe — NOT replaced by ASCII `'` or curly typographer's apostrophe.
+- [x] No `April` / `May` / `June` / `Mon` / `Tue` / etc. literal substrings anywhere in DOM (DevTools → Elements → Cmd-F).
+- [x] No date or number formatting on the page leaks to English. (P2 showcase does not render dates or `Intl.NumberFormat` outputs by default; if `Дані фікстури:` line shows the lesson title, it should remain `Перший блимаючий світлодіод`.)
+- [x] Browser locale toggle from `uk-UA` → `en-US` → reload produces ZERO visible English regression.
 
 ### Result row
 
-To be filled in after the user walks the page:
-
-| Phase | Date | Result | Notes |
-| ----- | ---- | ------ | ----- |
-| 02    | TBD  | PENDING | Awaiting user manual walk during Plan 02-06 checkpoint |
+| Phase | Date       | Result       | Notes |
+| ----- | ---------- | ------------ | ----- |
+| 02    | 2026-05-01 | **ALL PASS** | User walked `/dev/primitives` at ≥1200 with browser locale forced to `en-US`; reply `approved`. Three deviation commits during the walk: `27f5341` (MockContentApi asset-path fix), `d4be5d5`→`f849770` (PageMaker-style placeholder SVGs for the three referenced figure assets), `bb7d38a` (showcase Figure #2 demoted from `[fullBleed]` to body-measure). All eight P2 force-en check items PASS. |
 
 ## Phase 3 scope (placeholder)
 

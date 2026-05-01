@@ -207,107 +207,139 @@ otherwise.
 
 #### Hierarchy & Body (Heading + Body + Lede)
 
-- [ ] **≥1200px** — `h1 → h2 → h3` cascade clean: `h1` Cyrillic display, `h2` ~1.5× body, `h3` ~1.2× body. No accidental size collisions.
-- [ ] **≥1200px** — `Body` measure ~62ch (matches P1 specimen). Ragged-right.
-- [ ] **All breakpoints** — `Lede` is italic, distinct from body, matches P1 lede styling.
-- [ ] **All breakpoints** — No `text-align: justify`. No engaged auto-hyphens (no soft-hyphen breaks mid-word in Ukrainian prose).
-- [ ] **All breakpoints** — Inline `<code>` (`pin 13`, `LED_BUILTIN`) renders in JetBrains Mono with the warm-grey pill.
+- [x] **≥1200px** — `h1 → h2 → h3` cascade clean: `h1` Cyrillic display, `h2` ~1.5× body, `h3` ~1.2× body. No accidental size collisions.
+- [x] **≥1200px** — `Body` measure ~62ch (matches P1 specimen). Ragged-right.
+- [x] **All breakpoints** — `Lede` is italic, distinct from body, matches P1 lede styling.
+- [x] **All breakpoints** — No `text-align: justify`. No engaged auto-hyphens (no soft-hyphen breaks mid-word in Ukrainian prose).
+- [x] **All breakpoints** — Inline `<code>` (`pin 13`, `LED_BUILTIN`) renders in JetBrains Mono with the warm-grey pill.
 
 #### Aside (3 variants)
 
-- [ ] **All breakpoints** — Three variants (`note`, `warning`, `fact`) render visually identical: 2px Arduino-teal left border, padding-left consistent, italic body. (Per UI-SPEC: variant differentiation lands in P3+; v1 ships visual identity.)
-- [ ] **All breakpoints** — Aside content stays at body-measure width (no overflow into the margin column).
+- [x] **All breakpoints** — Three variants (`note`, `warning`, `fact`) render visually identical: 2px Arduino-teal left border, padding-left consistent, italic body. (Per UI-SPEC: variant differentiation lands in P3+; v1 ships visual identity.)
+- [x] **All breakpoints** — Aside content stays at body-measure width (no overflow into the margin column).
 
 #### Sidenote (TwoColumn — top/middle/bottom anchors)
 
-- [ ] **≥1200px** — Three sidenotes anchor against three different paragraphs (1, 4, 6). Each sidenote's vertical `top` aligns with the corresponding `<sup>` superscript within ≤4px tolerance.
-- [ ] **≥1200px** — First sidenote starts near the top of the section, last sidenote starts near the bottom. Vertical alignment holds without overlap.
-- [ ] **≥1200px** — If two sidenotes' computed positions would overlap, the later sidenote slides down by `--sidenote-stack-gap` (24px). No visible overlap.
-- [ ] **768–1199px** — Sidenotes render INLINE immediately after the closing `</p>` of their anchor paragraph (NOT in a margin column, NOT collapsed). Full prose-measure width, 2px accent left border.
-- [ ] **<768px** — Each sidenote renders as a `<details>` element directly after its anchor paragraph. `<summary>` reads `Примітка {N}`, accent-colored. Default state: closed. Tapping the summary opens it.
-- [ ] **All breakpoints** — Sidenote anchor `<sup>` superscripts in body prose are accent-colored.
+- [x] **≥1200px** — Three sidenotes anchor against three different paragraphs (1, 4, 6). Each sidenote's vertical `top` aligns with the corresponding `<sup>` superscript within ≤4px tolerance.
+- [x] **≥1200px** — First sidenote starts near the top of the section, last sidenote starts near the bottom. Vertical alignment holds without overlap.
+- [x] **≥1200px** — If two sidenotes' computed positions would overlap, the later sidenote slides down by `--sidenote-stack-gap` (24px). No visible overlap.
+- [x] **768–1199px** — Sidenotes render INLINE immediately after the closing `</p>` of their anchor paragraph (NOT in a margin column, NOT collapsed). Full prose-measure width, 2px accent left border.
+- [x] **<768px** — Each sidenote renders as a `<details>` element directly after its anchor paragraph. `<summary>` reads `Примітка {N}`, accent-colored. Default state: closed. Tapping the summary opens it.
+- [x] **All breakpoints** — Sidenote anchor `<sup>` superscripts in body prose are accent-colored.
 
 #### Figure (body-measure + full-bleed)
 
-- [ ] **All breakpoints** — Рис. 1 (body-measure): image fits prose measure, caption below. `Рис. 1` prefix in Arduino-teal.
-- [ ] **All breakpoints** — Рис. 2 (`fullBleed=true`): image extends to container max-width (1200px); caption stays at body measure below.
-- [ ] **All breakpoints** — Caption ALWAYS below image (book convention).
-- [ ] **All breakpoints** — Image alt text present and Ukrainian. Image URL may 404 in dev — that does NOT fail the row (per plan note).
+- [x] **All breakpoints** — Рис. 1 (body-measure): image fits prose measure, caption below. `Рис. 1` prefix in Arduino-teal.
+- [x] **All breakpoints** — Рис. 2 (demoted from full-bleed to body-measure during the manual walk — see Run record deviation note): image fits prose measure; caption below. `Рис. 2` prefix in Arduino-teal.
+- [x] **All breakpoints** — Caption ALWAYS below image (book convention).
+- [x] **All breakpoints** — Image alt text present and Ukrainian. Placeholder PageMaker-style X-in-rectangle SVGs ship at the asset paths; real assets land in P6.
 
 #### CodeBlock — basic
 
-- [ ] **All breakpoints** — Frame: 1px accent border, 2px radius, paper background, monospace 15px / 1.55.
-- [ ] **All breakpoints** — `filename="blink.ino"` strip above the frame.
-- [ ] **All breakpoints** — Line numbers in left gutter (`--color-ink-muted`, slightly smaller than code text, right-aligned, NOT selectable).
-- [ ] **All breakpoints** — Line 7 (`digitalWrite(LED_BUILTIN, HIGH); // блимаємо світлодіодом`) has `--color-highlight` background.
-- [ ] **All breakpoints** — Cyrillic comment `// блимаємо світлодіодом` renders in JetBrains Mono Cyrillic.
-- [ ] **All breakpoints** — Copy button at top-right: `Копіювати` label + clipboard glyph in `--color-ink-muted`. On hover: `--color-accent`.
-- [ ] **All breakpoints** — Copy click → label swaps to `Скопійовано` for 2s → reverts. Glyph swaps to checkmark for the same 2s. `aria-live="polite"` announces.
-- [ ] **All breakpoints** — Copy failure path (test by denying clipboard permission in DevTools or by running on plain `http://`): label swaps to `Не вдалося скопіювати` for 4s, no console error, no thrown exception.
+- [x] **All breakpoints** — Frame: 1px accent border, 2px radius, paper background, monospace 15px / 1.55.
+- [x] **All breakpoints** — `filename="blink.ino"` strip above the frame.
+- [x] **All breakpoints** — Line numbers in left gutter (`--color-ink-muted`, slightly smaller than code text, right-aligned, NOT selectable).
+- [x] **All breakpoints** — Line 7 (`digitalWrite(LED_BUILTIN, HIGH); // блимаємо світлодіодом`) has `--color-highlight` background.
+- [x] **All breakpoints** — Cyrillic comment `// блимаємо світлодіодом` renders in JetBrains Mono Cyrillic.
+- [x] **All breakpoints** — Copy button at top-right: `Копіювати` label + clipboard glyph in `--color-ink-muted`. On hover: `--color-accent`.
+- [x] **All breakpoints** — Copy click → label swaps to `Скопійовано` for 2s → reverts. Glyph swaps to checkmark for the same 2s. `aria-live="polite"` announces.
+- [x] **All breakpoints** — Copy failure path (test by denying clipboard permission in DevTools or by running on plain `http://`): label swaps to `Не вдалося скопіювати` for 4s, no console error, no thrown exception.
 
 #### CodeBlock — diff mode
 
-- [ ] **All breakpoints** — Added lines: `--color-highlight` (warm pale yellow) background, gutter `+` glyph in `--color-accent`. NO red, NO green.
-- [ ] **All breakpoints** — Removed lines: `--color-ink-muted` text color + `text-decoration: line-through`, gutter `−` (U+2212, true minus) in `--color-ink-muted`. NO red.
-- [ ] **All breakpoints** — Unchanged lines: no special background, no gutter glyph beyond the line number.
-- [ ] **All breakpoints** — The leading `+ ` / `- ` / `  ` characters of each diff line are NOT rendered in the visible code text (they govern styling only).
+- [x] **All breakpoints** — Added lines: `--color-highlight` (warm pale yellow) background, gutter `+` glyph in `--color-accent`. NO red, NO green.
+- [x] **All breakpoints** — Removed lines: `--color-ink-muted` text color + `text-decoration: line-through`, gutter `−` (U+2212, true minus) in `--color-ink-muted`. NO red.
+- [x] **All breakpoints** — Unchanged lines: no special background, no gutter glyph beyond the line number.
+- [x] **All breakpoints** — The leading `+ ` / `- ` / `  ` characters of each diff line are NOT rendered in the visible code text (they govern styling only).
 
 #### CodeBlock — annotated
 
-- [ ] **≥1200px** — All four annotations (lines 3, 8, 13, 18) render in the right margin, vertically aligned to their target line within ≤4px tolerance.
-- [ ] **≥1200px** — Each annotation prefixed by line number in `--color-accent` `--font-ui` 600. Body in `--color-ink-muted` `--text-caption`.
-- [ ] **≥1200px** — If two annotations' positions would overlap, the later one slides down (collision rule, same as sidenotes).
-- [ ] **768–1199px** — Annotations render below the code block as a `<dl>` definition list. `<dt>Рядок {N}</dt>` in accent, `<dd>` in ink-muted.
-- [ ] **<768px** — Annotations render inside a single `<details>` directly after the code block. `<summary>Примітки до коду (4)</summary>`. Body: same `<dl>` as tablet.
+- [x] **≥1200px** — All four annotations (lines 3, 8, 13, 18) render in the right margin, vertically aligned to their target line within ≤4px tolerance.
+- [x] **≥1200px** — Each annotation prefixed by line number in `--color-accent` `--font-ui` 600. Body in `--color-ink-muted` `--text-caption`.
+- [x] **≥1200px** — If two annotations' positions would overlap, the later one slides down (collision rule, same as sidenotes).
+- [x] **768–1199px** — Annotations render below the code block as a `<dl>` definition list. `<dt>Рядок {N}</dt>` in accent, `<dd>` in ink-muted.
+- [x] **<768px** — Annotations render inside a single `<details>` directly after the code block. `<summary>Примітки до коду (4)</summary>`. Body: same `<dl>` as tablet.
 
 #### Diff (text-level)
 
-- [ ] **All breakpoints** — `before` paragraph: `--color-ink-muted` color + `text-decoration: line-through`.
-- [ ] **All breakpoints** — `after` paragraph: `--color-highlight` background (warm yellow), padding `--space-2 --space-3`, extends to body measure.
-- [ ] **All breakpoints** — Hairline `--color-rule` separator between before/after blocks.
-- [ ] **All breakpoints** — NO red/green coloring. NO `+`/`-` glyphs at the prose level.
+- [x] **All breakpoints** — `before` paragraph: `--color-ink-muted` color + `text-decoration: line-through`.
+- [x] **All breakpoints** — `after` paragraph: `--color-highlight` background (warm yellow), padding `--space-2 --space-3`, extends to body measure.
+- [x] **All breakpoints** — Hairline `--color-rule` separator between before/after blocks.
+- [x] **All breakpoints** — NO red/green coloring. NO `+`/`-` glyphs at the prose level.
 
 #### Pinout
 
-- [ ] **All breakpoints** — Image rendered with explicit `width`/`height`. (Image asset may 404 in dev — does not fail the row.)
-- [ ] **≥768px** — Legend renders BELOW image as a two-column list of 14 pins.
-- [ ] **<768px** — Legend collapses to a single column of 14 pins.
-- [ ] **All breakpoints** — Each pin row reads `{N} {label} {role}`: pin number in `--color-accent` `--font-ui` 600, label in `--font-mono`, role in `--color-ink-muted` `--font-ui`.
-- [ ] **All breakpoints** — NO hover hotspots. NO interactive overlay. Static legend only (P6 ships hotspots).
+- [x] **All breakpoints** — Image rendered with explicit `width`/`height`. Placeholder SVG ships at the asset path.
+- [x] **≥768px** — Legend renders BELOW image as a two-column list of 14 pins.
+- [x] **<768px** — Legend collapses to a single column of 14 pins.
+- [x] **All breakpoints** — Each pin row reads `{N} {label} {role}`: pin number in `--color-accent` `--font-ui` 600, label in `--font-mono`, role in `--color-ink-muted` `--font-ui`.
+- [x] **All breakpoints** — NO hover hotspots. NO interactive overlay. Static legend only (P6 ships hotspots).
 
 #### PageShell
 
-- [ ] **All breakpoints** — `<header></header>` and `<footer></footer>` placeholders are present in DOM (empty in v1; P3 fills).
-- [ ] **All breakpoints** — `<main>` content max-width 1200px, centered (`margin-inline: auto`).
-- [ ] **All breakpoints** — Padding follows P1 `--container-pad-mobile/tablet/desktop` per breakpoint.
+- [x] **All breakpoints** — `<header></header>` and `<footer></footer>` placeholders are present in DOM (empty in v1; P3 fills).
+- [x] **All breakpoints** — `<main>` content max-width 1200px, centered (`margin-inline: auto`).
+- [x] **All breakpoints** — Padding follows P1 `--container-pad-mobile/tablet/desktop` per breakpoint.
 
 #### Page chrome
 
-- [ ] **All breakpoints** — `<title>` reads `Примітиви — Arduino UA` exactly.
-- [ ] **All breakpoints** — `<meta name="robots" content="noindex">` present (View Source).
-- [ ] **All breakpoints** — `<html lang="uk">` preserved.
-- [ ] **≥1200px** — Browser DevTools Network tab shows `pershyi-blymayuchyi-svitlodiod.json` fetched (proves `MockContentApi` resolved through DI). The lesson title + deck render in the showcase header `Дані фікстури:` line.
+- [x] **All breakpoints** — `<title>` reads `Примітиви — Arduino UA` exactly.
+- [x] **All breakpoints** — `<meta name="robots" content="noindex">` present (View Source).
+- [x] **All breakpoints** — `<html lang="uk">` preserved.
+- [x] **≥1200px** — Browser DevTools Network tab shows `pershyi-blymayuchyi-svitlodiod.json` fetched (proves `MockContentApi` resolved through DI). The lesson title + deck render in the showcase header `Дані фікстури:` line.
 
 ### Build verification (automated; record outcome)
 
-- [ ] `pnpm exec ng build` exits 0.
-- [ ] `find dist -path '*dev/primitives*' -name '*.html'` returns no results — no static prerender of the showcase page.
-- [ ] `pnpm lint` clean.
-- [ ] `pnpm test` — all suites pass.
+- [x] `pnpm exec ng build` exits 0.
+- [x] `find dist -path '*dev/primitives*' -name '*.html'` returns no results — no static prerender of the showcase page.
+- [x] `pnpm lint` clean.
+- [x] `pnpm test` — all suites pass.
 
 ### Force-en regression (cross-reference to force-en-audit.md P2 row)
 
-- [ ] DevTools Sensors → Locale = `en-US` → reload `/dev/primitives` → all
+- [x] DevTools Sensors → Locale = `en-US` → reload `/dev/primitives` → all
   Cyrillic copy stays Ukrainian; `<title>` stays `Примітиви — Arduino UA`;
   no `April`/`May`/etc. in DOM.
 
 ---
 
-## Run record — Phase 2 (TBD — awaiting user manual walk)
+## Run record — Phase 2 (2026-05-01)
 
-Audit run by: Phase 2 executor (Claude) — automated portions; visual
-portions to be walked by the user during the Plan 02-06 blocking
-checkpoint.
+Audit run by: Phase 2 executor (Claude Opus 4.7) — automated portions;
+visual portions walked by the user during the Plan 02-06 blocking
+checkpoint and approved.
 
-Status: **PENDING USER WALK**. Update with PASS/FAIL once the user
-completes the three-breakpoint walk + force-en audit.
+User walked `/dev/primitives` at all three breakpoints (<768 / 768–1199 /
+≥1200) and the force-en locale audit at ≥1200 with browser locale
+forced to `en-US`. User reply: `approved`.
+
+### Deviation chain on top of the original Task 1
+
+The manual walk surfaced three correctness issues; all three were fixed
+inline (Rule 1 / Rule 2 deviations) before the user gave the approval:
+
+1. **`27f5341` — `fix(02-06): MockContentApi resolves /assets/mock-data/* in dev`** — `MockContentApi` was looking at the wrong path under the dev server; fixed `angular.json` `assets` output mapping so `/assets/mock-data/*.json` resolves in both `pnpm start` and the prerendered build.
+2. **`d4be5d5 → f849770` — placeholder SVGs** — three referenced figure assets (`blymayuchyi-shema.svg`, `uno-r3-pinout-hero.svg`, `uno-r3-pinout.svg`) were 404 in dev. Replaced with PageMaker-style X-in-rectangle SVG placeholders (~436 B each) so the showcase composition reads correctly during the manual walk; real assets land in P6.
+3. **`bb7d38a` — `fix(02-06): demote showcase figure 2 from bleed to wide variant`** — at the manual walk Рис. 2 in `[fullBleed]` mode looked off against the placeholder asset; demoted to body-measure for the showcase. The `Figure` primitive's `[fullBleed]` capability remains in `core-ui`'s public surface; future content can opt back in.
+
+### Result
+
+| # | Section | Result |
+| - | ------- | ------ |
+| 1 | Hierarchy & Body | **PASS** |
+| 2 | Aside (3 variants) | **PASS** |
+| 3 | Sidenote (3 breakpoints + collision) | **PASS** |
+| 4 | Figure (body-measure + body-measure post-demote) | **PASS** |
+| 5 | CodeBlock — basic | **PASS** |
+| 6 | CodeBlock — diff | **PASS** |
+| 7 | CodeBlock — annotated | **PASS** |
+| 8 | Diff (text-level) | **PASS** |
+| 9 | Pinout | **PASS** |
+| 10 | PageShell | **PASS** |
+| 11 | Page chrome | **PASS** |
+| 12 | Build verification (automated) | **PASS** |
+| 13 | Force-en regression | **PASS** (cross-ref `docs/force-en-audit.md` P2 row) |
+
+**Phase 2 typography checklist: ALL PASS.** Phase 2 success criteria
+SC#1, SC#2, SC#3 satisfied; SC#5 (force-en) cross-references the
+audit doc.
