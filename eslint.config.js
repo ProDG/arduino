@@ -1,6 +1,7 @@
 // @ts-check
 import eslint from '@eslint/js';
 import angular from 'angular-eslint';
+import boundariesPlugin from 'eslint-plugin-boundaries';
 import tseslint from 'typescript-eslint';
 
 const NO_BARE_LOCALE_FORMATTERS = [
@@ -56,10 +57,52 @@ export default tseslint.config(
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {},
   },
+  // PRIM-01 / D-LIB-01 — public-API boundary for @arduino/core-ui.
+  // Element types describe architectural roles; `boundaries/element-types`
+  // enforces who may import whom. Reach-through imports such as
+  // `@arduino/core-ui/lib/...` are blocked structurally, not by patterns.
   {
-    // Default lint ignores. The synthetic violation fixture is excluded
+    files: ['**/*.ts'],
+    plugins: { boundaries: boundariesPlugin },
+    settings: {
+      'boundaries/elements': [
+        { type: 'core-ui-public', pattern: 'projects/core-ui/src/public-api.ts' },
+        { type: 'core-ui-internal', pattern: 'projects/core-ui/src/lib/**' },
+        { type: 'app', pattern: 'src/app/**' },
+        { type: 'content-models', pattern: 'src/content/**' },
+        { type: 'app-lib', pattern: 'src/lib/**' },
+      ],
+    },
+    rules: {
+      'boundaries/element-types': [
+        'error',
+        {
+          default: 'disallow',
+          rules: [
+            { from: 'app', allow: ['core-ui-public', 'content-models', 'app-lib'] },
+            { from: 'core-ui-internal', allow: ['core-ui-internal'] },
+            { from: 'core-ui-public', allow: ['core-ui-internal'] },
+            { from: 'content-models', allow: [] },
+            { from: 'app-lib', allow: [] },
+          ],
+        },
+      ],
+    },
+  },
+  // Component selector prefix override: `ui-` inside the core-ui library only.
+  {
+    files: ['projects/core-ui/**/*.ts'],
+    rules: {
+      '@angular-eslint/component-selector': [
+        'error',
+        { type: 'element', prefix: 'ui', style: 'kebab-case' },
+      ],
+    },
+  },
+  {
+    // Default lint ignores. The synthetic violation fixtures are excluded
     // here so day-to-day `pnpm lint` stays clean; `pnpm lint:verify-rule`
-    // targets it explicitly with --no-ignore to assert the rule fires.
+    // targets them explicitly with --no-ignore to assert the rules fire.
     ignores: [
       'dist/',
       'node_modules/',
@@ -67,6 +110,7 @@ export default tseslint.config(
       'coverage/',
       'public/',
       'src/__synthetic__/**',
+      'projects/core-ui/src/lib/__violation__.ts.example',
     ],
   },
 );

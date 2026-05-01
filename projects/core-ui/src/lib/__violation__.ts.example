@@ -1,0 +1,10 @@
+// Synthetic boundary violation. NOT compiled (the .example extension keeps
+// it out of the lint pass). Rename to `.ts` to verify that
+// `boundaries/element-types` fires once primitives exist:
+//
+//   mv projects/core-ui/src/lib/__violation__.ts.example \
+//      projects/core-ui/src/lib/__violation__.ts
+//   pnpm lint   # expect a `boundaries/element-types` error
+//   git mv ...  # back to .example to restore the green baseline
+//
+// import { HeadingComponent } from '@arduino/core-ui/lib/heading/heading.component'; // boundary violation
