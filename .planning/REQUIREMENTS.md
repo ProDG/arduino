@@ -50,9 +50,12 @@ Requirements for initial release. Each maps to roadmap phases.
 **: Primitives implemented: `Heading`, `Body`, `Lede`, `Aside`, `Sidenote`, `Figure`, `FigureCaption`
 - [x] **PRIM-03
 **: Layout primitives implemented: `PageShell`, `TwoColumn`, `MarginRail`
-- [ ] **PRIM-04**: `CodeBlock` primitive with Arduino C++ syntax highlighting (Shiki at build-time), line numbers, copy-to-clipboard button, horizontal scroll on overflow, NO client-side highlighting JS
-- [ ] **PRIM-05**: `CodeBlock` supports diff view ("add these lines", "remove these lines") with appropriate visual treatment
-- [ ] **PRIM-06**: `CodeBlock` supports per-line margin annotations linked to specific line numbers, vertically aligned to those lines on ≥1200px breakpoint, with disclosure fallback at smaller breakpoints
+- [x] **PRIM-04
+**: `CodeBlock` primitive with Arduino C++ syntax highlighting (Shiki at build-time), line numbers, copy-to-clipboard button, horizontal scroll on overflow, NO client-side highlighting JS
+- [x] **PRIM-05
+**: `CodeBlock` supports diff view ("add these lines", "remove these lines") with appropriate visual treatment
+- [x] **PRIM-06
+**: `CodeBlock` supports per-line margin annotations linked to specific line numbers, vertically aligned to those lines on ≥1200px breakpoint, with disclosure fallback at smaller breakpoints
 - [x] **PRIM-07
 **: `Pinout` primitive renders chip pinout images with hover hotspots / callouts (static for v1; no live data)
 - [x] **PRIM-08
