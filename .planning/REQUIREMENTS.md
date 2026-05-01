@@ -64,7 +64,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Page-Model Contract & Mock Data
 
 - [x] **CONTRACT-01**: TypeScript content models locked: `Lesson`, `Article`, `Datasheet`, `Schematic`, with shared `Block` discriminated union covering all StreamField block types (paragraph, heading, sidenote, figure, code, diff, pinout, parts-list)
-- [ ] **CONTRACT-02**: `CodeBlock` model includes `language`, `code`, and `annotations: { line: number; html: string }[]` shape verified by a 30–60 minute Wagtail 7.3 spike
+- [x] **CONTRACT-02
+**: `CodeBlock` model includes `language`, `code`, and `annotations: { line: number; html: string }[]` shape verified by a 30–60 minute Wagtail 7.3 spike
 - [x] **CONTRACT-03**: `ContentApi` interface defined; `MockContentApi` implementation reads from `/assets/mock-data/*.json`
 - [x] **CONTRACT-04**: Mock JSON populated with at least 3 real Ukrainian-language lessons, 1 article, 2 datasheets, 1 schematic — content drives design calibration, not Latin filler
 
@@ -80,7 +81,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PAGE-08**: 404 page in editorial aesthetic
 - [ ] **PAGE-09**: Routing covers `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`
 - [ ] **PAGE-10**: `BlockRenderer` component dispatches the `Block` discriminated union to the right primitive
-- [ ] **PAGE-11**: All pages consume content via `ContentApi` (not direct HTTP) so the mock→Wagtail swap is a single DI configuration change
+- [x] **PAGE-11
+**: All pages consume content via `ContentApi` (not direct HTTP) so the mock→Wagtail swap is a single DI configuration change
 
 ### Build & Performance
 
@@ -88,7 +90,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PERF-02**: All public routes prerendered at build time (`getPrerenderParams()` for `/lessons/:slug` etc.); no Node SSR runtime in v1
 - [ ] **PERF-03**: `/preview/<contentType>/<token>` route runs CSR-only (Angular client-side render of preview JSON from authenticated Wagtail endpoint)
 - [ ] **PERF-04**: Lighthouse gates met on a representative lesson page: LCP < 2.5s, CLS < 0.1, INP < 200ms
-- [ ] **PERF-05**: All in-page imagery uses NgOptimizedImage; figures enforce explicit dimensions
+- [x] **PERF-05
+**: All in-page imagery uses NgOptimizedImage; figures enforce explicit dimensions
 - [ ] **PERF-06**: Static build deploys as a folder of HTML/JS/CSS/woff2 — no runtime Node dependency
 
 ### Wagtail Backend (Wagtail 7.3 → bump to 7.4 LTS on 2026-05-04 release)
