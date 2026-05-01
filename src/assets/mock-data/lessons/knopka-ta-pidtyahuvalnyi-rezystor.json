@@ -1,0 +1,92 @@
+{
+  "type": "lesson",
+  "slug": "knopka-ta-pidtyahuvalnyi-rezystor",
+  "title": "Кнопка та підтягувальний резистор",
+  "deck": "Цифровий вхід ніколи не буває «порожнім» — він завжди читає або одиницю, або нуль. Підтягувальний резистор перетворює нашу кнопку на чесний сигнал.",
+  "estimatedMinutes": 15,
+  "difficulty": "beginner",
+  "partsList": {
+    "type": "parts-list",
+    "items": [
+      { "name": "Плата Arduino Uno R3", "quantity": 1 },
+      { "name": "Тактова кнопка", "quantity": 1, "note": "звичайна 4-пінова" },
+      { "name": "Резистор 10 кОм", "quantity": 1, "note": "діапазон 4,7–22 кОм" },
+      { "name": "Світлодіод", "quantity": 1 },
+      { "name": "Резистор 220 Ом", "quantity": 1 },
+      { "name": "Макетна плата", "quantity": 1 },
+      { "name": "Дроти-перемички", "quantity": 5 }
+    ]
+  },
+  "body": [
+    {
+      "type": "lede",
+      "html": "Кнопка — найпростіший сенсор, але саме на ній прокидається перша «цифрова інтуїція» інженера. Без підтягувального резистора цифровий вхід <code>pin 2</code> ловить шум на провідниках і повертає випадкові одиниці й нулі — стан, який в електроніці називають <em>«плаваючим»</em>."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Як це працює",
+      "id": "yak-tse-pratsyuye"
+    },
+    {
+      "type": "paragraph",
+      "html": "Резистор номіналом 10 кОм підʼєднуємо між <code>pin 2</code> та <code>5V</code>. Доки кнопку не натиснуто, резистор «тягне» вхід до напруги живлення — мікроконтролер бачить логічну одиницю. Натискання замикає той самий вхід на землю — і ми читаємо нуль."
+    },
+    {
+      "type": "paragraph",
+      "html": "У парі з кнопкою працює світлодіод на <code>pin 13</code> — у цьому уроці ми обʼєднаємо обидва елементи: натиск на кнопку запалює діод, відпускання — гасить."
+    },
+    {
+      "type": "sidenote",
+      "number": 1,
+      "anchorParagraphIndex": 2,
+      "html": "Arduino має <strong>вбудований підтягувальний резистор</strong> — його можна увімкнути викликом <code>pinMode(2, INPUT_PULLUP)</code>. Тоді зовнішній 10 кОм зайвий. Зовнішній резистор у наших схемах залишається ґатунково — щоб ти бачив, як працює сама ідея."
+    },
+    {
+      "type": "figure",
+      "number": 1,
+      "src": "/assets/mock-data/figures/knopka-shema.svg",
+      "alt": "Схема: Arduino, кнопка, резистор 10 кОм, світлодіод, резистор 220 Ом",
+      "captionHtml": "Кнопка з підтягувальним резистором на <code>pin 2</code> керує світлодіодом на <code>pin 13</code>.",
+      "fullBleed": false
+    },
+    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
+    {
+      "type": "code",
+      "language": "arduino",
+      "code": "const int BUTTON_PIN = 2;\nconst int LED_PIN    = 13;\n\nvoid setup() {\n  pinMode(BUTTON_PIN, INPUT);   // зовнішній підтягувальний резистор 10 кОм\n  pinMode(LED_PIN,    OUTPUT);\n}\n\nvoid loop() {\n  int state = digitalRead(BUTTON_PIN);\n  // натиск замикає вхід на землю -> читаємо LOW\n  digitalWrite(LED_PIN, state == LOW ? HIGH : LOW);\n}\n",
+      "filename": "button.ino",
+      "showLineNumbers": true,
+      "highlightLines": [10, 12],
+      "diffMode": false,
+      "annotations": [
+        {
+          "line": 10,
+          "html": "Зчитуємо стан кнопки кожну ітерацію <code>loop()</code> — приблизно 1000–10000 разів на секунду."
+        },
+        {
+          "line": 12,
+          "html": "Тернарний вираз: при <code>LOW</code> вмикаємо діод, інакше гасимо. Коротше за <code>if/else</code>."
+        }
+      ]
+    },
+    {
+      "type": "aside",
+      "variant": "warning",
+      "html": "Не пропускай резистор. Якщо підʼєднати кнопку напряму між <code>pin 2</code> і <code>5V</code> без обмеження — натиск замикає живлення на землю через сам контролер, і у платі <em>щось</em> згорить за секунду-дві."
+    },
+    {
+      "type": "paragraph",
+      "html": "На практиці виявиться, що під час натиску діод іноді «дрижить» — це <em>деренчання контактів</em>. Програмне придушення (<strong>debounce</strong>) — тема окремого уроку, але саму проблему важливо побачити вже зараз."
+    },
+    {
+      "type": "aside",
+      "variant": "fact",
+      "html": "Тактова кнопка має 4 ноги, але електрично це лише два контакти — пари ніг попарно замкнуті між собою. Це робить її зручною для макетної плати: дві дірки на один бік, дві на інший."
+    }
+  ],
+  "prevSlug": "pershyi-blymayuchyi-svitlodiod",
+  "nextSlug": "analogovyi-vhid-ta-potentsiometr",
+  "publishedAt": "2026-04-22T09:00:00+03:00",
+  "updatedAt": "2026-04-22T09:00:00+03:00"
+}
