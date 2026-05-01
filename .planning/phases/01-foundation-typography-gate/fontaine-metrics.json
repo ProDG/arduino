@@ -1,0 +1,26 @@
+{
+  "source-serif-4": {
+    "fallbackName": "Source Serif 4 Fallback",
+    "fallbackFont": "Georgia",
+    "sizeAdjust": "100.9419%",
+    "ascentOverride": "102.6332%",
+    "descentOverride": "33.1874%",
+    "lineGapOverride": "0%"
+  },
+  "inter": {
+    "fallbackName": "Inter Fallback",
+    "fallbackFont": "Arial",
+    "sizeAdjust": "107.1194%",
+    "ascentOverride": "90.4365%",
+    "descentOverride": "22.518%",
+    "lineGapOverride": "0%"
+  },
+  "jetbrains-mono": {
+    "fallbackName": "JetBrains Mono Fallback",
+    "fallbackFont": "Courier New",
+    "sizeAdjust": "99.9837%",
+    "ascentOverride": "102.0166%",
+    "descentOverride": "30.0049%",
+    "lineGapOverride": "0%"
+  }
+}

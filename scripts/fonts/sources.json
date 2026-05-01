@@ -1,0 +1,23 @@
+{
+  "source-serif-4": {
+    "version": "4.005R",
+    "archive": "https://github.com/adobe-fonts/source-serif/releases/download/4.005R/source-serif-4.005_Desktop.zip",
+    "ttf-roman": "source-serif-4.005_Desktop/VAR/SourceSerif4Variable-Roman.ttf",
+    "ttf-italic": "source-serif-4.005_Desktop/VAR/SourceSerif4Variable-Italic.ttf",
+    "ofl": "source-serif-4.005_Desktop/LICENSE.md"
+  },
+  "inter": {
+    "version": "v4.1",
+    "archive": "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip",
+    "ttf-roman": "InterVariable.ttf",
+    "ttf-italic": "InterVariable-Italic.ttf",
+    "ofl": "LICENSE.txt"
+  },
+  "jetbrains-mono": {
+    "version": "v2.304",
+    "archive": "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip",
+    "ttf-roman": "fonts/variable/JetBrainsMono[wght].ttf",
+    "ttf-italic": "fonts/variable/JetBrainsMono-Italic[wght].ttf",
+    "ofl": "OFL.txt"
+  }
+}
