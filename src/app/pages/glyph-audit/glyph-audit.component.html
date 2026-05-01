@@ -1,4 +1,71 @@
 <article class="glyph-audit">
-  <h1>Гліф-аудит</h1>
-  <p>Розмітка матриці гліфів — деталі у PLAN 05.</p>
+  <header class="page-header">
+    <h1>Гліф-аудит</h1>
+    <p class="lede">
+      Перевірка кириличного покриття для Source Serif 4, Inter та JetBrains Mono — кожна вага, кожен
+      стиль.
+    </p>
+  </header>
+
+  <section class="matrix">
+    @for (family of families; track family.name) {
+      @for (style of styles; track style.label) {
+        <div
+          class="cell"
+          [style.font-family]="family.cssVar"
+          [style.font-style]="style.style"
+          [style.font-weight]="style.weight"
+        >
+          <div class="cell-label">{{ family.name }} · {{ style.label }} · {{ style.weight }}</div>
+          <div class="cell-body">{{ verificationString }}</div>
+          <div class="cell-display">{{ verificationString }}</div>
+          <hr />
+          <div class="cell-glyphs">{{ criticalGlyphs }}</div>
+        </div>
+      }
+    }
+  </section>
+
+  <hr class="section-rule" />
+
+  <section class="specimen">
+    <h1>{{ specimenH1 }}</h1>
+    <p class="lede">{{ specimenLede }}</p>
+    @for (para of specimenBodyParas; track $index) {
+      <p [innerHTML]="para"></p>
+    }
+    <h2>{{ specimenH2 }}</h2>
+    <p [innerHTML]="specimenAfterH2"></p>
+    <pre><code>{{ specimenCode }}</code></pre>
+    <figure>
+      <div class="figure-placeholder" aria-label="Електрична схема (плейсхолдер)"></div>
+      <figcaption><span class="figure-num">Рис. 1</span>{{ specimenFigureCaption }}</figcaption>
+    </figure>
+    <h3>{{ specimenH3 }}</h3>
+    <p [innerHTML]="specimenAfterH3"></p>
+    <aside [innerHTML]="specimenAside"></aside>
+  </section>
+
+  <hr class="section-rule" />
+
+  <section class="locale-demo">
+    <h2>Локалізація</h2>
+    <p><strong>Сьогодні (live):</strong> {{ formattedDate }}</p>
+    <p>
+      <strong>Фіксована дата (для перевірки):</strong>
+      <span data-testid="fixed-date">{{ formattedFixedDate }}</span>
+    </p>
+    <p><strong>Число:</strong> {{ formattedNumber }}</p>
+    <p><strong>Сортування:</strong></p>
+    <ul>
+      @for (word of sortedWords; track word) {
+        <li>{{ word }}</li>
+      }
+    </ul>
+    <p class="audit-note">
+      Аудит: завантажте цю сторінку з налаштуваннями локалі браузера <code>en-US</code>. Дата, число
+      та порядок сортування вище МАЮТЬ залишитись українськими. Якщо хоч щось перемкнулось на
+      англійську — це регрес. Чек-ліст: <code>docs/force-en-audit.md</code>.
+    </p>
+  </section>
 </article>

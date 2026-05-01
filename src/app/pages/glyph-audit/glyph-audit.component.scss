@@ -1,1 +1,133 @@
-// Sections 1/2/3 styling fills in PLAN 05.
+.glyph-audit {
+  padding: var(--space-6) var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .glyph-audit {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .glyph-audit {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.page-header {
+  margin-block: var(--space-9) var(--space-7);
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8) var(--space-6);
+  margin-block: var(--space-7);
+}
+
+@media (width >= 768px) {
+  .matrix {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 1200px) {
+  .matrix {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.cell {
+  padding: var(--space-5);
+}
+
+.cell-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-3);
+}
+
+.cell-body {
+  font-size: var(--text-body);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+  overflow-wrap: break-word;
+}
+
+.cell-display {
+  font-size: var(--text-display-xl);
+  line-height: 1;
+  overflow: hidden;
+}
+
+.cell hr {
+  margin: var(--space-3) 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.cell-glyphs {
+  font-size: var(--text-glyph);
+  line-height: 1;
+  letter-spacing: 0.1em;
+}
+
+.section-rule {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: var(--space-10) 0;
+}
+
+@media (width <= 767px) {
+  .section-rule {
+    margin: var(--space-8) 0;
+  }
+}
+
+.specimen {
+  max-width: var(--measure-prose);
+  margin-inline: auto;
+}
+
+.specimen h1 {
+  margin-bottom: var(--space-5);
+}
+
+.specimen h2 {
+  margin-block: var(--space-7) var(--space-4);
+}
+
+.specimen h3 {
+  margin-block: var(--space-6) var(--space-4);
+}
+
+.specimen pre {
+  margin-block: var(--space-6);
+}
+
+.specimen .figure-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+
+.locale-demo {
+  max-width: var(--measure-prose);
+  margin-inline: auto;
+}
+
+.locale-demo h2 {
+  margin-bottom: var(--space-5);
+}
+
+.locale-demo .audit-note {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  border-left: 2px solid var(--color-accent);
+  padding-left: var(--space-4);
+  margin-top: var(--space-6);
+}
