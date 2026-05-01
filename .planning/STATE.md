@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-01T08:02:22.961Z"
+last_updated: "2026-05-01T08:06:35.262Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 12
-  completed_plans: 9
-  percent: 75
+  completed_plans: 10
+  percent: 83
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -36,7 +36,7 @@ Plan: 1 of 6
 - **Next phase:** Phase 2 — Primitives (`Heading`, `Body`, `CodeBlock`, `TwoColumn`, `Sidenote`, etc.)
 - **Plan:** None active
 - **Status:** Executing Phase 02
-- **Progress:** [████████░░] 75%
+- **Progress:** [████████░░] 83%
 
 ```
 [█▒▒▒▒▒▒▒▒▒] 1/6 phases
@@ -89,6 +89,7 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 | Phase 1: `src/lib/intl.ts` is the only Intl.* call site | 01-CONTEXT.md D-28, force-en-audit.md "Intl wrapper policy" | Bare `toLocale*` blocked by no-restricted-syntax ESLint rule + synthetic violation fixture. Audited zero violations on phase exit. |
 | Phase 1: Source Serif 4 ships with `opsz` axis (380KB ceiling, not 250KB) | 01-02-SUMMARY.md | The `opsz` axis is the editorial driver of this project (body vs display optical sizing); dropping it to fit a heuristic ceiling would amputate the design intent. Inter / JBM keep tighter ceilings. |
 | Phase 02 P03 | 8m | 2 tasks | 23 files |
+| Phase 02 P04 | 6min | 2 tasks | 8 files |
 
 ### Active Todos
 
@@ -113,7 +114,7 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 
 ## Session Continuity
 
-- **Last session:** 2026-05-01T08:02:22.957Z
+- **Last session:** 2026-05-01T08:06:27.473Z
 - **Files just written:** `.planning/phases/01-foundation-typography-gate/01-{01..06}-SUMMARY.md`, `font-swap-dry-run.md`, `docs/force-en-audit.md`, `docs/typography-checklist.md`, full Angular SSG app + woff2 pipeline + tokens + harness.
 - **Next action:** `/gsd-plan-phase 2` — plan Phase 2 (Primitives).
 

@@ -31,11 +31,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Layout & Responsive Behavior
 
-- [ ] **LAYOUT-01**: Two-column layout (body column + margin/sidenote column) renders correctly on screens ≥1200px
-- [ ] **LAYOUT-02**: Tablet breakpoint (768–1199px) collapses sidenotes/margin content to inline disclosure or above/below body — no overlap, no horizontal scroll
-- [ ] **LAYOUT-03**: Mobile breakpoint (<768px) is fully usable — single column, generous line-height, no broken sidenotes
-- [ ] **LAYOUT-04**: Layout looks polished on laptop screens and gorgeous on FHD+ (≥1920px) — content does not stretch full-width; max content width respects measure
-- [ ] **LAYOUT-05**: Header (with site title and primary navigation) and footer (with about/RSS/license info) render in editorial aesthetic across breakpoints
+- [x] **LAYOUT-01
+**: Two-column layout (body column + margin/sidenote column) renders correctly on screens ≥1200px
+- [x] **LAYOUT-02
+**: Tablet breakpoint (768–1199px) collapses sidenotes/margin content to inline disclosure or above/below body — no overlap, no horizontal scroll
+- [x] **LAYOUT-03
+**: Mobile breakpoint (<768px) is fully usable — single column, generous line-height, no broken sidenotes
+- [x] **LAYOUT-04
+**: Layout looks polished on laptop screens and gorgeous on FHD+ (≥1920px) — content does not stretch full-width; max content width respects measure
+- [x] **LAYOUT-05
+**: Header (with site title and primary navigation) and footer (with about/RSS/license info) render in editorial aesthetic across breakpoints
 - [ ] **LAYOUT-06**: Print stylesheet exists for lessons and articles — paper-friendly typography, no nav, expanded sidenotes inline
 
 ### Component Primitives (`core-ui`)
@@ -43,7 +48,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PRIM-01**: `core-ui` Angular library project exists with public-API boundary (no reaching into primitive internals from features)
 - [x] **PRIM-02
 **: Primitives implemented: `Heading`, `Body`, `Lede`, `Aside`, `Sidenote`, `Figure`, `FigureCaption`
-- [ ] **PRIM-03**: Layout primitives implemented: `PageShell`, `TwoColumn`, `MarginRail`
+- [x] **PRIM-03
+**: Layout primitives implemented: `PageShell`, `TwoColumn`, `MarginRail`
 - [ ] **PRIM-04**: `CodeBlock` primitive with Arduino C++ syntax highlighting (Shiki at build-time), line numbers, copy-to-clipboard button, horizontal scroll on overflow, NO client-side highlighting JS
 - [ ] **PRIM-05**: `CodeBlock` supports diff view ("add these lines", "remove these lines") with appropriate visual treatment
 - [ ] **PRIM-06**: `CodeBlock` supports per-line margin annotations linked to specific line numbers, vertically aligned to those lines on ≥1200px breakpoint, with disclosure fallback at smaller breakpoints
