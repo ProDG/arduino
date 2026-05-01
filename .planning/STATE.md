@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-01T08:15:21.919Z"
+status: ready-to-plan
+last_updated: "2026-05-01T08:50:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 12
-  completed_plans: 11
-  percent: 92
+  completed_plans: 12
+  percent: 100
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -28,18 +28,17 @@ progress:
 
 ## Current Position
 
-Phase: 02 (primitives-two-column-layout-page-model-contract) — EXECUTING
-Plan: 1 of 6
+Phase: 02 (primitives-two-column-layout-page-model-contract) — **COMPLETE** (closed 2026-05-01, user-approved)
 
 - **Milestone:** v1 (initial release)
-- **Phase:** 01 — Foundation & Typography Gate — **COMPLETE** (closed 2026-05-01, user-approved)
-- **Next phase:** Phase 2 — Primitives (`Heading`, `Body`, `CodeBlock`, `TwoColumn`, `Sidenote`, etc.)
+- **Phase:** 02 — Primitives, Two-Column Layout & Page-Model Contract — **COMPLETE**
+- **Next phase:** Phase 3 — Page Templates, Routing & Static Build
 - **Plan:** None active
-- **Status:** Executing Phase 02
-- **Progress:** [█████████░] 92%
+- **Status:** Ready for `/gsd-plan-phase 3`
+- **Progress:** [████████████] 100% (12/12 planned plans complete; phases 1+2 closed)
 
 ```
-[█▒▒▒▒▒▒▒▒▒] 1/6 phases
+[██▒▒▒▒▒▒▒▒] 2/6 phases
 ```
 
 ## Phase 1 — Foundation & Typography Gate — closed
@@ -58,11 +57,27 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 
 **Requirements shipped:** TYPE-01..10, UKR-01, UKR-04, UKR-05, UKR-06 (14 / 78).
 
+## Phase 2 — Primitives, Two-Column Layout & Page-Model Contract — closed
+
+All five Phase 2 success criteria verified PASS. `core-ui` library, layout primitives, content-model contract, and `/dev/primitives` showcase locked.
+
+| # | Criterion | Evidence |
+|---|-----------|----------|
+| 1 | Every primitive renders on `/dev/primitives` consumed only via `@arduino/core-ui` | User-approved visual checkpoint at PLAN 02-06; `02-06-SUMMARY.md` |
+| 2 | Three-breakpoint TwoColumn + sidenote behavior PASSes | `docs/typography-checklist.md` Phase 2 run record (ALL PASS at <768 / 768–1199 / ≥1200) |
+| 3 | CodeBlock basic / diff / annotated PASS | typography-checklist.md P2 CodeBlock rows ALL PASS; Plan 02-05 DOM-test for copy interaction green |
+| 4 | `MockContentApi` wired end-to-end via DI; page resolves a `Lesson` at runtime | `provideContentApi()` in `app.config.ts`; `02-06-SUMMARY.md` build-verification block |
+| 5 | UKR-02/03 reframed per D-PRE-05: editorial-smell + content-gate lint clean on every fixture; force-en audit PASS | `node scripts/lint-fixtures.mjs` → `7 fixtures clean`; `docs/force-en-audit.md` Phase 2 row **ALL PASS** |
+
+**Commits (Plan 02-06 chain, latest 7):** `a850d4a` showcase wiring → `420403a` P2 doc-section append → `27f5341` MockContentApi asset-path fix → `d4be5d5` editorial SVG placeholders → `f849770` PageMaker-style placeholder refinement → `bb7d38a` Figure #2 demote-from-bleed → `f5684e1` tick P2 audit rows. Plus the per-plan summaries `02-{01..06}-SUMMARY.md`.
+
+**Requirements shipped:** PRIM-01..08, LAYOUT-01..05, CONTRACT-01, CONTRACT-03, CONTRACT-04, UKR-02, UKR-03 (18 / 78).
+
 ## Performance Metrics
 
-- Phases completed: 1
-- Plans completed: 6
-- Requirements shipped: 14 / 78
+- Phases completed: 2
+- Plans completed: 12
+- Requirements shipped: 32 / 78
 
 ## Accumulated Context
 
@@ -91,10 +106,11 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 | Phase 02 P03 | 8m | 2 tasks | 23 files |
 | Phase 02 P04 | 6min | 2 tasks | 8 files |
 | Phase 02 P05 | 6min | 2 tasks | 5 files |
+| Phase 02 P06 | 30min (incl. user walk + 3 deviation commits) | 2 tasks | 11 files |
 
 ### Active Todos
 
-(None — Phase 1 closed; ready for Phase 2 planning.)
+(None — Phases 1+2 closed; ready for Phase 3 planning.)
 
 ### Blockers
 
@@ -115,11 +131,11 @@ All five Phase 1 success criteria verified PASS. Foundation locked.
 
 ## Session Continuity
 
-- **Last session:** 2026-05-01T08:15:21.914Z
-- **Files just written:** `.planning/phases/01-foundation-typography-gate/01-{01..06}-SUMMARY.md`, `font-swap-dry-run.md`, `docs/force-en-audit.md`, `docs/typography-checklist.md`, full Angular SSG app + woff2 pipeline + tokens + harness.
-- **Next action:** `/gsd-plan-phase 2` — plan Phase 2 (Primitives).
+- **Last session:** 2026-05-01T08:50:00.000Z
+- **Files just written:** `.planning/phases/02-primitives-two-column-layout-page-model-contract/02-06-SUMMARY.md`, `docs/typography-checklist.md` (P2 ALL PASS), `docs/force-en-audit.md` (P2 ALL PASS row).
+- **Next action:** `/gsd-plan-phase 3` — plan Phase 3 (Page Templates, Routing & Static Build).
 
 ---
-*State initialized: 2026-04-30 — Phase 1 closed: 2026-05-01.*
+*State initialized: 2026-04-30 — Phase 1 closed: 2026-05-01 — Phase 2 closed: 2026-05-01.*
 
-**Planned Phase:** 2 (primitives-two-column-layout-page-model-contract) — 6 plans — 2026-05-01T07:12:36.211Z
+**Planned Phase:** 2 (primitives-two-column-layout-page-model-contract) — 6 plans — 2026-05-01T07:12:36.211Z — **CLOSED 2026-05-01.**

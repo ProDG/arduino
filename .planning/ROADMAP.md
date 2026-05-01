@@ -8,8 +8,8 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Typography Gate** — Day-zero locale + secrets discipline; self-hosted Cyrillic-complete font stack; SCSS token system; Ukrainian glyph audit harness page; light-only-v1 commitment.
-- [ ] **Phase 2: Primitives, Two-Column Layout & Page-Model Contract** — `core-ui` primitives (Heading, Body, Aside, Sidenote, Figure, CodeBlock with diff/annotations, Pinout, PageShell, TwoColumn, MarginRail); three-breakpoint sidenote behavior; TypeScript content models locked; `ContentApi` interface + `MockContentApi` with real Ukrainian fixtures.
+- [x] **Phase 1: Foundation & Typography Gate** — Day-zero locale + secrets discipline; self-hosted Cyrillic-complete font stack; SCSS token system; Ukrainian glyph audit harness page; light-only-v1 commitment. **CLOSED 2026-05-01.**
+- [x] **Phase 2: Primitives, Two-Column Layout & Page-Model Contract** — `core-ui` primitives (Heading, Body, Aside, Sidenote, Figure, CodeBlock with diff/annotations, Pinout, PageShell, TwoColumn, MarginRail); three-breakpoint sidenote behavior; TypeScript content models locked; `ContentApi` interface + `MockContentApi` with real Ukrainian fixtures. **CLOSED 2026-05-01** (user-approved).
 - [ ] **Phase 3: Page Templates, Routing & Static Build** — All page templates (lesson/article/datasheet/schematic/library/home/about/404); routing; SSG prerender via `outputMode: "static"`; CSR-only `/preview/*` stub; Lighthouse gates met; **30–60 min Wagtail StreamField spike at phase exit** validates contract before BE work begins.
 - [ ] **Phase 4: Wagtail Backend Skeleton & Contract Match** — Wagtail 7.4 LTS conforms 1:1 to FE contract; DRF v2 with server-side `expand_db_html`; `wagtail-headless-preview` wired; `WagtailContentApi` flips mock→real. **Cannot start before 2026-05-04** (Wagtail 7.4 LTS release).
 - [ ] **Phase 5: Single-VPS Deployment** — Caddy + gunicorn + systemd + PostgreSQL 17 on Ubuntu 24.04; auto-TLS; off-site backups with tested restore drill before any content publishes; `ufw` lockdown; reproducible `deploy.sh`.
@@ -46,13 +46,13 @@
   3. A `CodeBlock` instance demonstrates Arduino C++ syntax highlighting (Shiki at build-time), line numbers, copy-to-clipboard, diff markers, and per-line margin annotations vertically aligned to their target lines on a wide viewport.
   4. `content/models/*.ts` (`Lesson`, `Article`, `Datasheet`, `Schematic`, and the shared `Block` discriminated union) is locked and committed; `MockContentApi` reads `/assets/mock-data/*.json` containing at least 3 real Ukrainian lessons, 1 article, 2 datasheets, 1 schematic.
   5. The Ukrainian text pre-processor transforms `"…"`→`«…»`, `--`→`—`, ranges to en-dash, and inserts NBSPs after one-letter prepositions; running the same fixture through it twice is a no-op (idempotent), and the force-en locale audit passes for all primitives.
-**Plans**: 6 plans
-  - [ ] 02-01-PLAN.md — `core-ui` workspace library scaffold + ESLint boundary rule + path alias
-  - [ ] 02-02-PLAN.md — TS content models + ContentApi/MockContentApi + 7 Ukrainian fixtures + fixture lint + copy style guide (UKR-02/UKR-03 reframed per D-PRE-01..05)
-  - [ ] 02-03-PLAN.md — 10 editorial primitives + `measure.ts` pure-fn geometry with Vitest (highest-value test)
-  - [ ] 02-04-PLAN.md — Layout primitives: PageShell + MarginRail + TwoColumn (JS-measured sidenote anchoring)
-  - [ ] 02-05-PLAN.md — CodeBlock primitive (frame + line numbers + copy interaction + diff visuals + annotation alignment) with DOM test
-  - [ ] 02-06-PLAN.md — `/dev/primitives` showcase page + DI wiring + prerender exclusion + 3-breakpoint walk + force-en audit
+**Plans**: 6 plans (all complete 2026-05-01)
+  - [x] 02-01-PLAN.md — `core-ui` workspace library scaffold + ESLint boundary rule + path alias
+  - [x] 02-02-PLAN.md — TS content models + ContentApi/MockContentApi + 7 Ukrainian fixtures + fixture lint + copy style guide (UKR-02/UKR-03 reframed per D-PRE-01..05)
+  - [x] 02-03-PLAN.md — 10 editorial primitives + `measure.ts` pure-fn geometry with Vitest (highest-value test)
+  - [x] 02-04-PLAN.md — Layout primitives: PageShell + MarginRail + TwoColumn (JS-measured sidenote anchoring)
+  - [x] 02-05-PLAN.md — CodeBlock primitive (frame + line numbers + copy interaction + diff visuals + annotation alignment) with DOM test
+  - [x] 02-06-PLAN.md — `/dev/primitives` showcase page + DI wiring + prerender exclusion + 3-breakpoint walk + force-en audit
 **UI hint**: yes
 
 ### Phase 3: Page Templates, Routing & Static Build
@@ -111,9 +111,9 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Typography Gate | 0/6 | Not started | - |
-| 2. Primitives, Two-Column Layout & Page-Model Contract | 0/6 | Planned | - |
-| 3. Page Templates, Routing & Static Build | 0/0 | Not started | - |
+| 1. Foundation & Typography Gate | 6/6 | **Complete** | 2026-05-01 |
+| 2. Primitives, Two-Column Layout & Page-Model Contract | 6/6 | **Complete** | 2026-05-01 |
+| 3. Page Templates, Routing & Static Build | 0/0 | Ready to plan (`/gsd-plan-phase 3`) | - |
 | 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Blocked: awaiting Wagtail 7.4 LTS (2026-05-04) | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
 | 6. Content Migration, Differentiators & Editorial Polish | 0/0 | Not started | - |

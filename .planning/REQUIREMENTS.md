@@ -23,8 +23,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Ukrainian Text & Locale
 
 - [ ] **UKR-01**: `<html lang="uk">` set globally; `LOCALE_ID = 'uk-UA'` registered in Angular; `registerLocaleData(localeUk)` invoked
-- [ ] **UKR-02**: Ukrainian text pre-processor utility transforms straight ASCII quotes to `«…»` (primary) and `„…"` (nested), inserts em-dash `—` with surrounding spaces, en-dash `–` for numeric ranges, and inserts non-breaking spaces after one-letter prepositions (`в`, `з`, `у`, `і`, `й`, `та`, `не`, `на`, `до`, `за`, `по`)
-- [ ] **UKR-03**: Pre-processor applied consistently to both static prose and rendered StreamField content
+- [x] **UKR-02**: Ukrainian text pre-processor utility transforms straight ASCII quotes to `«…»` (primary) and `„…"` (nested), inserts em-dash `—` with surrounding spaces, en-dash `–` for numeric ranges, and inserts non-breaking spaces after one-letter prepositions (`в`, `з`, `у`, `і`, `й`, `та`, `не`, `на`, `до`, `за`, `по`) *(reframed per CONTEXT D-PRE-01..05 as authoring-contract: `docs/copy-style-uk.md` + `scripts/lint-fixtures.mjs`)*
+- [x] **UKR-03**: Pre-processor applied consistently to both static prose and rendered StreamField content *(reframed: editorial-smell + content-gate lint clean on all 7 fixtures)*
 - [ ] **UKR-04**: All date/number formatting uses `Intl.DateTimeFormat('uk-UA')` and `Intl.NumberFormat('uk-UA')`; sorting uses `Intl.Collator('uk-UA')`; no `toLocaleDateString()` calls without explicit locale
 - [ ] **UKR-05**: `TIME_ZONE = 'Europe/Kyiv'` set wherever times are rendered
 - [ ] **UKR-06**: Force-en browser-locale audit checklist exists and is run at the end of each phase that touches user-facing strings (catches locale leakage early)
@@ -45,7 +45,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Component Primitives (`core-ui`)
 
-- [ ] **PRIM-01**: `core-ui` Angular library project exists with public-API boundary (no reaching into primitive internals from features)
+- [x] **PRIM-01**: `core-ui` Angular library project exists with public-API boundary (no reaching into primitive internals from features)
 - [x] **PRIM-02
 **: Primitives implemented: `Heading`, `Body`, `Lede`, `Aside`, `Sidenote`, `Figure`, `FigureCaption`
 - [x] **PRIM-03
@@ -63,10 +63,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Page-Model Contract & Mock Data
 
-- [ ] **CONTRACT-01**: TypeScript content models locked: `Lesson`, `Article`, `Datasheet`, `Schematic`, with shared `Block` discriminated union covering all StreamField block types (paragraph, heading, sidenote, figure, code, diff, pinout, parts-list)
+- [x] **CONTRACT-01**: TypeScript content models locked: `Lesson`, `Article`, `Datasheet`, `Schematic`, with shared `Block` discriminated union covering all StreamField block types (paragraph, heading, sidenote, figure, code, diff, pinout, parts-list)
 - [ ] **CONTRACT-02**: `CodeBlock` model includes `language`, `code`, and `annotations: { line: number; html: string }[]` shape verified by a 30–60 minute Wagtail 7.4 spike
-- [ ] **CONTRACT-03**: `ContentApi` interface defined; `MockContentApi` implementation reads from `/assets/mock-data/*.json`
-- [ ] **CONTRACT-04**: Mock JSON populated with at least 3 real Ukrainian-language lessons, 1 article, 2 datasheets, 1 schematic — content drives design calibration, not Latin filler
+- [x] **CONTRACT-03**: `ContentApi` interface defined; `MockContentApi` implementation reads from `/assets/mock-data/*.json`
+- [x] **CONTRACT-04**: Mock JSON populated with at least 3 real Ukrainian-language lessons, 1 article, 2 datasheets, 1 schematic — content drives design calibration, not Latin filler
 
 ### Page Templates & Routing
 
@@ -200,29 +200,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TYPE-09 | Phase 1 | Pending |
 | TYPE-10 | Phase 1 | Pending |
 | UKR-01 | Phase 1 | Pending |
-| UKR-02 | Phase 2 | Pending |
-| UKR-03 | Phase 2 | Pending |
+| UKR-02 | Phase 2 | **Complete** (2026-05-01) |
+| UKR-03 | Phase 2 | **Complete** (2026-05-01) |
 | UKR-04 | Phase 1 | Pending |
 | UKR-05 | Phase 1 | Pending |
 | UKR-06 | Phase 1 | Pending |
-| LAYOUT-01 | Phase 2 | Pending |
-| LAYOUT-02 | Phase 2 | Pending |
-| LAYOUT-03 | Phase 2 | Pending |
-| LAYOUT-04 | Phase 2 | Pending |
-| LAYOUT-05 | Phase 2 | Pending |
+| LAYOUT-01 | Phase 2 | **Complete** (2026-05-01) |
+| LAYOUT-02 | Phase 2 | **Complete** (2026-05-01) |
+| LAYOUT-03 | Phase 2 | **Complete** (2026-05-01) |
+| LAYOUT-04 | Phase 2 | **Complete** (2026-05-01) |
+| LAYOUT-05 | Phase 2 | **Complete** (2026-05-01) |
 | LAYOUT-06 | Phase 6 | Pending |
-| PRIM-01 | Phase 2 | Pending |
-| PRIM-02 | Phase 2 | Pending |
-| PRIM-03 | Phase 2 | Pending |
-| PRIM-04 | Phase 2 | Pending |
-| PRIM-05 | Phase 2 | Pending |
-| PRIM-06 | Phase 2 | Pending |
-| PRIM-07 | Phase 2 | Pending |
-| PRIM-08 | Phase 2 | Pending |
-| CONTRACT-01 | Phase 2 | Pending |
+| PRIM-01 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-02 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-03 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-04 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-05 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-06 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-07 | Phase 2 | **Complete** (2026-05-01) |
+| PRIM-08 | Phase 2 | **Complete** (2026-05-01) |
+| CONTRACT-01 | Phase 2 | **Complete** (2026-05-01) |
 | CONTRACT-02 | Phase 3 | Pending |
-| CONTRACT-03 | Phase 2 | Pending |
-| CONTRACT-04 | Phase 2 | Pending |
+| CONTRACT-03 | Phase 2 | **Complete** (2026-05-01) |
+| CONTRACT-04 | Phase 2 | **Complete** (2026-05-01) |
 | PAGE-01 | Phase 3 | Pending |
 | PAGE-02 | Phase 3 | Pending |
 | PAGE-03 | Phase 3 | Pending |
