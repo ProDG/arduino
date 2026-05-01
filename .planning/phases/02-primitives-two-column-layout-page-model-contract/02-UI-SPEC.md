@@ -1,7 +1,7 @@
 ---
 phase: 2
 slug: primitives-two-column-layout-page-model-contract
-status: approved
+status: draft
 shadcn_initialized: false
 preset: none
 created: 2026-05-01
@@ -520,7 +520,21 @@ Each JSON file is the serialized form of the matching TypeScript page model. Fie
 
 ---
 
-## Ukrainian Text Pre-processor (UKR-02, UKR-03)
+## Ukrainian Text Pre-processor (UKR-02, UKR-03) — SUPERSEDED
+
+> **SUPERSEDED 2026-05-01 by 02-CONTEXT.md D-PRE-01..05.**
+> The function `processUkrainianText` and the file `src/lib/uk-text.ts` are descoped from Phase 2.
+> Authors deliver typeset prose verbatim; primitives consume strings unchanged; `MockContentApi` performs no transformation.
+> UKR-02 / UKR-03 are reframed as authoring-contract requirements:
+> - `docs/copy-style-uk.md` — author/editor style guide listing required typography forms.
+> - `scripts/lint-fixtures.mjs` — Node CLI that warns on editorial smells in mock JSON (no transformation).
+> See 02-CONTEXT.md §Implementation Decisions → "Pre-processor — descoped from Phase 2" for full rationale.
+> The original section is retained below for traceability but is **NOT NORMATIVE**.
+
+<details>
+<summary>Original (non-normative) pre-processor specification</summary>
+
+
 
 **Location:** `src/lib/uk-text.ts` (alongside `intl.ts` from P1).
 
@@ -561,7 +575,7 @@ In P4, `WagtailContentApi` runs the same function on the same fields after Wagta
 
 The pre-processor is purely string-mechanical and does NOT touch any locale-sensitive code. The phase-exit force-en audit walks `/dev/primitives` under `en-US` browser locale and verifies:
 
-- Quotes still render as `«…»` (the function doesn't depend on browser locale).
+- Quotes still render as `«…»` (verbatim from authored fixtures; per D-PRE-01..05 there is no function — fixtures ship typeset).
 - Em-dashes and en-dashes still render correctly.
 - The estimated-read-time string (`≈ 12 хв`) still uses `Intl.NumberFormat('uk-UA')` via the P1 `intl.ts` wrapper.
 - Date strings on the showcase page still render as `30 квітня 2026 р.`, never `April 30, 2026`.
@@ -569,6 +583,8 @@ The pre-processor is purely string-mechanical and does NOT touch any locale-sens
 Audit results recorded as a P2 row in `docs/force-en-audit.md` (the same accumulating doc started in P1).
 
 ---
+
+</details>
 
 ## The Showcase Page — `/dev/primitives`
 

@@ -46,7 +46,13 @@
   3. A `CodeBlock` instance demonstrates Arduino C++ syntax highlighting (Shiki at build-time), line numbers, copy-to-clipboard, diff markers, and per-line margin annotations vertically aligned to their target lines on a wide viewport.
   4. `content/models/*.ts` (`Lesson`, `Article`, `Datasheet`, `Schematic`, and the shared `Block` discriminated union) is locked and committed; `MockContentApi` reads `/assets/mock-data/*.json` containing at least 3 real Ukrainian lessons, 1 article, 2 datasheets, 1 schematic.
   5. The Ukrainian text pre-processor transforms `"…"`→`«…»`, `--`→`—`, ranges to en-dash, and inserts NBSPs after one-letter prepositions; running the same fixture through it twice is a no-op (idempotent), and the force-en locale audit passes for all primitives.
-**Plans**: TBD
+**Plans**: 6 plans
+  - [ ] 02-01-PLAN.md — `core-ui` workspace library scaffold + ESLint boundary rule + path alias
+  - [ ] 02-02-PLAN.md — TS content models + ContentApi/MockContentApi + 7 Ukrainian fixtures + fixture lint + copy style guide (UKR-02/UKR-03 reframed per D-PRE-01..05)
+  - [ ] 02-03-PLAN.md — 10 editorial primitives + `measure.ts` pure-fn geometry with Vitest (highest-value test)
+  - [ ] 02-04-PLAN.md — Layout primitives: PageShell + MarginRail + TwoColumn (JS-measured sidenote anchoring)
+  - [ ] 02-05-PLAN.md — CodeBlock primitive (frame + line numbers + copy interaction + diff visuals + annotation alignment) with DOM test
+  - [ ] 02-06-PLAN.md — `/dev/primitives` showcase page + DI wiring + prerender exclusion + 3-breakpoint walk + force-en audit
 **UI hint**: yes
 
 ### Phase 3: Page Templates, Routing & Static Build
@@ -106,7 +112,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Typography Gate | 0/6 | Not started | - |
-| 2. Primitives, Two-Column Layout & Page-Model Contract | 0/0 | Not started | - |
+| 2. Primitives, Two-Column Layout & Page-Model Contract | 0/6 | Planned | - |
 | 3. Page Templates, Routing & Static Build | 0/0 | Not started | - |
 | 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Blocked: awaiting Wagtail 7.4 LTS (2026-05-04) | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
