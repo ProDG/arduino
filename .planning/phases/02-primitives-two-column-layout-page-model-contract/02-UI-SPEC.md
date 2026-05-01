@@ -1,10 +1,11 @@
 ---
 phase: 2
 slug: primitives-two-column-layout-page-model-contract
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-05-01
+reviewed_at: 2026-05-01
 ---
 
 # Phase 2 — UI Design Contract
