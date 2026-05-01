@@ -1,0 +1,13 @@
+dist/
+node_modules/
+pnpm-lock.yaml
+public/fonts/
+fonts-source/
+.angular/
+coverage/
+
+# Planning + project docs are authored, not auto-formatted.
+.planning/
+CLAUDE.md
+README.md
+docs/

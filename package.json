@@ -1,0 +1,52 @@
+{
+  "name": "arduino-hub",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "dev": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "lint": "eslint . && stylelint \"src/**/*.scss\"",
+    "lint:js": "eslint .",
+    "lint:scss": "stylelint \"src/**/*.scss\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/platform-server": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@angular/ssr": "^21.2.9",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.9",
+    "@angular/cli": "^21.2.9",
+    "@angular/compiler-cli": "^21.2.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20.17.19",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "angular-eslint": "^21.0.0",
+    "eslint": "^9.16.0",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "stylelint": "^16.10.0",
+    "stylelint-config-standard-scss": "^14.0.0",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^4.0.8"
+  }
+}
