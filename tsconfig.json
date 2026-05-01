@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@arduino/core-ui": ["projects/core-ui/src/public-api.ts"]
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -28,6 +32,12 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/core-ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/core-ui/tsconfig.spec.json"
     }
   ]
 }
