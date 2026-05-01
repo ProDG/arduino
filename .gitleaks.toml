@@ -1,0 +1,19 @@
+# Gitleaks config (D-31). Inherits the default ruleset; this file exists
+# so we can scope project-specific allowlists if false positives surface.
+# Do NOT silence rules wholesale — investigate every finding first.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for known-safe project artifacts"
+paths = [
+  # synthetic-violation fixtures and test fixtures live here; they must
+  # never contain real secrets, but we exclude them from gitleaks scanning
+  # so a deliberately fake-shaped string never triggers a false positive
+  # on a future fixture.
+  '''^src/__synthetic__/''',
+  # font binaries — gitleaks should not scan binary blobs.
+  '''^public/fonts/.*\.woff2$''',
+  '''^public/fonts/CHECKSUMS\.txt$''',
+]

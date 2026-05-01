@@ -1,0 +1,32 @@
+# Pre-commit hooks for Arduino UA (D-31).
+# Install once via `pre-commit install`. Update gitleaks tag on release bump.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: prettier-check
+        name: prettier-check
+        entry: pnpm exec prettier --check
+        language: system
+        files: '\.(ts|html|scss|json|md|yaml|yml)$'
+        pass_filenames: true
+
+      - id: eslint-changed
+        name: eslint changed ts
+        entry: pnpm exec eslint
+        language: system
+        files: '\.ts$'
+        # Synthetic fixture is exercised separately via `pnpm lint:verify-rule`.
+        exclude: '^src/__synthetic__/'
+        pass_filenames: true
+
+      - id: stylelint-changed
+        name: stylelint changed scss
+        entry: pnpm exec stylelint
+        language: system
+        files: '\.scss$'
+        pass_filenames: true
