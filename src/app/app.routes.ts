@@ -12,4 +12,12 @@ export const routes: Routes = [
       import('./pages/glyph-audit/glyph-audit.component').then((m) => m.GlyphAuditComponent),
     title: 'Гліф-аудит — Arduino UA',
   },
+  {
+    path: 'dev/primitives',
+    loadComponent: () =>
+      import('./pages/dev-primitives/dev-primitives.component').then(
+        (m) => m.DevPrimitivesComponent,
+      ),
+    title: 'Примітиви — Arduino UA',
+  },
 ];

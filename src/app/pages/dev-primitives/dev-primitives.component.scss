@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+
+.showcase {
+  padding-block: var(--space-6);
+  padding-inline: var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .showcase {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .showcase {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.showcase__header {
+  margin-block: var(--space-9) var(--space-7);
+}
+
+.showcase__lesson-meta {
+  font-family: var(--font-ui);
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  margin-top: var(--space-4);
+}
+
+.showcase > section {
+  margin-block: var(--space-7);
+}
+
+.force-en-footer {
+  margin-top: var(--space-8);
+  border-top: 1px solid var(--color-rule);
+  padding-top: var(--space-5);
+}

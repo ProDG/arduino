@@ -1,0 +1,189 @@
+<ui-page-shell>
+  <article class="showcase">
+    <header class="showcase__header">
+      <ui-heading [level]="1">Showcase примітивів</ui-heading>
+      <ui-lede
+        >Кожен примітив core-ui на реальних даних. Відкрий у трьох ширинах: &lt;768, 768–1199,
+        ≥1200.</ui-lede
+      >
+      @if (lesson(); as l) {
+        <p class="showcase__lesson-meta">
+          Дані фікстури: <strong>{{ l.title }}</strong> — <em>{{ l.deck }}</em>
+        </p>
+      }
+    </header>
+
+    <!-- Section 2: Body & Heading hierarchy -->
+    <section>
+      <ui-heading [level]="2" id="hierarchy">Ієрархія</ui-heading>
+      <ui-body
+        >Плата <strong>Arduino Uno</strong> побудована на мікроконтролері
+        <strong>ATmega328P</strong>. Вбудований світлодіод підʼєднано до цифрового виходу
+        <code>pin 13</code> через резистор. Це канонічна перша схема — з неї починається кожен курс
+        Arduino.</ui-body
+      >
+      <ui-heading [level]="3">Підрозділ</ui-heading>
+      <ui-body
+        >Цей абзац перевіряє, що ієрархія заголовків залишається спокійною — інтервали, накреслення,
+        оптичний розмір. Жодних декоративних рамок, жодних тіней — лише типографіка.</ui-body
+      >
+    </section>
+
+    <!-- Section 3: Lede & Aside -->
+    <section>
+      <ui-heading [level]="2">Asides</ui-heading>
+      <ui-aside variant="note"
+        ><strong>Замітка.</strong> Це нейтральне додаткове пояснення біля основного тексту. Книжкова
+        естетика просить, щоб такі врізки були тихими — без іконок, без яскравих фонів.</ui-aside
+      >
+      <ui-aside variant="warning"
+        ><strong>Увага.</strong> Не подавай напругу 5 В на пін, налаштований на вихід — згориш плату
+        безповоротно. Це найпоширеніша помилка серед початківців.</ui-aside
+      >
+      <ui-aside variant="fact"
+        ><strong>Факт.</strong> Назва «Arduino» походить від кафе у місті Іврея, Італія, де
+        збиралися перші розробники проєкту.</ui-aside
+      >
+    </section>
+
+    <!-- Section 4: TwoColumn + Sidenote (3 sidenotes anchored top/middle/bottom) -->
+    <section>
+      <ui-heading [level]="2">Двоколонкова верстка</ui-heading>
+      <ui-two-column>
+        <div body>
+          <p data-sidenote-anchor="1">
+            Перший абзац уроку: тут пояснюємо, чому світлодіод треба підключати через
+            резистор<ui-sidenote-ref [number]="1" />. Без обмеження струму світлодіод швидко згорить
+            — ґніт спалахне миттєво, як свічка від ковзкого сірника.
+          </p>
+          <p>
+            Другий абзац без примітки. Прохолодний ритм основного тексту перевіряє інтервал між
+            абзацами та довжину рядка близько 62ch. Текст — справжня українська проза, ніяких
+            латинських замінників. Це принциповий вибір: калібрований дизайн на реальному вмісті.
+          </p>
+          <p>
+            Третій абзац: перевіряємо, як абзаци дихають у двоколонковій верстці. Жодного
+            «text-align: justify», жодних автоматичних переносів — рваний правий край є редакційною
+            нормою для української типографіки.
+          </p>
+          <p data-sidenote-anchor="2">
+            Четвертий абзац згадує <code>digitalWrite(LED_BUILTIN, HIGH)</code
+            ><ui-sidenote-ref [number]="2" /> — стандартну функцію, з якої починається кожен курс
+            Arduino. Її синтаксис простий, а семантика — фундаментальна.
+          </p>
+          <p>
+            Пʼятий абзац без примітки. Текст продовжується для перевірки колізії приміток у нижній
+            частині секції. Якщо примітки 2 і 3 розташовані надто близько одна до одної на десктопі,
+            друга має зʼїхати вниз на висоту першої плюс
+            <code>--sidenote-stack-gap</code>.
+          </p>
+          <p data-sidenote-anchor="3">
+            Шостий абзац — останній у цій секції. Тут ми перевіряємо, що остання
+            примітка<ui-sidenote-ref [number]="3" /> вирівнюється внизу і не перекриває попередню
+            навіть при ширині 1200–1280 пікселів, де поля вузькі, а сторінка — щільна.
+          </p>
+        </div>
+        <ui-margin-rail margin>
+          <ui-sidenote [number]="1"
+            >Резистор 220 Ом — типовий вибір для світлодіода 2 В при живленні 5 В. Розрахунок: (5–2)
+            ÷ 0.014 ≈ 214 Ом, округлюємо вгору до найближчого стандартного номіналу.</ui-sidenote
+          >
+          <ui-sidenote [number]="2"
+            ><code>LED_BUILTIN</code> — макрос, що позначає вбудований світлодіод плати. На Uno R3
+            це <code>pin 13</code>; на інших платах номер може відрізнятися.</ui-sidenote
+          >
+          <ui-sidenote [number]="3"
+            >Якщо примітки накладаються одна на одну — спрацьовує правило колізії: пізніша зʼїжджає
+            вниз на висоту попередньої плюс <code>--sidenote-stack-gap</code>.</ui-sidenote
+          >
+        </ui-margin-rail>
+      </ui-two-column>
+    </section>
+
+    <!-- Section 5: Figure (body-measure + full-bleed) -->
+    <section>
+      <ui-heading [level]="2">Figure</ui-heading>
+      <ui-figure [number]="1">
+        <img
+          src="/assets/mock-data/figures/blymayuchyi-shema.svg"
+          alt="Схема: Arduino Uno, світлодіод, резистор 220 Ом"
+          width="800"
+          height="450"
+        />
+        <ui-figure-caption [number]="1"
+          >Підключення світлодіода до <code>pin 13</code> через обмежувальний
+          резистор.</ui-figure-caption
+        >
+      </ui-figure>
+      <ui-figure [number]="2" [fullBleed]="true">
+        <img
+          src="/assets/mock-data/figures/uno-r3-pinout-hero.svg"
+          alt="Загальний вигляд плати Arduino Uno R3"
+          width="1600"
+          height="900"
+        />
+        <ui-figure-caption [number]="2"
+          >Плата Arduino Uno R3, повна ширина контейнера.</ui-figure-caption
+        >
+      </ui-figure>
+    </section>
+
+    <!-- Section 6: CodeBlock — basic -->
+    <section>
+      <ui-heading [level]="2">CodeBlock — простий</ui-heading>
+      <ui-code-block
+        language="arduino"
+        filename="blink.ino"
+        [showLineNumbers]="true"
+        [highlightLines]="[7]"
+        [code]="basicCode"
+      />
+    </section>
+
+    <!-- Section 7: CodeBlock — diff mode -->
+    <section>
+      <ui-heading [level]="2">CodeBlock — diff</ui-heading>
+      <ui-code-block language="diff" [diffMode]="true" [showLineNumbers]="true" [code]="diffCode" />
+    </section>
+
+    <!-- Section 8: CodeBlock — annotated -->
+    <section>
+      <ui-heading [level]="2">CodeBlock — з примітками</ui-heading>
+      <ui-code-block
+        language="arduino"
+        filename="annotated.ino"
+        [showLineNumbers]="true"
+        [annotations]="annotations"
+        [code]="annotatedCode"
+      />
+    </section>
+
+    <!-- Section 9: Diff (text-level) -->
+    <section>
+      <ui-heading [level]="2">Diff — текст</ui-heading>
+      <ui-diff
+        before="Підключи світлодіод напряму до пін 13 — Arduino не згорить, бо вбудований резистор обмежує струм."
+        after="Підключи світлодіод через зовнішній резистор 220 Ом до пін 13 — це безпечніше для зовнішніх світлодіодів і дисциплінує початківця."
+      />
+    </section>
+
+    <!-- Section 10: Pinout -->
+    <section>
+      <ui-heading [level]="2">Pinout</ui-heading>
+      <ui-pinout
+        src="/assets/mock-data/figures/uno-r3-pinout.svg"
+        alt="Pinout Arduino Uno R3"
+        [pins]="pins"
+      />
+    </section>
+
+    <!-- Section 11: Force-en audit footer -->
+    <section class="force-en-footer">
+      <ui-heading [level]="2">Force-en аудит</ui-heading>
+      <ui-body
+        >Перевір цю сторінку під <code>en-US</code> локаллю браузера: усі лапки лишаються «…», тире
+        — «—», числа й дати — українські. Жодного «April», жодного «5,000».</ui-body
+      >
+    </section>
+  </article>
+</ui-page-shell>
