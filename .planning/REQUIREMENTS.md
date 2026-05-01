@@ -89,17 +89,19 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **WAGTAIL-06**: Django configured for Ukrainian: `LANGUAGE_CODE = 'uk'`, `TIME_ZONE = 'Europe/Kyiv'`, `USE_TZ = True`
 - [ ] **WAGTAIL-07**: `WagtailContentApi` Angular implementation hits `/api/v2/pages/`; environment flag flips `MockContentApi` → `WagtailContentApi`
 - [ ] **WAGTAIL-08**: Day-zero security: `.env` in `.gitignore`, `gitleaks` pre-commit hook, `DEBUG = False` in prod, explicit `ALLOWED_HOSTS`, secret key not in repo
+- [ ] **WAGTAIL-09**: Wagtail uses `django-storages[s3]` + `boto3` configured against MinIO (S3-compatible) for `DEFAULT_FILE_STORAGE` — original uploads, image renditions, and document storage live in a single MinIO bucket. Endpoint, bucket name, and credentials are sourced from environment variables (no hardcoded URLs). Local-filesystem `MEDIA_ROOT` storage is forbidden (same backend in dev and prod).
+- [ ] **WAGTAIL-10**: BE (Wagtail + Postgres + MinIO) runs in Docker Compose in both dev and prod. The same `docker-compose.yml` (with `compose.dev.yml` / `compose.prod.yml` overlays) defines services, networks, named volumes, and healthchecks; production differs only via overlay (TLS via Traefik labels, no port exposure to host except Traefik's 80/443).
 
 ### Single-VPS Deployment
 
-- [ ] **DEPLOY-01**: Single Ubuntu 24.04 VPS provisioned; Caddy 2.8+, gunicorn 23, PostgreSQL 17, all managed by systemd; no Docker
-- [ ] **DEPLOY-02**: Caddyfile configured: auto-TLS, `/api/*`, `/admin/*`, `/preview/*`, `/media/*` routed to gunicorn :8000; everything else served as static files from the prerendered Angular build
-- [ ] **DEPLOY-03**: PostgreSQL connects via UNIX socket (no TCP listener); `arduino-wagtail.service` systemd unit defined and enabled
-- [ ] **DEPLOY-04**: Daily off-site backups: `pg_dump` + `restic` to a remote target (e.g., Backblaze B2); restore drill executed and documented before any real content is published
-- [ ] **DEPLOY-05**: Cert renewal (Caddy) and backup completion both monitored via Healthchecks.io pings; failure alerts go to author email
-- [ ] **DEPLOY-06**: Quarterly cron runs `wagtail_update_image_renditions --purge-only` to prevent rendition disk bloat
-- [ ] **DEPLOY-07**: `ufw` firewall allows only 22, 80, 443; SSH via key only
-- [ ] **DEPLOY-08**: Reproducible `deploy.sh` script in repo (idempotent — can be re-run safely); deployment does not depend on the dev machine
+- [ ] **DEPLOY-01**: Single Ubuntu 24.04 VPS provisioned with Docker Engine 27+ and Docker Compose v2. The full prod stack runs from `compose.yml` + `compose.prod.yml`: Traefik (reverse proxy + auto-TLS), Wagtail (gunicorn 23 in container), PostgreSQL 17, MinIO, and a static-FE container (`caddy:alpine`) serving the prerendered Angular bundle on port 80 (Traefik handles TLS upstream). A single host-level `docker-compose@arduino.service` systemd unit ensures the stack starts on boot.
+- [ ] **DEPLOY-02**: Traefik configured via container labels: auto-TLS via Let's Encrypt; `Host(<domain>)` routes — `/api/*`, `/admin/*`, `/preview/*`, `/django-static/*` to the Wagtail container :8000; `/media/*` to MinIO :9000 with bucket-level public-read policy on the renditions prefix; everything else routed to the static-FE container :80 (which serves the prerendered Angular bundle and falls back to `/index.html` for SPA routes). HTTP→HTTPS redirect handled by Traefik entrypoint config.
+- [ ] **DEPLOY-03**: PostgreSQL 17 runs in container, exposed only on the internal Docker network (no host port published). Wagtail connects via Docker DNS (e.g., `postgres:5432`). Postgres data on a named volume backed by a host-bind mount at `/srv/arduino/postgres-data` for backup access. MinIO data on a separate named volume bound to `/srv/arduino/minio-data` so a media-disk-fill cannot starve Postgres.
+- [ ] **DEPLOY-04**: Daily off-site backups via two paths: (a) `pg_dump` from a transient sidecar container (or `docker compose exec postgres pg_dump`) piped into `restic` to Backblaze B2; (b) MinIO bucket replicated to B2 via `mc mirror` (run from a sidecar/cron). Restore drill executed and documented in `deploy/RESTORE.md` end-to-end on a fresh DB AND a fresh MinIO bucket before any real content is published.
+- [ ] **DEPLOY-05**: Traefik cert renewal, daily `pg_dump` job, and daily `mc mirror` job each ping Healthchecks.io on success; failure (or missed ping) emails the author. Traefik logs cert events; the backup cron exits non-zero on any error to trip the Healthchecks grace window.
+- [ ] **DEPLOY-06**: Quarterly cron runs `docker compose exec wagtail python manage.py wagtail_update_image_renditions --purge-only` to prevent rendition bloat in MinIO. Optional: a MinIO bucket lifecycle policy ages out renditions older than N days as a second safety net.
+- [ ] **DEPLOY-07**: `ufw` firewall allows only 22, 80, 443 on the host; Docker daemon is configured with `iptables=true` but the `docker-compose.yml` exposes only Traefik's 80/443 to the host (Postgres, MinIO, Wagtail, FE-static are all on the internal network). SSH via key only (`PasswordAuthentication no`).
+- [ ] **DEPLOY-08**: Reproducible `deploy/deploy.sh` script in repo (idempotent — can be re-run safely): pulls the repo, runs `docker compose -f compose.yml -f compose.prod.yml pull && up -d --build`, runs Django migrations + `collectstatic` to MinIO via `docker compose exec wagtail …`, rsyncs the FE bundle to the host volume mounted into the FE-static container, and restarts only the affected services. Deployment does not depend on the dev machine — works from any laptop with SSH access.
 
 ### Editorial Differentiators & Polish
 
@@ -157,13 +159,16 @@ Explicitly excluded. Documented to prevent scope creep.
 | Material Design / off-the-shelf component library | Editorial primitives are bespoke; design system is the product. |
 | Card-grid library / index | Replaced by typographic table-of-contents — explicitly rejects the "YouTube grid" pattern. |
 | Justified body text | Reliable Ukrainian browser hyphenation is not yet universal; ragged-right is the editorial choice. |
-| Real-time / autosave-driven SSR for `/preview/*` (v1) | CSR-only `/preview/*` is acceptable in v1; revisit only if Wagtail 7.4 autosave UX demands SSR. |
+| Node SSR runtime (any phase) | SSG-only is the locked architecture. Wagtail REST API v2 → Angular consumes content; `/preview/*` is CSR-only with autosave polling. SSR is not on the roadmap. |
+| Server-rendered preview (`/preview/*`) | CSR-only `/preview/*` is the v1 strategy; preview UX issues will be addressed via autosave polling on the CSR side, not by introducing SSR. |
 | Newsletter popup, autoplay video, cookie banners beyond legal minimum | Anti-features — actively excluded to protect reading experience. |
 | Comments / Disqus / external embeds | Same — reading experience first. |
 | CDN front (Cloudflare/Bunny) | Not needed at expected audience scale; revisit only post-launch. |
 | GraphQL (`wagtail-grapple`) | REST v2 is sufficient; one less moving part for solo author. |
-| Docker | Single-VPS topology is simpler with systemd + uv + pnpm directly. |
-| Node SSR runtime in v1 | SSG resolution: pure prerender ships the same SEO/perf with one less service. |
+| Bare-metal systemd-managed Wagtail/gunicorn | Replaced by Docker Compose. Single `docker-compose@arduino.service` host unit is the only host-level service. |
+| Local-filesystem media storage (`MEDIA_ROOT` on disk) | Replaced by MinIO (S3-compatible). Same backend in dev and prod. Prevents disk-fill from media uploads taking down Postgres. |
+| nginx as reverse proxy | Replaced by Traefik (Docker-native, label-driven routing, integrated Let's Encrypt). |
+| Caddy on the host | Caddy still appears as the FE-static container (`caddy:alpine`) on `:80`, but TLS is handled by Traefik upstream. No host-level Caddy. |
 | English month names anywhere in the UI | Locale leakage — actively guarded against. |
 
 ## Traceability
@@ -231,6 +236,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WAGTAIL-06 | Phase 4 | Pending |
 | WAGTAIL-07 | Phase 4 | Pending |
 | WAGTAIL-08 | Phase 4 | Pending |
+| WAGTAIL-09 | Phase 4 | Pending |
+| WAGTAIL-10 | Phase 4 | Pending |
 | DEPLOY-01 | Phase 5 | Pending |
 | DEPLOY-02 | Phase 5 | Pending |
 | DEPLOY-03 | Phase 5 | Pending |
@@ -250,10 +257,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POLISH-09 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 76 total
-- Mapped to phases: 76
+- v1 requirements: 78 total (added WAGTAIL-09, WAGTAIL-10 on 2026-05-01)
+- Mapped to phases: 78
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-04-30 after roadmap creation (traceability populated)*
+*Last updated: 2026-05-01 — added WAGTAIL-09 (MinIO storage) and WAGTAIL-10 (Docker Compose); rewrote DEPLOY-01..08 for Docker/Traefik/MinIO topology; updated Out of Scope table to reflect locked architecture changes.*

@@ -91,7 +91,7 @@ Requirements covered: TYPE-01 through TYPE-10, UKR-01, UKR-04, UKR-05, UKR-06.
 
 ### Project locks (must read first)
 
-- `CLAUDE.md` — hard constraints: Ukrainian only, Cyrillic-Ext required, ragged-right body, no Tailwind, no Node SSR runtime in v1, frontend owns the contract, real Ukrainian prose for design calibration.
+- `CLAUDE.md` — hard constraints: Ukrainian only, Cyrillic-Ext required, ragged-right body, no Tailwind, no Node SSR runtime — ever, frontend owns the contract, real Ukrainian prose for design calibration.
 - `.planning/PROJECT.md` — vision, requirements, key decisions table.
 - `.planning/REQUIREMENTS.md` — full v1 requirement list. Phase 1 covers TYPE-01..10, UKR-01, UKR-04, UKR-05, UKR-06.
 - `.planning/ROADMAP.md` §"Phase 1: Foundation & Typography Gate" — phase goal, depends-on (none), success criteria 1–5.
@@ -99,7 +99,7 @@ Requirements covered: TYPE-01 through TYPE-10, UKR-01, UKR-04, UKR-05, UKR-06.
 ### Stack research (locked decisions)
 
 - `.planning/research/STACK.md` §1 (Cyrillic-Capable Typography Pipeline) — Pairing A locked (Source Serif 4 + Inter + JetBrains Mono), self-host woff2, subsetting strategy, Fontaine fallback metric pattern, FOUT decision, verification protocol with the canonical Ukrainian verification string.
-- `.planning/research/STACK.md` §2 (Angular 21 Specifics) — `outputMode: "static"` SSG strategy, no Node SSR runtime in v1, `LOCALE_ID = 'uk-UA'` setup.
+- `.planning/research/STACK.md` §2 (Angular 21 Specifics) — `outputMode: "static"` SSG strategy, no Node SSR runtime — ever, `LOCALE_ID = 'uk-UA'` setup.
 - `.planning/research/STACK.md` §5 (Tooling) — pnpm 10, ESLint 9, Stylelint 16, Prettier 3, `pre-commit` versions; the master frontend installation cheatsheet.
 - `.planning/research/PITFALLS.md` — light-only-v1, ragged-right rationale, locale leakage traps. *(Read for the "Looks Done But Isn't" pitfall list.)*
 - `.planning/research/SUMMARY.md` — synthesized stack overview.

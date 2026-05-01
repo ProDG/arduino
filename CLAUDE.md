@@ -4,7 +4,7 @@ This file is read by Claude Code at the start of every session in this repo. Kee
 
 ## Project
 
-Editorial-quality Ukrainian-language Arduino learning website. Lessons, articles, schematics, datasheets. **Design and typography are the product**, not decoration — inspired by the official Arduino Starter Kit book. Built FE-first with mocked data (Angular 21 + SCSS), then a Wagtail 7.4 LTS backend conforms to the locked frontend contract. Single self-hosted VPS. Ukrainian only — no i18n.
+Editorial-quality Ukrainian-language Arduino learning website. Lessons, articles, schematics, datasheets. **Design and typography are the product**, not decoration — inspired by the official Arduino Starter Kit book. Built FE-first with mocked data (Angular 21 + SCSS), then a Wagtail 7.4 LTS backend (Dockerized) conforms to the locked frontend contract. Single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO). Ukrainian only — no i18n.
 
 **Core value:** Reading and learning here feels as good as reading a beautifully typeset book.
 
@@ -29,12 +29,13 @@ This project uses Get Shit Done (GSD) for planning and execution. Key files in `
 
 ## Stack (locked)
 
-- **Frontend:** Angular 21.2.x (zoneless, Signal Forms, Vitest), SCSS (no Tailwind), `@angular/ssr` with `outputMode: "static"` (pure SSG, no Node SSR runtime in v1)
+- **Frontend:** Angular 21.2.x (zoneless, Signal Forms, Vitest), SCSS (no Tailwind), `@angular/ssr` with `outputMode: "static"` (pure SSG, no Node SSR runtime — ever)
 - **Typography:** Source Serif 4 (body) + Inter (UI) + JetBrains Mono (code), self-hosted variable woff2, subset Cyrillic + Cyrillic-Ext, Fontaine fallback metrics
 - **Code rendering:** Shiki at build-time with `@shikijs/transformers` for diff and line-anchored margin annotations
-- **Backend:** Wagtail 7.4 LTS (releases 2026-05-04) + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2; REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview`
+- **Backend:** Wagtail 7.4 LTS (releases 2026-05-04) + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2; REST API v2 (NOT wagtail-grapple); `wagtail-headless-preview`; `django-storages[s3]` + `boto3` against MinIO for media + image renditions.
 - **Tooling:** pnpm 10 + ESLint 9 + Stylelint 16 (FE); uv + Ruff + mypy + pytest (BE); pre-commit + gitleaks
-- **Deployment:** Single Ubuntu 24.04 VPS — Caddy 2.8+ (auto-TLS) + gunicorn 23 + systemd + PostgreSQL on UNIX socket. No Docker, no Node SSR service.
+- **Containerization:** Docker (Compose) for BE + Postgres + MinIO in dev AND prod. Dev parity: same compose file with dev overrides. **FE is NOT containerized in dev** — Angular runs directly on the host (`pnpm start`); the FE bundle is built locally/CI and rsynced to the VPS for prod.
+- **Deployment:** Single Ubuntu 24.04 VPS — Traefik (label-driven auto-TLS via Let's Encrypt, in container) + Wagtail/gunicorn + Postgres + MinIO + a tiny `caddy:alpine` container that serves the prerendered Angular FE bundle on `:80` (Traefik handles TLS upstream). No bare-metal systemd units except a single `docker-compose@arduino.service`.
 
 ## Hard constraints
 
@@ -44,12 +45,14 @@ This project uses Get Shit Done (GSD) for planning and execution. Key files in `
 - **Ragged-right body**, no `text-align: justify`, no `hyphens: auto` — Ukrainian browser hyphenation isn't reliable.
 - **No Tailwind.** Hand-authored SCSS with token system; component styles co-locate, only `styles/tokens/` and `styles/base/` are global.
 - **Frontend owns the contract.** TypeScript content models in `content/models/*.ts` are locked first; Wagtail StreamField shapes match them, not the inverse.
-- **No Node SSR runtime in v1.** SSG only. `/preview/*` runs CSR-only. Revisit only if Wagtail 7.4 autosave preview UX demands SSR.
-- **Backups before content.** Restore drill executed end-to-end before a single piece of real content is published.
+- **No Node SSR ever.** SSG only. `/preview/*` runs CSR-only. Wagtail provides content via REST API v2; Angular renders it. SSR is not on the roadmap — preview ergonomics will be solved with CSR + autosave polling, not by introducing a Node runtime.
+- **Backups before content.** Two paths: `pg_dump → restic` for Postgres (off-site to B2/Hetzner), `mc mirror` to B2 for MinIO. Restore drill executed end-to-end on a fresh DB AND a fresh MinIO bucket before a single piece of real content is published.
+- **Media via S3-compatible storage (MinIO).** Wagtail uses `django-storages[s3]` + `boto3` against a self-hosted MinIO container. Same backend in dev and prod (different bucket/endpoint). Local filesystem media is forbidden — catches storage-config bugs early.
+- **Docker for BE; bare-metal for FE dev.** All BE services (Wagtail, Postgres, MinIO, Traefik, FE-static-server) run in Docker via a single `docker-compose.yml` (with `compose.dev.yml` and `compose.prod.yml` overlays). FE dev runs `pnpm start` directly on the host — no FE container, no volume-mounted node_modules.
 
 ## Out of scope (don't propose these without explicit user request)
 
-Tailwind, Google Fonts CDN, Material Design, Docker, GraphQL/wagtail-grapple, dark mode in v1, justified body, search, reader accounts, comments, circuit simulator, code execution, i18n, card-grid library index, CDN front, English month names anywhere.
+Tailwind, Google Fonts CDN, Material Design, GraphQL/wagtail-grapple, dark mode in v1, justified body, search, reader accounts, comments, circuit simulator, code execution, i18n, card-grid library index, CDN front, English month names anywhere, Node SSR runtime, bare-metal systemd-managed Wagtail/gunicorn (replaced by Docker), local-filesystem media storage (replaced by MinIO).
 
 ## Coding conventions
 
@@ -60,4 +63,4 @@ Tailwind, Google Fonts CDN, Material Design, Docker, GraphQL/wagtail-grapple, da
 - Commit messages: lowercase imperative summary; reference REQ-IDs where relevant.
 
 ---
-*Last updated: 2026-04-30 after project initialization*
+*Last updated: 2026-05-01 — switched to Docker (Traefik + Wagtail + Postgres + MinIO) for BE, MinIO for media, no Node SSR ever.*

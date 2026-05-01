@@ -21,9 +21,9 @@ progress:
 ## Project Reference
 
 - **Core value:** Reading and learning here feels as good as reading a beautifully typeset book — design, typography, and visual structure are the primary product.
-- **Stack:** Angular 21 (zoneless, Signal Forms, Vitest) + SCSS + self-hosted variable woff2 (Source Serif 4 + Inter + JetBrains Mono, Pairing A) + Wagtail 7.4 LTS (post 2026-05-04) + Django 5.2 LTS + PostgreSQL 17 + Caddy + gunicorn + systemd on a single Ubuntu 24.04 VPS.
-- **Build order:** FE-first with mocked data → contract lockdown → SSG-only static build → Wagtail BE conforms to FE contract → VPS deploy → content + polish.
-- **Rendering strategy:** SSG (`outputMode: "static"`) for v1 — no Node SSR runtime; CSR-only `/preview/*`.
+- **Stack:** Angular 21 (zoneless, Signal Forms, Vitest) + SCSS + self-hosted variable woff2 (Source Serif 4 + Inter + JetBrains Mono, Pairing A) + Wagtail 7.4 LTS (post 2026-05-04) + Django 5.2 LTS + PostgreSQL 17 + MinIO (S3-compatible) + Traefik (auto-TLS) running in Docker Compose on a single Ubuntu 24.04 VPS.
+- **Build order:** FE-first with mocked data → contract lockdown → SSG-only static build → Wagtail BE in Docker conforms to FE contract → Dockerized VPS deploy → content + polish.
+- **Rendering strategy:** SSG (`outputMode: "static"`) — no Node SSR ever; CSR-only `/preview/*`.
 - **Language:** Ukrainian only, no i18n architecture.
 
 ## Current Position
@@ -43,7 +43,7 @@ progress:
 
 - Phases completed: 0
 - Plans completed: 0
-- Requirements shipped: 0 / 76
+- Requirements shipped: 0 / 78
 
 ## Accumulated Context
 
@@ -61,6 +61,11 @@ progress:
 | Light-only theme in v1 | research/PITFALLS.md | Dark mode = parallel design language, not token swap; defer to v2 |
 | Ragged-right body, no auto-hyphenation | research/PITFALLS.md | Sidesteps unreliable Ukrainian browser hyphenation |
 | REST API v2, not wagtail-grapple | research/STACK.md | Fewer moving parts; built-in; matches contract |
+| Docker Compose for BE in dev AND prod (Wagtail + Postgres + MinIO + Traefik + FE-static); FE dev on host | PROJECT.md, CLAUDE.md | Same-backend dev/prod parity catches storage/networking bugs early; FE dev runs `pnpm start` on host for fast iteration. Locked 2026-05-01. |
+| Traefik (containerized) for reverse proxy + Let's Encrypt auto-TLS | PROJECT.md, research/STACK.md §4 | Docker-native, label-driven routing; replaces host-level Caddy; integrates with Compose. Locked 2026-05-01. |
+| MinIO (S3-compatible, containerized) for media + Wagtail renditions + collectstatic | PROJECT.md, REQUIREMENTS.md WAGTAIL-09 | `django-storages[s3]` + `boto3`; same backend dev/prod (different bucket); off-site backup via `mc mirror` to B2; prevents disk-fill from media taking down Postgres. Locked 2026-05-01. |
+| SSG-only — no Node SSR EVER (upgraded from "v1 only") | PROJECT.md, CLAUDE.md, research/SUMMARY.md | Wagtail REST API v2 → Angular consumes (build-time prerender + CSR for `/preview/*`). Preview ergonomics solved via CSR autosave-polling, NOT SSR. Locked 2026-05-01. |
+| Backups: `pg_dump → restic` + `mc mirror`, both off-site to B2 | REQUIREMENTS.md DEPLOY-04, research/STACK.md §4 | Different shapes (relational vs blob) warrant different tools. Restore drill before content publish. Locked 2026-05-01. |
 
 ### Active Todos
 
@@ -76,7 +81,7 @@ progress:
 - Margin-annotation CSS alignment across breakpoints — may warrant `/gsd-research-phase` on CSS `anchor-name` / `position-anchor` at start of Phase 3.
 - "Universal Listings API" in Wagtail 7.4 — verify against final 2026-05-04 release notes; default to `/api/v2/pages/`.
 - `pillow-avif-plugin` longevity — re-check at Phase 4; switch to native Pillow AVIF if available.
-- Preview UX with Wagtail 7.4 autosave — measure in Phase 4; if broken without SSR, revisit SSG-only resolution and selectively graduate `/preview/*` to per-route SSR.
+- Preview UX with Wagtail 7.4 autosave — measure in Phase 4; SSG is locked, so any preview ergonomics issues will be solved with CSR autosave-polling against the preview-token endpoint, not by introducing SSR.
 
 ## Session Continuity
 

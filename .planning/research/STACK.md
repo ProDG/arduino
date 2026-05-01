@@ -1,10 +1,10 @@
 # Stack Research — Arduino Learning Hub (Ukrainian)
 
-**Domain:** Editorial-quality content/learning website (Ukrainian-language); headless Wagtail + Angular 21 SSR/SSG; single VPS.
-**Researched:** 2026-04-30
+**Domain:** Editorial-quality content/learning website (Ukrainian-language); headless Wagtail + Angular 21 SSG; Dockerized single VPS.
+**Researched:** 2026-04-30 — last updated 2026-05-01 to reflect locked architecture changes (Docker for BE, MinIO for media, SSG-only / no SSR).
 **Confidence:** HIGH overall (locked choices verified current; supporting stack widely-used 2026 defaults; one MEDIUM area: typography selection is opinionated)
 
-> Locked choices (NOT re-litigated, only validated for version-pinning): Angular 21 (zoneless, Signal Forms, Vitest), SCSS only, Wagtail 7.4 LTS, single self-hosted VPS, Ukrainian only. This document recommends the supporting stack around them.
+> Locked choices (NOT re-litigated, only validated for version-pinning): Angular 21 (zoneless, Signal Forms, Vitest), SCSS only, Wagtail 7.4 LTS, single self-hosted VPS running Docker (Traefik + Wagtail + Postgres + MinIO), SSG-only (no Node SSR — ever), Ukrainian only. This document recommends the supporting stack around them.
 
 ---
 
@@ -353,107 +353,150 @@ whitenoise==6.*              # static-file serving (Wagtail admin assets)
 
 ---
 
-## 4. Single-VPS Deployment Stack
+## 4. Single-VPS Deployment Stack (Docker Compose)
 
 ### Topology
 
 ```
-                     Internet
-                        │
-                  ┌─────▼─────┐
-                  │   Caddy   │  :443 (auto-TLS via Let's Encrypt)
-                  │  reverse  │  :80  (auto-redirect)
-                  │   proxy   │
-                  └─┬───┬───┬─┘
-        static FE   │   │   │   /api/* /admin/* /preview/* /media/*
-        (Angular    │   │   │
-         prerender) │   │   │
-            ┌───────▼─┐ │ ┌─▼──────────────┐
-            │ /var/www│ │ │ Gunicorn       │
-            │ /arduino│ │ │ Wagtail/Django │
-            │ /dist   │ │ │ (systemd unit) │
-            └─────────┘ │ │ 127.0.0.1:8000 │
-                        │ └────────┬───────┘
-                        │          │
-                  /static/*       PostgreSQL 17
-                  served by       127.0.0.1:5432
-                  Caddy from      (systemd)
-                  collectstatic
-                  output dir
+                                 Internet
+                                    │
+                          ┌─────────▼─────────┐
+                          │   Traefik         │  :443 (auto-TLS via Let's Encrypt)
+                          │  (container)      │  :80  (HTTP→HTTPS redirect)
+                          │  label-driven     │
+                          │   routing         │
+                          └─┬─┬─┬───────────┬─┘
+                            │ │ │           │
+       host:443/[/api/*,    │ │ │           │ host:443/* (everything else)
+       /admin/*, /preview/*,│ │ │           │  ↓
+       /django-static/*]    │ │ │           │ caddy:alpine FE-static
+            ↓               │ │ │           │  serves /srv/arduino/fe-bundle
+       wagtail :8000        │ │ │           │  on :80 (no TLS — Traefik upstream)
+       (gunicorn 23,        │ │ │
+        in container)       │ │ │ host:443/media/*
+            │               │ │ ↓
+            │               │ │ minio :9000  (S3-compatible)
+            │               │ │  (renditions prefix bucket-policy public-read)
+            │               │ │
+            │               │ │
+            └──Docker net──▶│ └▶ postgres :5432  (no host port)
+                            │     (named volume → /srv/arduino/postgres-data)
+                            │
+                            └─▶ minio :9000
+                                (named volume → /srv/arduino/minio-data)
 ```
 
-**Key choice: serve Angular as static files.** Per §2 use `outputMode: "static"` — no Node SSR process needed in v1. This eliminates an entire failure surface.
+**Key architectural points:**
+- **No bare-metal services** other than Docker Engine itself, `ufw`, `sshd`, and a single host systemd unit `docker-compose@arduino.service` that brings the stack up on boot.
+- **No host-level Caddy / nginx.** Traefik handles all TLS at the edge; the FE bundle is served by an internal `caddy:alpine` container on port 80 only.
+- **No Node SSR — ever.** Per §2, Angular ships as a static folder. Wagtail REST API v2 → Angular renders. `/preview/*` is CSR-only.
+- **No local-filesystem media.** Wagtail uses `django-storages[s3]` + `boto3` against the MinIO container. Same backend in dev and prod (different bucket and credentials).
 
 ### Component picks
 
 | Component | Pick | Version | Why |
 |-----------|------|---------|-----|
-| **Reverse proxy + TLS** | **Caddy** | 2.8.x+ | One-line auto-HTTPS via Let's Encrypt; readable Caddyfile; HTTP/2 + HTTP/3 (QUIC) by default; no certbot wiring. For solo dev on single VPS, this saves real hours over nginx + certbot setup. |
-| **Python WSGI** | **gunicorn** | 23.x | Industry default for Django prod. ASGI not required — Wagtail is sync-friendly. |
-| **Process management** | **systemd** | (OS-provided) | Use systemd units for `wagtail.service` (gunicorn) and `postgresql.service`. Do not use PM2 for Django. Do not use supervisord (older convention; systemd is the answer in 2026). |
-| **Database** | **PostgreSQL 17** | 17.x | See §3. Run as a systemd-managed local instance; bind 127.0.0.1 only. |
-| **Static FE** | Caddy filesystem handler | — | `root * /var/www/arduino/dist/browser` + `file_server` — no Node, no PM2. |
-| **Wagtail static (admin)** | Caddy filesystem handler against `collectstatic` output | — | `whitenoise` is fine as a fallback; Caddy serving directly is faster. |
-| **Media (uploads)** | Local disk + Caddy `file_server` | — | At this scale (small audience, ~hundreds of MB of images): no S3 needed. Plan a backup story (below). |
-| **TLS certs** | Let's Encrypt via Caddy | — | Auto-issued, auto-renewed, zero config. |
-| **Firewall** | `ufw` | OS | Allow 22, 80, 443. Block all else. Postgres bound to localhost. |
-| **OS** | Ubuntu 24.04 LTS or Debian 12 | — | Ubuntu 24.04: support to 2029. Debian 12: support to 2028. Either fine; Ubuntu has slightly fresher Python/Postgres in apt. |
+| **Reverse proxy + TLS** | **Traefik** | 3.x | Docker-native (label-driven service discovery + routing); built-in Let's Encrypt resolver; HTTP/2 + HTTP/3; one container handles routing for the entire stack. |
+| **Python WSGI** | **gunicorn** in Wagtail container | 23.x | Industry default for Django prod. Runs as PID 1 of the wagtail image. |
+| **Process management** | **Docker Compose** + systemd unit `docker-compose@arduino.service` | Compose v2 | Single host service brings up the stack on boot; Docker handles container restart policies. |
+| **Database** | **PostgreSQL 17** in container | 17.x | See §3. Internal Docker network only; no host port published. Data on host-bound named volume. |
+| **Object storage** | **MinIO** in container | latest | S3-compatible; same `boto3`/`django-storages` interface in dev and prod; off-site backup via `mc mirror` to B2. |
+| **Static FE** | `caddy:alpine` container | latest | Tiny image, one-line Caddyfile (`file_server` + SPA fallback to `index.html`); listens on `:80` only — Traefik provides TLS upstream. |
+| **Wagtail static (admin)** | Sent to MinIO via `collectstatic` (django-storages) on each deploy | — | Same path as user uploads; no separate storage location. |
+| **Media (uploads + renditions)** | MinIO bucket, `django-storages[s3]` | — | Bucket policy: renditions prefix is public-read; originals require Wagtail-signed URL or admin auth. |
+| **TLS certs** | Let's Encrypt via Traefik | — | Auto-issued, auto-renewed; certs persist on a host-bound volume. |
+| **Firewall** | `ufw` | OS | Allow 22, 80, 443. Docker daemon configured to NOT publish container ports to the public interface (only Traefik's 80/443 are exposed). |
+| **OS** | Ubuntu 24.04 LTS | — | Support to 2029; ships modern Docker via apt. |
 
-### Caddyfile (skeletal)
+### Compose layout (skeletal)
+
+```yaml
+# compose.yml — base, used in dev AND prod
+services:
+  traefik:
+    image: traefik:3
+    command: [--providers.docker, --entrypoints.web.address=:80, --entrypoints.websecure.address=:443]
+    ports: ["80:80", "443:443"]
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro", "traefik-letsencrypt:/letsencrypt"]
+    labels: ["traefik.enable=true"]
+
+  postgres:
+    image: postgres:17
+    environment: { POSTGRES_DB: arduino, POSTGRES_USER: arduino, POSTGRES_PASSWORD_FILE: /run/secrets/pg_password }
+    volumes: ["/srv/arduino/postgres-data:/var/lib/postgresql/data"]
+    # NO ports: published — internal network only
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    environment: { MINIO_ROOT_USER_FILE: /run/secrets/minio_user, MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_password }
+    volumes: ["/srv/arduino/minio-data:/data"]
+    labels:
+      - "traefik.http.routers.minio-media.rule=Host(`example.ua`) && PathPrefix(`/media`)"
+      - "traefik.http.services.minio-media.loadbalancer.server.port=9000"
+
+  wagtail:
+    build: ./backend
+    command: gunicorn arduino_hub.wsgi:application -w 3 -b 0.0.0.0:8000
+    environment:
+      DATABASE_URL: postgres://arduino@postgres:5432/arduino
+      AWS_S3_ENDPOINT_URL: http://minio:9000
+      AWS_STORAGE_BUCKET_NAME: arduino-media
+    depends_on: [postgres, minio]
+    labels:
+      - "traefik.http.routers.wagtail.rule=Host(`example.ua`) && (PathPrefix(`/api`) || PathPrefix(`/admin`) || PathPrefix(`/preview`) || PathPrefix(`/django-static`))"
+      - "traefik.http.services.wagtail.loadbalancer.server.port=8000"
+
+  fe-static:
+    image: caddy:alpine
+    volumes: ["/srv/arduino/fe-bundle:/srv/site:ro", "./deploy/fe.Caddyfile:/etc/caddy/Caddyfile:ro"]
+    labels:
+      - "traefik.http.routers.fe.rule=Host(`example.ua`)"
+      - "traefik.http.routers.fe.priority=1"  # falls through after wagtail/minio routes
+      - "traefik.http.services.fe.loadbalancer.server.port=80"
+```
 
 ```caddyfile
-arduino.example.ua {
-    encode zstd gzip
-
-    # Wagtail admin + API + media + preview
-    @backend path /admin* /api/* /preview/* /media/* /django-static/*
-    handle @backend {
-        reverse_proxy 127.0.0.1:8000
-    }
-
-    # Wagtail collectstatic output (only if not using whitenoise)
-    handle_path /django-static/* {
-        root * /srv/wagtail/static
-        file_server
-    }
-
-    # Angular static FE (everything else → SPA fallback)
-    handle {
-        root * /var/www/arduino/dist/browser
-        try_files {path} /index.html
-        file_server
-        header /assets/* Cache-Control "public, max-age=31536000, immutable"
-        header /fonts/* Cache-Control "public, max-age=31536000, immutable"
-    }
+# deploy/fe.Caddyfile — served INSIDE the FE-static container
+:80 {
+    root * /srv/site
+    try_files {path} /index.html
+    file_server
+    header /assets/* Cache-Control "public, max-age=31536000, immutable"
+    header /fonts/*  Cache-Control "public, max-age=31536000, immutable"
 }
 ```
 
-### Backup story (realistic for solo dev)
+### Backup story (realistic for solo dev — Docker-aware)
 
 | What | How | Cadence |
 |------|-----|---------|
-| Postgres | `pg_dump` to `/var/backups/pg/$(date).sql.gz`; nightly cron | Daily |
-| `/srv/wagtail/media/` (uploads) | `restic` to a cheap S3-compatible bucket (Backblaze B2, Hetzner Storage Box) | Daily incremental |
-| Caddyfile, systemd units, `.env` | Committed to a private git repo (NOT alongside code; secrets repo) | On change |
-| Off-site copy | `restic` already off-site; verify monthly with `restic check` | Monthly |
+| Postgres | `docker compose exec postgres pg_dump -U arduino arduino \| gzip > /srv/arduino/backups/pg/$(date).sql.gz`, then `restic backup` to Backblaze B2 | Daily |
+| MinIO bucket | `mc mirror --overwrite minio/arduino-media b2/arduino-media` (run from a sidecar container or host cron with `mc` binary) | Daily |
+| Compose files, .env (without secrets), Traefik dynamic config | Committed to a private git repo (NOT alongside code) | On change |
+| Off-site verification | `restic check` for Postgres archive; `mc ls b2/arduino-media \| wc -l` against MinIO source count | Monthly |
 
-That's the whole backup story. Do not invest in HA/replication for v1.
+Restore drill (executed BEFORE first content publish): provision a fresh VPS, `docker compose up -d`, run `pg_restore` from a `restic snapshot`, run `mc mirror b2/arduino-media minio/arduino-media`, verify Wagtail admin shows existing pages and image renditions resolve through the new MinIO instance.
 
 ### What NOT to do
 
 | Don't | Why |
 |-------|-----|
-| Docker Compose with 5 services | Solo VPS = systemd is simpler and lower overhead |
-| Kubernetes / k3s | Massive overkill |
-| nginx (in 2026, for a new project) | Caddy is faster to set up, equivalent perf at this scale, has auto-TLS |
-| Node SSR runtime in v1 | Use static prerender; revisit only if needed |
-| S3 for media | Adds infra; local disk + restic backups is sufficient |
-| Cloudflare in front | Optional v1.5; do not need it for the audience scale |
+| Run Wagtail/gunicorn directly on the host (no Docker) | Replaced by Docker Compose. Mixed bare-metal + container is the worst of both worlds. |
+| Kubernetes / k3s | Massive overkill for a single VPS. |
+| nginx as reverse proxy | Replaced by Traefik (Docker-native, label-driven, integrated Let's Encrypt). |
+| Node SSR runtime | SSG only — locked architecture. |
+| Local-filesystem media | Replaced by MinIO. |
+| Publishing Postgres or MinIO ports to the host public interface | Internal Docker network only; only Traefik's 80/443 are exposed. |
+| Cloudflare in front | Optional v1.5; do not need it for the audience scale. |
+| Volume-mounting `node_modules` for FE in Docker | FE dev runs on the host with `pnpm start` — no FE container in dev. |
 
 **Sources:**
-- [Caddy vs Nginx 2026](https://privatedevops.com/articles/nginx-vs-caddy-2026-reverse-proxy-comparison) — MEDIUM (third-party 2026 review)
-- [Caddy with Django](https://rtl.chrisadams.me.uk/2023/01/til-using-caddy-with-django-apps-instead-of-nginx/) — MEDIUM
-- [Django production guide 2026](https://medium.com/@sizanmahmud08/production-ready-django-with-docker-in-2026-complete-guide-with-nginx-postgresql-and-best-1fb248e65983) — LOW (single-author blog; cross-checked with official Django docs)
+- [Traefik with Docker — official getting-started](https://doc.traefik.io/traefik/getting-started/quick-start/) — HIGH
+- [Traefik Let's Encrypt resolver](https://doc.traefik.io/traefik/https/acme/) — HIGH
+- [django-storages S3 backend (used against MinIO)](https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html) — HIGH
+- [MinIO Docker quickstart](https://min.io/docs/minio/container/index.html) — HIGH
+- [Wagtail + django-storages for media](https://wagtail.org/blog/configuring-django-storages-with-wagtail/) — HIGH
 
 ---
 
@@ -545,24 +588,35 @@ pnpm add -D fonttools-bin                           # subsetting via Python; or 
 ```bash
 uv init wagtail-arduino && cd wagtail-arduino
 uv add 'wagtail==7.4.*' 'django==5.2.*' 'psycopg[binary]==3.2.*' \
-       pillow pillow-avif-plugin gunicorn==23.* whitenoise==6.* \
-       'django-cors-headers==4.*' 'wagtail-headless-preview==0.8.*'
+       pillow pillow-avif-plugin 'gunicorn==23.*' \
+       'django-cors-headers==4.*' 'wagtail-headless-preview==0.8.*' \
+       'django-storages[s3]' 'boto3'
 uv add --dev ruff mypy django-stubs pytest pytest-django pre-commit
 ```
 
-### VPS (Ubuntu 24.04)
+### VPS (Ubuntu 24.04 — Docker host only)
 
 ```bash
-# As root
-apt update && apt install -y postgresql-17 caddy ufw python3.13 python3.13-venv
+# As root — install Docker Engine + Compose v2 from Docker's official apt repo
+apt update && apt install -y ca-certificates curl ufw
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable" \
+  > /etc/apt/sources.list.d/docker.list
+apt update && apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 ufw allow 22 && ufw allow 80 && ufw allow 443 && ufw enable
-# install uv as the deploy user
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# install pnpm
+
+# host systemd unit to bring up the stack on boot:
+# /etc/systemd/system/docker-compose@arduino.service
+systemctl enable docker-compose@arduino.service
+
+# Install pnpm + Node 22 (FE BUILD step only — never runtime)
+# Use nvm or fnm on the deploy user (FE bundle is built then rsynced to /srv/arduino/fe-bundle)
 curl -fsSL https://get.pnpm.io/install.sh | sh -
-# install Node 22 (for the Angular build step only; not for runtime)
-# use nvm or fnm
 ```
+
+**No Python, no Postgres, no Caddy installed on the host.** All BE services are containers.
 
 ---
 
@@ -594,9 +648,10 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 | `psycopg2-binary` | Legacy driver; psycopg 3 is the modern path | `psycopg[binary]==3.2` |
 | pip + virtualenv + pip-tools | Slow, three tools instead of one | uv |
 | black + isort + flake8 | Three tools, slow | ruff |
-| nginx + certbot | More config, manual cert renewal wiring | Caddy (auto-TLS) |
-| Docker Compose for a 3-service single-VPS app | Adds Docker daemon, image rebuilds, log indirection | systemd units |
-| Node SSR runtime in v1 | Adds a process to manage; not needed for static editorial content | Angular `outputMode: "static"` (prerender) |
+| nginx + certbot | More config, manual cert renewal wiring | Traefik (Docker-native auto-TLS) |
+| Bare-metal Wagtail/gunicorn + systemd | Replaced by Docker Compose for dev/prod parity | Docker Compose with Traefik labels |
+| Local-filesystem media (`MEDIA_ROOT` on disk) | Disk-fill takes down Postgres; awkward to back up incrementally | MinIO + `django-storages[s3]` + `mc mirror` to B2 |
+| Node SSR runtime (any phase) | SSG-only is the locked architecture | Angular `outputMode: "static"` (prerender); CSR-only `/preview/*` |
 | wagtail-grapple (GraphQL) | Extra dependency, schema maintenance, marginal benefit | Wagtail REST API (`/api/v2/pages/`) |
 | `@angular/material` for editorial UI | Material design language fights editorial aesthetic | Hand-authored SCSS components + Angular CDK / Aria primitives |
 

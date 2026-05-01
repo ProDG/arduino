@@ -1,7 +1,7 @@
 # Architecture Research
 
-**Domain:** Headless editorial site (Wagtail 7.4 LTS BE + Angular 21 zoneless FE, single VPS)
-**Researched:** 2026-04-30
+**Domain:** Headless editorial site (Wagtail 7.4 LTS BE + Angular 21 zoneless FE, Dockerized single VPS)
+**Researched:** 2026-04-30 — last updated 2026-05-01 to reflect locked architecture changes (Docker for BE, MinIO for media, SSG-only / no SSR).
 **Confidence:** HIGH on FE structure and topology; MEDIUM-HIGH on Wagtail headless choices (verified against current Wagtail 7.x docs); MEDIUM on annotated-code StreamField modeling (no canonical pattern in docs — recommendation is opinionated).
 
 ---
@@ -17,42 +17,56 @@
                                │ HTTPS
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                  Caddy (or nginx) reverse proxy :443                 │
-│   /api/*, /cms/*, /media/*, /documents/*  →  Wagtail (Gunicorn)     │
-│   everything else                          →  Angular SSR (Node)    │
-└──────────────────┬───────────────────────────────────┬──────────────┘
-                   │                                   │
-                   ▼                                   ▼
-        ┌──────────────────────┐         ┌────────────────────────────┐
-        │  Angular 21 SSR      │         │  Wagtail 7.4 LTS           │
-        │  Node :4000          │         │  Gunicorn :8000            │
-        │  zoneless, signals   │         │  DRF v2 API + admin        │
-        │  ContentApi service  │◀───────▶│  + wagtail-headless-preview│
-        └──────────────────────┘  HTTP   └────────────┬───────────────┘
-                                                       │
-                                                       ▼
-                                          ┌────────────────────────┐
-                                          │  PostgreSQL :5432       │
-                                          │  (local socket, not net)│
-                                          └────────────────────────┘
-                                          ┌────────────────────────┐
-                                          │  Local FS: /srv/media/  │
-                                          │  (Wagtail-managed)      │
-                                          └────────────────────────┘
+│                Traefik (container) — :80 → :443                      │
+│  Label-driven routing, Let's Encrypt auto-TLS, HTTP/2 + HTTP/3       │
+└──────┬───────────────────┬───────────────────┬───────────────────────┘
+       │                   │                   │
+       │ /api/*,           │ /media/*          │ everything else
+       │ /admin/*,         │                   │ (prerendered Angular)
+       │ /preview/*,       │                   │
+       │ /django-static/*  │                   │
+       ▼                   ▼                   ▼
+┌────────────────┐  ┌──────────────────┐ ┌──────────────────────────┐
+│ wagtail        │  │ minio :9000      │ │ fe-static (caddy:alpine) │
+│ (gunicorn 23,  │  │ (S3-compatible)  │ │ :80 — serves prerendered │
+│  in container) │  │  bucket:         │ │  Angular bundle          │
+│  :8000         │  │  arduino-media   │ │  (rsynced to host volume │
+│  DRF v2 +      │  │                  │ │   /srv/arduino/fe-bundle)│
+│  admin +       │  │ stores: original │ │                          │
+│  wagtail-      │  │ uploads, image   │ │ /preview/* lives in this │
+│  headless-     │  │ renditions, docs │ │ same bundle (CSR-only)   │
+│  preview       │  │                  │ │                          │
+└───────┬────────┘  └──────────────────┘ └──────────────────────────┘
+        │
+        │  Docker internal network (no host ports)
+        ▼
+┌────────────────┐
+│ postgres :5432 │
+│  (no host port)│
+│  data:         │
+│  /srv/arduino/ │
+│  postgres-data │
+└────────────────┘
+
+NO Node SSR. NO host-level web server. NO local-filesystem media.
+ContentApi service (Angular) talks to Wagtail at build time (prerender)
+AND at runtime (CSR for /preview/* and any client-side fetches).
 ```
 
 ### Component Responsibilities
 
 | Component | Responsibility | Implementation |
 |-----------|----------------|----------------|
-| **Caddy/nginx** | TLS termination, path-based routing, static media serving, gzip/brotli | Caddy preferred (auto-TLS, simpler config) |
-| **Angular SSR (Node)** | Render every page server-side for SEO + first-paint quality; hydrate to zoneless client | `@angular/ssr` (built-in v17+, mature in v21) |
+| **Traefik (container)** | TLS termination via Let's Encrypt, label-driven routing across the compose stack, HTTP→HTTPS redirect, HTTP/2 + HTTP/3 | Traefik 3.x; configured via Docker labels on each service |
+| **fe-static (container)** | Serves the prerendered Angular bundle on port 80 (Traefik provides TLS upstream); SPA fallback to `index.html`; long-cache headers for `/assets/*` and `/fonts/*` | `caddy:alpine` with a 10-line Caddyfile; mounts `/srv/arduino/fe-bundle` read-only |
+| **Angular (build-time prerender + runtime CSR)** | All public routes prerendered at build (`outputMode: "static"`); `/preview/*` runs CSR-only inside the same static bundle | `@angular/ssr` configured for SSG; **no Node SSR runtime** |
 | **ContentApi service (Angular)** | Single typed seam between FE and content source; swappable mock ↔ Wagtail | Interface + two implementations (`MockContentApi`, `WagtailContentApi`) |
-| **Wagtail 7.4 LTS** | Page models, StreamField content, admin UX, image renditions, autosave, preview | Django + Wagtail; DRF v2 for read API |
-| **wagtail-headless-preview** | Bridge editor preview → Angular renders draft via signed token | Official Torchbox package, redirect-mode (Wagtail 7.1+) |
-| **PostgreSQL** | Pages, revisions, users, search index | Single instance, listening on UNIX socket only |
-| **Media FS** | Originals + Wagtail-generated renditions | `/srv/media/` mounted into both Wagtail (write) and Caddy (read) |
-| **systemd** | Process supervision for `wagtail.service`, `angular-ssr.service`, `caddy.service` | No Docker required v1; can add later |
+| **Wagtail 7.4 LTS (container)** | Page models, StreamField content, admin UX, image renditions stored in MinIO, autosave, preview | Django + Wagtail in `python:3.13-slim` image; gunicorn 23 as PID 1; DRF v2 for read API |
+| **wagtail-headless-preview** | Bridge editor preview → Angular `/preview/*` route renders draft via signed token | Official Torchbox package, redirect-mode (Wagtail 7.1+) |
+| **PostgreSQL 17 (container)** | Pages, revisions, users, search index | Internal Docker network only; data on host-bound named volume `/srv/arduino/postgres-data` |
+| **MinIO (container)** | S3-compatible object storage for media originals + Wagtail renditions + collected static admin assets | `minio/minio:latest`; data on host-bound named volume `/srv/arduino/minio-data`; reachable internally as `http://minio:9000`; via Traefik externally as `/media/*` |
+| **django-storages[s3] + boto3** | Wagtail's `DEFAULT_FILE_STORAGE` configured against MinIO endpoint; uploads, renditions, and `collectstatic` all go to MinIO | Configured via env vars (`AWS_S3_ENDPOINT_URL`, `AWS_STORAGE_BUCKET_NAME`, credentials) |
+| **Docker Compose (host)** | Process supervision, restart policies, network isolation, named volumes, healthchecks | `compose.yml` + `compose.dev.yml` / `compose.prod.yml` overlays; brought up by single host systemd unit `docker-compose@arduino.service` |
 
 ---
 
@@ -230,19 +244,27 @@ interface DiffBlock {
 
 ## Data Flow
 
-### Read flow (public page request)
+### Read flow (public page request — production)
 
 ```
-Reader → Caddy :443
-       → Angular SSR (Node :4000)
-            ↓ ContentApi.getLesson(slug)
-            ↓ HttpClient GET /api/v2/pages/?type=lessons.LessonPage&slug=foo&fields=*
-       → Wagtail DRF v2 (:8000)
-            ↓ ORM query
-       → PostgreSQL
-       ← JSON {meta, title, intro, body: [...blocks]}
-       ← SSR rendered HTML + serialized state for hydration
-       ← Browser hydrates to zoneless client; subsequent navigations are CSR via ContentApi
+Reader → Traefik :443
+       → fe-static container :80
+            ↓ serves prerendered HTML for /lessons/<slug>/index.html
+       ← Browser receives fully-rendered editorial HTML
+       ← Browser hydrates Angular client-side
+       ← For navigations: ContentApi (WagtailContentApi) hits /api/v2/pages/...
+                          → Traefik routes to wagtail :8000 → Postgres
+                          ← JSON, Angular renders client-side
+       ← For images: <picture> srcset URLs point at /media/...
+                     → Traefik routes to minio :9000 → object served
+```
+
+**Build-time flow (prerender):**
+```
+ng build (locally or CI) →
+  uses ContentApi.listAllSlugs() against Wagtail (or mock fixtures) →
+  emits dist/browser/lessons/<slug>/index.html for every slug →
+  rsynced to /srv/arduino/fe-bundle on the VPS
 ```
 
 ### Editor preview flow
@@ -285,58 +307,64 @@ Cross-route shared state (lesson index for nav):
 
 ---
 
-## Single-VPS Deployment Topology
+## Single-VPS Deployment Topology (Docker Compose)
 
 ### Services on the box
 
-| Service | Port | User | Purpose |
-|---------|------|------|---------|
-| Caddy | :80, :443 | caddy | TLS, reverse proxy, static media |
-| Angular SSR (Node) | :4000 (loopback only) | www-data | Render Angular pages |
-| Gunicorn (Wagtail) | :8000 (loopback only) | wagtail | Serve admin + API |
-| PostgreSQL | UNIX socket | postgres | Data |
+| Service | Container | Exposed port | Purpose |
+|---------|-----------|--------------|---------|
+| Traefik | `traefik:3` | :80, :443 (host) | TLS termination, label-driven routing, Let's Encrypt |
+| FE-static | `caddy:alpine` | :80 (internal only) | Serves prerendered Angular bundle from host volume |
+| Wagtail | custom image (Python 3.13 + uv + gunicorn) | :8000 (internal only) | DRF v2 + admin + headless preview |
+| PostgreSQL | `postgres:17` | :5432 (internal only) | Data |
+| MinIO | `minio/minio:latest` | :9000, :9001 (internal only; :9000 exposed via Traefik as `/media/*`) | S3-compatible object storage for media |
 
-### Caddyfile sketch
+**Only Traefik publishes ports to the host.** Postgres, MinIO, Wagtail, FE-static are reachable only on the internal Docker network.
 
-```
-arduino-hub.example.com {
-    encode zstd gzip
+### Compose layout (skeletal — see STACK.md §4 for full version)
 
-    # Wagtail admin + API + auth
-    handle /cms/* { reverse_proxy 127.0.0.1:8000 }
-    handle /api/* { reverse_proxy 127.0.0.1:8000 }
-    handle /django-admin/* { reverse_proxy 127.0.0.1:8000 }
-
-    # Media (originals + Wagtail renditions) served directly off disk
-    handle /media/*     { root * /srv/arduino-hub; file_server }
-    handle /documents/* { reverse_proxy 127.0.0.1:8000 }  # auth-checked
-
-    # Everything else → Angular SSR
-    handle { reverse_proxy 127.0.0.1:4000 }
-}
+```yaml
+services:
+  traefik: { image: traefik:3, ports: ["80:80","443:443"], ... }
+  postgres: { image: postgres:17, volumes: ["/srv/arduino/postgres-data:/var/lib/postgresql/data"] }
+  minio:    { image: minio/minio, volumes: ["/srv/arduino/minio-data:/data"], labels: [traefik /media/*] }
+  wagtail:  { build: ./backend, depends_on: [postgres, minio], labels: [traefik /api,/admin,/preview,/django-static] }
+  fe-static:{ image: caddy:alpine, volumes: ["/srv/arduino/fe-bundle:/srv/site:ro"], labels: [traefik catch-all] }
 ```
 
-### Storage layout
+### Storage layout (host)
 
 ```
-/srv/arduino-hub/
-├── media/             # Wagtail uploads (originals + renditions)
-├── backups/           # nightly pg_dump + media tarball
-└── releases/
-    ├── frontend/      # Angular SSR build artifacts
-    └── backend/       # Wagtail venv + source
+/srv/arduino/
+├── postgres-data/        # bound into postgres container
+├── minio-data/           # bound into minio container (originals + renditions + collectstatic)
+├── fe-bundle/            # rsync target for Angular static build (mounted RO into fe-static)
+├── backups/
+│   ├── pg/               # pg_dump output, restic-managed
+│   └── minio-mirror.log  # mc mirror exit codes
+└── traefik-letsencrypt/  # Traefik ACME state (named volume)
 ```
 
 ### Backups
 
-Nightly cron: `pg_dump | gzip > backups/db-$(date).sql.gz` and `tar czf backups/media-$(date).tgz /srv/arduino-hub/media`. Rotate to 14 days. Optional rclone push to off-site (B2/S3) — recommended but not blocking.
+| Path | Tool | Off-site target |
+|------|------|-----------------|
+| `postgres-data` (via `pg_dump`) | `restic` | Backblaze B2 (encrypted) |
+| MinIO bucket `arduino-media` | `mc mirror` | Backblaze B2 (separate bucket) |
+| Compose files + Traefik dynamic config + secrets sample | private git repo | Github private |
+
+Restore drill (executed BEFORE first content publish): provision a fresh VPS, `docker compose up -d`, `pg_restore` from a `restic snapshot`, `mc mirror b2/arduino-media minio/arduino-media`, verify Wagtail admin shows existing pages and image renditions resolve through the new MinIO instance.
 
 ### What the topology deliberately is NOT
 
-- No Docker (single VPS, single author, no orchestration win — systemd is enough)
-- No Redis (no cache invalidation needed; DRF response is already fast; revisit only if proven slow)
-- No CDN (small audience; Caddy gzip + browser caching of immutable assets covers it)
-- No separate worker process (no async tasks in v1; if needed later, add `django-q2` or similar)
+- No Node SSR runtime — ever (SSG-only is locked).
+- No bare-metal Wagtail/gunicorn/Postgres on the host (all services are containers).
+- No host-level Caddy or nginx (Traefik handles edge TLS; an internal `caddy:alpine` only serves the FE bundle).
+- No local-filesystem media (MinIO with `django-storages[s3]` is the only path).
+- No Kubernetes / k3s / Swarm (Compose is enough for one box).
+- No Redis (no cache invalidation needed yet; revisit only if proven slow).
+- No CDN (small audience; immutable-asset caching covers it).
+- No separate worker process (no async tasks in v1).
 
 ---
 
@@ -362,36 +390,39 @@ This is the section that drives the roadmap. Each phase produces concrete artifa
 
 **Unblocks:** Phase 3 can build full page templates against the contract.
 
-### Phase 3 — Page templates + routing + SSR
+### Phase 3 — Page templates + routing + static build
 **Artifacts produced:**
 - All routes wired: `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`
 - `LessonPageComponent`, `ArticlePageComponent`, etc., each consuming `ContentApi`
 - `BlockRenderer` switch dispatching the discriminated union
-- Angular SSR enabled and verified against mock data
+- Angular configured for `outputMode: "static"` — pure SSG; `ng build` produces `dist/browser/*` with prerendered HTML for every public route. NO Node SSR runtime.
 - Responsive verified across phone/laptop/FHD+
-- `/preview` route stub with `PAGE_COMPONENTS` dynamic map (no token validation yet — placeholder)
+- `/preview/<contentType>/<token>` route lives in the same static bundle and runs CSR-only (Angular client fetches preview JSON from Wagtail at runtime)
 
 **Unblocks:** Design freeze checkpoint. Solo author can now read mock content as if the site were live.
 
-### Phase 4 — Wagtail backend skeleton
+### Phase 4 — Wagtail backend skeleton (Dockerized)
 **Artifacts produced:**
 - Wagtail 7.4 LTS project with apps: `lessons`, `articles`, `datasheets`, `schematics`, `content_blocks`
+- `compose.yml` + `compose.dev.yml` defining `wagtail`, `postgres`, `minio` services with healthchecks; FE remains on the host (`pnpm start`)
 - Page models with fields matching `content/models/*.ts` (1:1 — this is enforced)
 - StreamField blocks matching the FE `Block` union, including `CodeBlock` with `annotations` ListBlock
 - DRF v2 API enabled at `/api/v2/`, custom serializers where needed to match FE shape exactly
+- `django-storages[s3]` + `boto3` configured against MinIO; `DEFAULT_FILE_STORAGE` = S3 backend; `collectstatic` writes to MinIO
 - `WagtailContentApi` implementation; environment flag flips mock → real
-- One lesson migrated from mock JSON to Wagtail to prove the contract holds
+- One lesson migrated from mock JSON to Wagtail to prove the contract holds (uploaded image renditions verified to land in MinIO bucket via `mc ls`)
 
 **Unblocks:** Phase 5 deployment.
 
-### Phase 5 — Single-VPS deployment
+### Phase 5 — Single-VPS deployment (Docker Compose)
 **Artifacts produced:**
-- Caddyfile, systemd units (`arduino-wagtail.service`, `arduino-ssr.service`)
-- PostgreSQL configured (UNIX socket, daily backups)
-- Media directory + permissions
-- `wagtail-headless-preview` integrated; preview redirect mode (Wagtail 7.1+) configured
-- Backup script + cron + tested restore
-- HTTPS via Caddy auto-TLS
+- `compose.prod.yml` overlay adding Traefik (Let's Encrypt resolver) and the `fe-static` (`caddy:alpine`) container that serves the prerendered Angular bundle
+- Single host systemd unit `docker-compose@arduino.service` brings the stack up on boot — NO `arduino-ssr.service`, NO host-level Wagtail/gunicorn/Caddy/Postgres
+- Postgres + MinIO data on host-bound named volumes (`/srv/arduino/postgres-data`, `/srv/arduino/minio-data`); separate volumes prevent media disk-fill from starving Postgres
+- `wagtail-headless-preview` integrated; preview redirect mode routes editors to the Angular `/preview/*` CSR route
+- Daily backups via two paths: `pg_dump → restic` to B2 for Postgres; `mc mirror` to a separate B2 bucket for MinIO; restore drill executed end-to-end before content publish
+- HTTPS via Traefik auto-TLS; Healthchecks.io pings on cert renewal + each backup path
+- `deploy/deploy.sh` reproducible from any laptop with SSH access
 
 **Unblocks:** Author can publish real content.
 
@@ -476,8 +507,9 @@ DRF v2 N+1 queries on richly-nested StreamField pages. Mitigation: `select_relat
 | `core-ui` ↔ `features/` | Public API only (`public-api.ts`) | Enforce via lint rule; no deep imports |
 | `features/` ↔ `ContentApi` | DI'd interface | Components never instantiate or know the impl |
 | Angular ↔ Wagtail | HTTP REST (`/api/v2/`) + preview token | Single seam; both sides know the same JSON shape |
-| Wagtail ↔ PostgreSQL | UNIX socket | Postgres not exposed on TCP at all |
-| Caddy ↔ media FS | Direct file_server | Wagtail does not proxy static media |
+| Wagtail ↔ PostgreSQL | TCP via internal Docker network (`postgres:5432`) | Postgres is NOT published on the host; reachable only by containers on the `arduino` network |
+| Wagtail ↔ MinIO | HTTP via internal Docker network (`http://minio:9000`) using `boto3` + `django-storages[s3]` | Originals + renditions + collected static admin assets stored in single bucket |
+| Browser ↔ MinIO `/media/*` | Routed by Traefik to `minio:9000` | Renditions prefix bucket-policy public-read; originals require Wagtail-signed URL |
 
 ---
 
@@ -486,7 +518,7 @@ DRF v2 N+1 queries on richly-nested StreamField pages. Mitigation: `select_relat
 - **HIGH:** Angular 21 zoneless + signals + SSR patterns; FE folder layout; ContentApi seam; single-VPS topology with Caddy/systemd; Wagtail DRF v2 as the headless choice.
 - **MEDIUM-HIGH:** Page-model contract structure — confidence is high in the *approach* (FE owns the shape, Wagtail conforms); medium on exact field names, which will refine in Phase 2.
 - **MEDIUM:** Annotated CodeBlock StreamField design. There is no canonical Wagtail pattern for line-level annotations published in docs. The recommendation (StructBlock + ListBlock of {line, note}) is an opinionated synthesis. Worth a 30-minute spike at Phase 4 start to validate against Wagtail 7.4's actual block API.
-- **MEDIUM:** SSR vs prerender vs CSR. Recommendation is SSR-with-hydration because (a) editorial site benefits from full SSR for SEO + first paint, (b) Angular 21's `@angular/ssr` is mature, (c) single VPS can run a Node process trivially. Prerender (build-time SSG) was considered but rejected for v1 because every content edit would require a redeploy — kills the autosave/preview value of Wagtail 7.4.
+- **LOCKED (2026-05-01):** SSG-only — no Node SSR, ever. Angular ships as `outputMode: "static"`; Wagtail REST API v2 → Angular consumes (build-time prerender for public routes, runtime CSR for `/preview/*` and any client-side fetches). The earlier note recommending SSR is superseded by an explicit user decision: SSR is not on the roadmap. Editor preview ergonomics are addressed via CSR + autosave polling against the preview-token endpoint, not by introducing a Node runtime. Trigger to revisit: never within v1 scope; would require a new architectural ADR.
 
 ---
 
@@ -502,4 +534,4 @@ DRF v2 N+1 queries on richly-nested StreamField pages. Mitigation: `select_relat
 
 ---
 *Architecture research for: headless editorial CMS site (Wagtail + Angular)*
-*Researched: 2026-04-30*
+*Researched: 2026-04-30 — updated 2026-05-01: switched to Docker (Traefik + Wagtail + Postgres + MinIO); MinIO for media; locked SSG-only / no SSR.*

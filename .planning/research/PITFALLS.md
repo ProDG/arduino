@@ -1,7 +1,7 @@
 # Pitfalls Research
 
-**Domain:** Editorial-quality Ukrainian Arduino learning site (Angular 21 + Wagtail 7.4 LTS, single VPS, solo dev)
-**Researched:** 2026-04-30
+**Domain:** Editorial-quality Ukrainian Arduino learning site (Angular 21 + Wagtail 7.4 LTS, Dockerized single VPS, solo dev)
+**Researched:** 2026-04-30 — updated 2026-05-01 for Docker/Traefik/MinIO architecture and SSG-only lock.
 **Confidence:** HIGH for typography/Cyrillic, Angular 21 zoneless, Wagtail headless; MEDIUM for VPS ops specifics
 
 > Reading discipline: this project's stated core value is editorial typography. Most pitfalls below are ranked
@@ -241,7 +241,7 @@ The author types content in Wagtail admin, hits Preview, gets either nothing, th
 
 ---
 
-### Pitfall 9: Solo-VPS operations decay (no backups, expired certs, secrets in git)
+### Pitfall 9: Solo-VPS operations decay (no backups, expired certs, secrets in git, Docker-specific failure modes)
 
 **What goes wrong:**
 Single VPS feels like home; ops feels like an afterthought. Then, in some combination:
@@ -273,6 +273,16 @@ Solo project, no peer review, "I'll do it later," ops chores have no user-facing
 **Severity:** Critical (any one of these can cost the entire site)
 **Phase to address:** Deployment / ops phase, BUT some items (gitignore, secrets) belong on day zero of the BE phase
 
+**Docker-specific additions (locked architecture, 2026-05-01):**
+1. **Backups must be container-aware.** `pg_dump` runs via `docker compose exec postgres` (or a sidecar container) — NOT against a host-installed `psql`. MinIO is backed up via `mc mirror` to a separate B2 bucket. Two paths because relational and blob data have different shapes; one tool for each.
+2. **Restart policies.** Every service in `compose.yml` declares `restart: unless-stopped`. The host-level `docker-compose@arduino.service` systemd unit ensures Docker itself comes up on boot; container restart policy handles individual crashes.
+3. **Image pinning.** Use exact tags (`postgres:17.5`, not `postgres:17`) and pin `wagtail` image SHA after build. Floating tags = silent breaking changes on `docker compose pull`.
+4. **Secrets via Docker secrets or `.env` (gitignored).** Never bake secrets into images. `docker compose config` + `gitleaks` pre-commit catches accidental leaks.
+5. **Volume backups, not container backups.** Backups target the host-bound volumes (`/srv/arduino/postgres-data`, `/srv/arduino/minio-data`) and DB dump output — never image layers.
+6. **Healthchecks on every service.** Postgres: `pg_isready`; MinIO: `mc ready local`; Wagtail: HTTP `/api/v2/pages/?limit=1`; Traefik: built-in. Compose `depends_on: condition: service_healthy` prevents Wagtail from starting before Postgres is accepting connections.
+7. **Don't publish ports unnecessarily.** Only Traefik publishes 80/443. Postgres and MinIO must be on the internal network only — publishing them to the host = trivial scan target.
+8. **Disk usage of Docker itself.** `docker system prune -af --filter "until=720h"` quarterly to reclaim layer/image disk.
+
 ---
 
 ## High-Severity Pitfalls
@@ -302,7 +312,9 @@ You install a library (rich-text editor, charting library, modal, drag-and-drop,
 
 ---
 
-### Pitfall 11: SSR hydration mismatches from CMS rich-text `[innerHTML]`
+### Pitfall 11: SSR hydration mismatches from CMS rich-text `[innerHTML]` — N/A (SSG-only is locked)
+
+> **Status as of 2026-05-01: not applicable.** Architecture is locked to `outputMode: "static"` — there is no Node SSR runtime, ever. Hydration mismatches between SSR and CSR DOM cannot occur because there is no SSR DOM. The pitfall below is preserved for historical context only.
 
 **What goes wrong:**
 Lesson body comes from Wagtail as HTML. FE binds it via `[innerHTML]`. SSR renders it server-side; client hydrates and Angular complains "DOM node mismatch" (NG0500). Console errors flood; in some cases interactive elements inside the rich text (copy-to-clipboard buttons, expandable figures) don't bind. ([NG0500 docs](https://angular.dev/errors/NG0500))
@@ -506,6 +518,33 @@ This component is genuinely complex. Highlighting libraries (Shiki, Prism, Highl
 
 ---
 
+### Pitfall 20: MinIO + django-storages mismatched URL/endpoint config
+
+**What goes wrong:**
+Wagtail uploads succeed, but image renditions render as broken images in the FE. Or admin shows the right URL but readers' browsers get 403/redirect loops. Common causes:
+- `AWS_S3_ENDPOINT_URL` (used by `boto3` from inside the wagtail container, e.g. `http://minio:9000`) differs from the public URL the browser must hit (`https://example.ua/media/...`). If `django-storages` returns the internal URL to the FE, browsers can't resolve `minio` (Docker DNS).
+- Bucket policy rejects anonymous reads on the renditions prefix; admin works (signed) but public renders fail.
+- `AWS_S3_CUSTOM_DOMAIN` not set, so URL generation defaults to `<endpoint>/<bucket>/<key>` with the internal hostname.
+- MinIO `MINIO_BROWSER_REDIRECT_URL` not configured, causing admin console redirect loops when accessed via Traefik.
+
+**How to avoid:**
+1. Configure two URL paths in `settings.py`:
+   - `AWS_S3_ENDPOINT_URL = "http://minio:9000"` (internal — used for upload/PUT calls from Wagtail)
+   - `AWS_S3_CUSTOM_DOMAIN = "example.ua/media"` and `AWS_S3_URL_PROTOCOL = "https:"` (public — used for URLs returned to the browser)
+2. Set MinIO bucket policy: `arduino-media/renditions/*` → `s3:GetObject` for `*` (public-read); originals require signed URL.
+3. Verify in dev with `curl https://localhost/media/renditions/<file>` (anonymous) AND `mc ls` from the host.
+4. Test the FE renders renditions on a fresh-bucket dev environment before declaring Phase 4 done.
+
+**Warning signs:**
+- Wagtail admin shows the image, public site shows broken image
+- Browser dev-tools shows `http://minio:9000/...` URLs (internal hostname leaked)
+- 403s on `/media/renditions/...` for anonymous browsers
+
+**Severity:** High
+**Phase to address:** Phase 4 (BE) and Phase 5 (deploy verification)
+
+---
+
 ## Technical Debt Patterns
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
@@ -635,6 +674,7 @@ This component is genuinely complex. Highlighting libraries (Shiki, Prism, Highl
 | 17. Teal overuse | Design system | Accent usage rules documented; design review |
 | 18. Grapple lag | BE phase (API choice) | Default to REST v2; only use grapple if specific need |
 | 19. Code-block complexity deferred | Dedicated code-block sub-phase | Demo: line numbers + diff + margin annotation + copy on a real lesson |
+| 20. MinIO + django-storages URL/endpoint mismatch | Phase 4 (BE) + Phase 5 (deploy) | FE renders renditions anonymously on fresh dev bucket; `AWS_S3_CUSTOM_DOMAIN` set explicitly |
 
 ## Sources
 
@@ -680,4 +720,4 @@ This component is genuinely complex. Highlighting libraries (Shiki, Prism, Highl
 
 ---
 *Pitfalls research for: Editorial-quality Ukrainian Arduino learning site*
-*Researched: 2026-04-30*
+*Researched: 2026-04-30 — updated 2026-05-01 for Docker/Traefik/MinIO topology and SSG-only lock; Pitfall 11 marked N/A (no SSR), Pitfall 9 expanded with Docker-specific guidance, new Pitfall 20 (MinIO/django-storages URL/endpoint mismatch).*
