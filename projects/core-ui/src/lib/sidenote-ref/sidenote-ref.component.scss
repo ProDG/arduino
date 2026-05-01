@@ -1,0 +1,16 @@
+.sidenote-ref {
+  font-family: var(--font-ui);
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--color-accent);
+}
+
+.sidenote-ref a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sidenote-ref a:hover,
+.sidenote-ref a:focus-visible {
+  text-decoration: underline;
+}

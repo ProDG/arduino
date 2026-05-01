@@ -1,0 +1,36 @@
+.ui-pinout__legend {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2) var(--space-4);
+}
+
+@media (width >= 768px) {
+  .ui-pinout__legend {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ui-pinout__legend li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.pin-num {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+}
+
+.pin-label {
+  font-family: var(--font-mono);
+}
+
+.pin-role {
+  color: var(--color-ink-muted);
+  font-family: var(--font-ui);
+}
