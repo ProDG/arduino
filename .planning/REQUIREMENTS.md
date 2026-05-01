@@ -79,7 +79,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PAGE-06**: Home page in editorial aesthetic — features the most recent lessons/articles, clear entry points to library and about
 - [ ] **PAGE-07**: About page explains the project's purpose and authorship in editorial prose
 - [ ] **PAGE-08**: 404 page in editorial aesthetic
-- [ ] **PAGE-09**: Routing covers `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`
+- [x] **PAGE-09
+**: Routing covers `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`
 - [ ] **PAGE-10**: `BlockRenderer` component dispatches the `Block` discriminated union to the right primitive
 - [x] **PAGE-11
 **: All pages consume content via `ContentApi` (not direct HTTP) so the mock→Wagtail swap is a single DI configuration change
