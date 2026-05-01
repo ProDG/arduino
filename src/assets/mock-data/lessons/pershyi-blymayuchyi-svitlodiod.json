@@ -1,0 +1,84 @@
+{
+  "type": "lesson",
+  "slug": "pershyi-blymayuchyi-svitlodiod",
+  "title": "Перший блимаючий світлодіод",
+  "deck": "Найпростіша схема, з якої починається кожен курс — світлодіод і пара рядків коду.",
+  "estimatedMinutes": 12,
+  "difficulty": "beginner",
+  "partsList": {
+    "type": "parts-list",
+    "items": [
+      { "name": "Плата Arduino Uno R3", "quantity": 1 },
+      { "name": "Світлодіод", "quantity": 1, "note": "будь-якого кольору" },
+      { "name": "Резистор 220 Ом", "quantity": 1, "note": "діапазон 220–330 Ом" },
+      { "name": "Макетна плата", "quantity": 1 },
+      { "name": "Дроти-перемички", "quantity": 2 }
+    ]
+  },
+  "body": [
+    {
+      "type": "lede",
+      "html": "Плата <strong>Arduino Uno</strong> побудована на мікроконтролері <strong>ATmega328P</strong>. Вбудований світлодіод підʼєднано до цифрового виходу <code>pin 13</code> через резистор — саме тому ми можемо керувати ним <em>без жодних додаткових компонентів</em>."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Що нам знадобиться",
+      "id": "shcho-nam-znadobytsya"
+    },
+    {
+      "type": "paragraph",
+      "html": "У цьому уроці ми зберемо схему на макетній платі та запишемо першу програму. Знадобиться лише пʼять елементів зі стартового набору — нічого, чого не можна було б знайти в міському магазині електроніки."
+    },
+    {
+      "type": "paragraph",
+      "html": "Якщо ти береш Arduino вперше — ґрунтовно прочитай розділ «Безпека» у документації плати: живлення USB безпечне, але коротке замикання на дроті 5 В все ж може спалити порт памʼяті."
+    },
+    {
+      "type": "sidenote",
+      "number": 1,
+      "anchorParagraphIndex": 2,
+      "html": "Якщо в тебе ще немає набору — підійде будь-яка плата серії «Uno»: <strong>R3</strong>, <strong>R4 Minima</strong>, або клон. Інші плати потребуватимуть інших схем живлення."
+    },
+    {
+      "type": "figure",
+      "number": 1,
+      "src": "/assets/mock-data/figures/blymayuchyi-shema.svg",
+      "alt": "Схема: Arduino Uno, світлодіод, резистор 220 Ом",
+      "captionHtml": "Підключення світлодіода до <code>pin 13</code> через обмежувальний резистор.",
+      "fullBleed": false
+    },
+    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
+    {
+      "type": "code",
+      "language": "arduino",
+      "code": "void setup() {\n  pinMode(LED_BUILTIN, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(LED_BUILTIN, HIGH);  // блимаємо світлодіодом\n  delay(1000);\n  digitalWrite(LED_BUILTIN, LOW);\n  delay(1000);\n}\n",
+      "filename": "blink.ino",
+      "showLineNumbers": true,
+      "highlightLines": [7],
+      "diffMode": false,
+      "annotations": [
+        {
+          "line": 2,
+          "html": "Налаштовуємо <code>pin 13</code> як вихід — це робиться один раз при старті."
+        },
+        {
+          "line": 7,
+          "html": "Затримка <code>1000 мс</code> — пауза в одну секунду між перемиканнями."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "html": "Завантаж скетч на плату через <em>Arduino IDE</em> — світлодіод почне блимати з інтервалом 1–2 секунди. Якщо нічого не відбувається, перевір полярність діода: довша ніжка — анод, до «плюса»."
+    },
+    {
+      "type": "aside",
+      "variant": "fact",
+      "html": "Назва «Arduino» походить від кафе у місті Іврея, Італія, де у 2005-му зібралася команда засновників проєкту."
+    }
+  ],
+  "nextSlug": "knopka-ta-pidtyahuvalnyi-rezystor",
+  "publishedAt": "2026-04-15T09:00:00+03:00",
+  "updatedAt": "2026-04-22T11:30:00+03:00"
+}
