@@ -343,3 +343,11 @@ inline (Rule 1 / Rule 2 deviations) before the user gave the approval:
 **Phase 2 typography checklist: ALL PASS.** Phase 2 success criteria
 SC#1, SC#2, SC#3 satisfied; SC#5 (force-en) cross-references the
 audit doc.
+
+---
+
+## Phase 3 — Wagtail Spike
+
+| Date | Wagtail version | code block | figure block | Verdict | Report |
+|---|---|---|---|---|---|
+| 2026-05-02 | 7.3.1 | FAIL (note→html rename in P4) | FAIL (image_src→src rename in P4) | signed-off | wagtail-spike-report.md |
