@@ -1,0 +1,35 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <main main class="lesson-library-page">
+    <header class="lesson-library-page__title-block">
+      <ui-heading [level]="1">Уроки</ui-heading>
+      <ui-lede
+        >Послідовний шлях через мікроконтролери Arduino — українською мовою. Кожен урок калібрований
+        так, щоб його можна було прочитати ввечері за чашкою чаю.</ui-lede
+      >
+    </header>
+
+    @if (sortedLessons().length === 0) {
+    <ui-aside variant="note" class="lesson-library-page__empty">
+      <h2>Уроки готуються</h2>
+      <p>Перші публікації з'являться у наступних фазах. Зазирай знову.</p>
+    </ui-aside>
+    } @else {
+    <ol class="lesson-library-page__toc">
+      @for (lesson of sortedLessons(); track lesson.slug; let i = $index) {
+      <li class="lesson-library-page__row">
+        <span class="lesson-library-page__num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+        <a class="lesson-library-page__title" [routerLink]="['/lessons', lesson.slug]"
+          >{{ lesson.title }}</a
+        >
+        <p class="lesson-library-page__meta">
+          {{ labelDifficulty(lesson.difficulty) }} · ≈ {{ labelMinutes(lesson.estimatedMinutes) }}
+          хв
+        </p>
+      </li>
+      }
+    </ol>
+    }
+  </main>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>
