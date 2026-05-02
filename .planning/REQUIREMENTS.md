@@ -71,7 +71,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Page Templates & Routing
 
-- [ ] **PAGE-01**: Lesson page template — title + deck + parts-list-in-margin + in-page TOC + prose + figures + code blocks + prev/next-lesson navigation
+- [x] **PAGE-01
+**: Lesson page template — title + deck + parts-list-in-margin + in-page TOC + prose + figures + code blocks + prev/next-lesson navigation
 - [ ] **PAGE-02**: Standalone article page template — editorial layout with sidenotes, figures, code; no parts list, no prev/next
 - [ ] **PAGE-03**: Datasheet page template — component metadata block + pinout figure + specifications + peripheral notes prose
 - [ ] **PAGE-04**: Schematic page template — large schematic figure with click-to-zoom, accompanying explanation prose, downloadable image link
