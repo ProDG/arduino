@@ -1,0 +1,56 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <article main class="article-page" [class.article-page--loading]="!article()">
+    @if (article(); as a) {
+    <header class="article-page__title-block">
+      <ui-heading [level]="1">{{ a.title }}</ui-heading>
+      <p class="article-page__meta">{{ metaLine() }}</p>
+      <ui-lede>{{ a.deck }}</ui-lede>
+    </header>
+
+    <ui-two-column class="article-page__body-section">
+      <div body class="article-page__body">
+        @if (headingToc().length > 0) {
+        <nav aria-label="Зміст" class="article-page__toc-inline">
+          <p class="article-page__toc-heading">Зміст</p>
+          <ol class="article-page__toc-list">
+            @for (entry of headingToc(); track entry.id; let i = $index) {
+            <li class="article-page__toc-item">
+              <span class="article-page__toc-num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+              <a [href]="'#' + entry.id">{{ entry.text }}</a>
+            </li>
+            }
+          </ol>
+        </nav>
+        } @for (block of bodyBlocks(); track $index; let i = $index) {
+        <app-block-renderer
+          [block]="block"
+          [isFirstFigure]="block.type === 'figure' && firstFigureIndex() === i"
+        ></app-block-renderer>
+        }
+      </div>
+
+      <div margin class="article-page__margin">
+        @if (headingToc().length > 0) {
+        <nav aria-label="Зміст" class="article-page__toc-margin">
+          <p class="article-page__toc-heading">Зміст</p>
+          <ol class="article-page__toc-list">
+            @for (entry of headingToc(); track entry.id; let i = $index) {
+            <li class="article-page__toc-item">
+              <span class="article-page__toc-num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+              <a [href]="'#' + entry.id">{{ entry.text }}</a>
+            </li>
+            }
+          </ol>
+        </nav>
+        } @for (sn of sidenotes(); track sn.number) {
+        <ui-sidenote [number]="sn.number">
+          <span [innerHTML]="sn.html"></span>
+        </ui-sidenote>
+        }
+      </div>
+    </ui-two-column>
+    }
+  </article>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>

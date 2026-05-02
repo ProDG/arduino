@@ -1,0 +1,96 @@
+.article-page {
+  padding-block: var(--space-6);
+  padding-inline: var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .article-page {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .article-page {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.article-page__title-block {
+  text-align: start;
+  margin-block-end: var(--page-section-gap);
+}
+
+.article-page__meta {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  margin-block: var(--space-2) var(--space-4);
+}
+
+// Inline TOC: visible at <1200px, hidden at ≥1200px
+.article-page__toc-inline {
+  display: block;
+  margin-block-end: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-rule);
+}
+
+@media (width >= 1200px) {
+  .article-page__toc-inline {
+    display: none;
+  }
+}
+
+// Margin TOC: hidden at <1200px (TwoColumn collapses the margin slot anyway)
+.article-page__toc-margin {
+  display: none;
+  margin-block-start: var(--space-7);
+}
+
+@media (width >= 1200px) {
+  .article-page__toc-margin {
+    display: block;
+  }
+}
+
+.article-page__toc-heading {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  font-weight: 600;
+  font-family: var(--font-ui);
+  margin: 0 0 var(--space-2);
+}
+
+.article-page__toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.article-page__toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+
+  a {
+    color: var(--color-ink-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-accent);
+    }
+  }
+}
+
+.article-page__toc-num {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  flex-shrink: 0;
+}
