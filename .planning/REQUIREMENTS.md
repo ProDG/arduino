@@ -73,9 +73,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **PAGE-01
 **: Lesson page template — title + deck + parts-list-in-margin + in-page TOC + prose + figures + code blocks + prev/next-lesson navigation
-- [ ] **PAGE-02**: Standalone article page template — editorial layout with sidenotes, figures, code; no parts list, no prev/next
-- [ ] **PAGE-03**: Datasheet page template — component metadata block + pinout figure + specifications + peripheral notes prose
-- [ ] **PAGE-04**: Schematic page template — large schematic figure with click-to-zoom, accompanying explanation prose, downloadable image link
+- [x] **PAGE-02
+**: Standalone article page template — editorial layout with sidenotes, figures, code; no parts list, no prev/next
+- [x] **PAGE-03
+**: Datasheet page template — component metadata block + pinout figure + specifications + peripheral notes prose
+- [x] **PAGE-04
+**: Schematic page template — large schematic figure with click-to-zoom, accompanying explanation prose, downloadable image link
 - [ ] **PAGE-05**: Lesson library / index page renders as a typographic table-of-contents (NOT a card grid) — visual hierarchy, optional difficulty markers, estimated read time
 - [ ] **PAGE-06**: Home page in editorial aesthetic — features the most recent lessons/articles, clear entry points to library and about
 - [ ] **PAGE-07**: About page explains the project's purpose and authorship in editorial prose
