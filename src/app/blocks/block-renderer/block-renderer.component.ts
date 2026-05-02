@@ -47,14 +47,23 @@ import type { Block } from '../../../content/models/block';
       }
       @case ('figure') {
         <ui-figure [number]="$any(block()).number" [fullBleed]="$any(block()).fullBleed">
-          <img
-            [ngSrc]="$any(block()).src"
-            [width]="$any(block()).width"
-            [height]="$any(block()).height"
-            [alt]="$any(block()).alt"
-            [priority]="isFirstFigure()"
-            [loading]="isFirstFigure() ? 'eager' : 'lazy'"
-          />
+          @if (isFirstFigure()) {
+            <img
+              [ngSrc]="$any(block()).src"
+              [width]="$any(block()).width"
+              [height]="$any(block()).height"
+              [alt]="$any(block()).alt"
+              priority
+            />
+          } @else {
+            <img
+              [ngSrc]="$any(block()).src"
+              [width]="$any(block()).width"
+              [height]="$any(block()).height"
+              [alt]="$any(block()).alt"
+              loading="lazy"
+            />
+          }
           @if ($any(block()).captionHtml) {
             <ui-figure-caption [innerHTML]="$any(block()).captionHtml"></ui-figure-caption>
           }
