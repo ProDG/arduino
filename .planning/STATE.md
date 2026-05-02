@@ -2,14 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-02T09:18:39.729Z"
+status: phase_closed_with_debt
+last_updated: "2026-05-02T09:30:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 22
-  completed_plans: 21
-  percent: 95
+  completed_plans: 22
+  percent: 100
+known_debt:
+  count: 5
+  blocks_milestone_exit: true
+  ids: [KD-01, KD-02, KD-03, KD-04, KD-05]
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -28,18 +32,18 @@ progress:
 
 ## Current Position
 
-Phase: 03 (page-templates-routing-static-build) — EXECUTING
-Plan: 1 of 10
+Phase: 03 (page-templates-routing-static-build) — **CLOSED WITH KNOWN DEBT** (option C)
+Plan: None active
 
 - **Milestone:** v1 (initial release)
-- **Phase:** 02 — Primitives, Two-Column Layout & Page-Model Contract — **COMPLETE**
-- **Next phase:** Phase 3 — Page Templates, Routing & Static Build
+- **Phase:** 03 — Page Templates, Routing & Static Build — **CLOSED 2026-05-02 with known-debt disclaimer**
+- **Next phase:** Phase 4 — Wagtail backend (Docker)
 - **Plan:** None active
-- **Status:** Executing Phase 03
-- **Progress:** [██████████] 95%
+- **Status:** Phase 3 closed; ready to plan Phase 4
+- **Progress:** [█████░░░░░] 3/6 phases
 
 ```
-[██▒▒▒▒▒▒▒▒] 2/6 phases
+[███▒▒▒] 3/6 phases
 ```
 
 ## Phase 1 — Foundation & Typography Gate — closed
@@ -74,11 +78,73 @@ All five Phase 2 success criteria verified PASS. `core-ui` library, layout primi
 
 **Requirements shipped:** PRIM-01..08, LAYOUT-01..05, CONTRACT-01, CONTRACT-03, CONTRACT-04, UKR-02, UKR-03 (18 / 78).
 
+## Phase 3 — Page Templates, Routing & Static Build — closed with known debt
+
+10 plans across 8 waves shipped. All 4 page templates (Lesson, Article, Datasheet, Schematic) plus library/home/about/404/preview-stub built; routes wired with getPrerenderParams; Shiki integrated at build time with line numbers + github-light theme; NgOptimizedImage in Figure/Pinout; CONTRACT-02 Wagtail spike PASS (FE Block model immutable across P3→P4).
+
+**Verifier verdict:** `gaps_found`, 12/17 must-haves verified. Phase closed under **option C** (known-debt disclaimer; gaps roll into milestone-end review). See `03-VERIFICATION.md` for the full report.
+
+| # | Criterion | Evidence |
+|---|-----------|----------|
+| 1 | All 9 page templates render correctly at runtime (manual three-breakpoint walk) | User PASS verdict 2026-05-02; `03-09-SUMMARY.md` |
+| 2 | Build emits pure static `dist/browser/`; no `dist/server/` runtime; no Shiki bytes in client bundle | `03-07-SUMMARY.md`; verifier confirmed |
+| 3 | All 11 routes wired via Angular Router; `/preview/*` is RenderMode.Client | `app.routes.ts`, `app.routes.server.ts` |
+| 4 | CONTRACT-02 — Wagtail 7.3 StreamField spike PASS; FE Block model unchanged | `wagtail-spike-report.md`; CONTRACT-02 closed |
+| 5 | BlockRenderer dispatcher routes all 10 Block variants to core-ui primitives | `block-renderer.component.ts` (PAGE-10) |
+| ~ | **PERF-01..06 SSG meaningful prerender** | ❌ KNOWN DEBT: dynamic-slug pages prerender as empty shells (async ngOnInit not awaited) |
+| ~ | **`<ui-heading>` projection** | ❌ KNOWN DEBT: text-node children not materializing into h1/h2/h3 |
+| ~ | **PERF-04 Lighthouse gate runner** | ❌ KNOWN DEBT: not built (deferred until SSG fix) |
+| ~ | **Audit doc P3 rows** | ❌ KNOWN DEBT: `docs/typography-checklist.md` and `docs/force-en-audit.md` P3 sections empty |
+
+**Commits:** 31 plan commits + 8 inline-fix commits during manual verification + 1 SUMMARY for 03-09 + 1 phase-closure record. Ranges: `61ed000`..`88fc989` for plans 01-08; `c2146b6`..`716b973` for inline fixes; `3ee24cd`..`ffdc96e` for plan 10; `2fdff70` for 03-09 SUMMARY; this commit for closure.
+
+**Requirements shipped:** PAGE-01..11, PAGE-10, CONTRACT-02 (12 / 78). PERF-01..06 deferred to known-debt remediation.
+
+## Known Debt — to remediate before milestone v1.0 ships
+
+These items were explicitly accepted at Phase 3 close (option C). They MUST be remediated before v1.0 ships — they are entries on the milestone-exit checklist, not optional polish.
+
+### KD-01 — Dynamic-slug pages prerender as empty shells (PERF-01..06 functionally unmet)
+
+**What:** Lesson, Article, Datasheet, Schematic, Home, and Lesson-Library pages all use `async ngOnInit` to fetch data via `CONTENT_API`. Angular's prerender does not await `ngOnInit` before snapshotting the DOM, so the static HTML output for `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`, `/`, and `/lessons` contains a `*-loading` empty shell. Pages only render via client-side bootstrap.
+
+**Why this is debt, not a paper cut:** SSG meaningful-prerender is the editorial value of the project per CLAUDE.md ("typography is the product, not decoration"). First-paint UX and SEO indexing both see the empty shell. Visiting `/lessons/x` in a fresh tab flashes blank for ~150-300ms before client-side render fills the article.
+
+**Fix shape:** Migrate each page's data fetch from `async ngOnInit` to an Angular `ResolveFn` (router resolver). Resolvers ARE awaited by Angular's prerender. Touches `app.routes.ts`, `app.routes.server.ts`, plus the 6 page components. ~1-2 plans of focused work.
+
+**Verifier evidence:** `dist/arduino-hub/browser/lessons/pershyi-blymayuchyi-svitlodiod/index.html` contains `<article class="lesson-page lesson-page--loading"><!--container--></article>` with no body content.
+
+### KD-02 — `<ui-heading>` text-node projection silently drops content
+
+**What:** `<ui-heading [level]="N">{{ text }}</ui-heading>` renders as an empty `<h1|h2|h3>` element in prerendered HTML. Lesson page works around with a literal `<h1>`; Article, Datasheet, Schematic, Lesson-Library, About, BlockRenderer-driven `heading` blocks all still use `<ui-heading>` and likely lose their headings during prerender.
+
+**Why this is debt:** Headings are accessibility-critical landmarks. They also drive in-page TOC generation. Empty headings break SEO and screen readers.
+
+**Fix shape:** Investigate `@switch` + `<ng-content>` + Angular SSR projection limitation in `projects/core-ui/src/lib/heading/heading.component.ts`. Likely fix: change input shape to `text = input.required<string>()` and render `{{ text() }}` in the template instead of projecting via `<ng-content>`. Migration is mechanical: rewrite each `<ui-heading>{{ x }}</ui-heading>` callsite to `<ui-heading [text]="x" />`. ~half a plan of work.
+
+### KD-03 — `scripts/lighthouse-lesson.mjs` Lighthouse gate runner not built (PERF-04 unmeasured)
+
+**What:** Plan 03-09 declared this script as a must-have; it was deferred because measuring Lighthouse against an SSG-empty-shell would be misleading.
+
+**Fix shape:** After KD-01 lands, build the runner per the original 03-09 Task 1 spec. Serves `dist/browser` via http-server and runs Lighthouse against `/lessons/pershyi-blymayuchyi-svitlodiod` at desktop + mobile profiles, fails the script on LCP ≥2.5s OR CLS ≥0.1 OR TBT ≥200ms.
+
+### KD-04 — `docs/typography-checklist.md` P3 rows missing
+
+**What:** No P3 three-breakpoint walk rows + no P3 Performance section. The doc currently has P1 and P2 rows only.
+
+**Fix shape:** Append once KD-01 + KD-03 land and provide accurate prerender + LH numbers to record.
+
+### KD-05 — `docs/force-en-audit.md` P3 row missing
+
+**What:** P3 section is a placeholder. No checklist items, no run record row.
+
+**Fix shape:** Run the force-en audit across every P3 route (home, lessons, lessons/:slug, articles/:slug, datasheets/:slug, schematics/:slug, about, /preview/:contentType/:token, 404), populate the row.
+
 ## Performance Metrics
 
-- Phases completed: 2
-- Plans completed: 12
-- Requirements shipped: 32 / 78
+- Phases completed: 3 (with KD-01..05 carried as v1.0-blocking debt)
+- Plans completed: 22 (12 P1+P2 + 10 P3)
+- Requirements shipped: 44 / 78
 
 ## Accumulated Context
 
