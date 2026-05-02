@@ -81,7 +81,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PAGE-08**: 404 page in editorial aesthetic
 - [x] **PAGE-09
 **: Routing covers `/`, `/lessons`, `/lessons/:slug`, `/articles/:slug`, `/datasheets/:slug`, `/schematics/:slug`
-- [ ] **PAGE-10**: `BlockRenderer` component dispatches the `Block` discriminated union to the right primitive
+- [x] **PAGE-10
+**: `BlockRenderer` component dispatches the `Block` discriminated union to the right primitive
 - [x] **PAGE-11
 **: All pages consume content via `ContentApi` (not direct HTTP) so the mock→Wagtail swap is a single DI configuration change
 
