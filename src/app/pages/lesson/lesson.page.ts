@@ -48,6 +48,7 @@ export class LessonPage implements OnInit {
 
   lesson = signal<Lesson | null>(null);
   lessonIndex = signal<{ slug: string; title: string }[]>([]);
+  loadError = signal<boolean>(false);
 
   bodyBlocks = computed(() => {
     const l = this.lesson();
@@ -103,12 +104,19 @@ export class LessonPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const [lesson, index] = await Promise.all([
-      this.api.getLesson(this.slug()),
-      this.api.listLessons(),
-    ]);
-    this.lesson.set(lesson);
-    this.lessonIndex.set(index.map((l) => ({ slug: l.slug, title: l.title })));
-    this.titleService.setTitle(`${lesson.title} — Arduino UA`);
+    try {
+      const [lesson, index] = await Promise.all([
+        this.api.getLesson(this.slug()),
+        this.api.listLessons(),
+      ]);
+      this.lesson.set(lesson);
+      this.lessonIndex.set(index.map((l) => ({ slug: l.slug, title: l.title })));
+      this.titleService.setTitle(`${lesson.title} — Arduino UA`);
+    } catch {
+      // Slug not found. Render inline "not found" state — never throw out of
+      // ngOnInit, an unhandled rejection here kills `ng serve`.
+      this.loadError.set(true);
+      this.titleService.setTitle('Сторінку не знайдено — Arduino UA');
+    }
   }
 }

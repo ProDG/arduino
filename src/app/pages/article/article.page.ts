@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import {
   HeadingComponent,
   LedeComponent,
@@ -28,6 +29,7 @@ import { SiteHeaderComponent } from '../../chrome/site-header.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     PageShellComponent,
     TwoColumnComponent,
     SidenoteComponent,
@@ -46,6 +48,7 @@ export class ArticlePage implements OnInit {
   private readonly titleService = inject(Title);
 
   article = signal<Article | null>(null);
+  loadError = signal<boolean>(false);
 
   bodyBlocks = computed(() => {
     const a = this.article();
@@ -81,8 +84,15 @@ export class ArticlePage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const article = await this.api.getArticle(this.slug());
-    this.article.set(article);
-    this.titleService.setTitle(`${article.title} — Arduino UA`);
+    try {
+      const article = await this.api.getArticle(this.slug());
+      this.article.set(article);
+      this.titleService.setTitle(`${article.title} — Arduino UA`);
+    } catch {
+      // Slug not found (e.g., fixture missing). Render inline "not found" state
+      // instead of throwing — an unhandled rejection here kills `ng serve`.
+      this.loadError.set(true);
+      this.titleService.setTitle('Сторінку не знайдено — Arduino UA');
+    }
   }
 }

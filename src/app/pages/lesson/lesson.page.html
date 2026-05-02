@@ -1,7 +1,12 @@
 <ui-page-shell>
   <app-site-header header></app-site-header>
   <article main class="lesson-page" [class.lesson-page--loading]="!lesson()">
-    @if (lesson(); as l) {
+    @if (loadError()) {
+    <header class="lesson-page__not-found">
+      <h1>Урок не знайдено</h1>
+      <p>Можливо, посилання застаріле. <a routerLink="/lessons">До списку уроків</a>.</p>
+    </header>
+    } @else if (lesson(); as l) {
     <header class="lesson-page__title-block">
       <h1 class="lesson-page__title">{{ l.title }}</h1>
       <p class="lesson-page__meta">{{ metaLine() }}</p>

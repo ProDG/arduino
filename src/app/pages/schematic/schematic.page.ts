@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import {
   HeadingComponent,
   PageShellComponent,
@@ -28,6 +29,7 @@ import { SiteHeaderComponent } from '../../chrome/site-header.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgOptimizedImage,
+    RouterLink,
     PageShellComponent,
     TwoColumnComponent,
     SidenoteComponent,
@@ -45,6 +47,7 @@ export class SchematicPage implements OnInit {
   private readonly titleService = inject(Title);
 
   schematic = signal<Schematic | null>(null);
+  loadError = signal<boolean>(false);
 
   explanationBlocks = computed(() => {
     const s = this.schematic();
@@ -63,8 +66,13 @@ export class SchematicPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const s = await this.api.getSchematic(this.slug());
-    this.schematic.set(s);
-    this.titleService.setTitle(`${s.title} — Arduino UA`);
+    try {
+      const s = await this.api.getSchematic(this.slug());
+      this.schematic.set(s);
+      this.titleService.setTitle(`${s.title} — Arduino UA`);
+    } catch {
+      this.loadError.set(true);
+      this.titleService.setTitle('Сторінку не знайдено — Arduino UA');
+    }
   }
 }

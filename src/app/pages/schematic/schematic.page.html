@@ -1,7 +1,12 @@
 <ui-page-shell>
   <app-site-header header></app-site-header>
   <article main class="schematic-page" [class.schematic-page--loading]="!schematic()">
-    @if (schematic(); as s) {
+    @if (loadError()) {
+    <header class="schematic-page__not-found">
+      <h1>Схему не знайдено</h1>
+      <p>Можливо, посилання застаріле. <a routerLink="/">На головну</a>.</p>
+    </header>
+    } @else if (schematic(); as s) {
     <header class="schematic-page__title-block">
       <ui-heading [level]="1">{{ s.title }}</ui-heading>
     </header>

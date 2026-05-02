@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import {
   HeadingComponent,
   PageShellComponent,
@@ -27,6 +28,7 @@ import { SiteHeaderComponent } from '../../chrome/site-header.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     PageShellComponent,
     TwoColumnComponent,
     SidenoteComponent,
@@ -45,6 +47,7 @@ export class DatasheetPage implements OnInit {
   private readonly titleService = inject(Title);
 
   datasheet = signal<Datasheet | null>(null);
+  loadError = signal<boolean>(false);
 
   peripheralBlocks = computed(() => {
     const d = this.datasheet();
@@ -68,8 +71,13 @@ export class DatasheetPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const d = await this.api.getDatasheet(this.slug());
-    this.datasheet.set(d);
-    this.titleService.setTitle(`${d.title} — Arduino UA`);
+    try {
+      const d = await this.api.getDatasheet(this.slug());
+      this.datasheet.set(d);
+      this.titleService.setTitle(`${d.title} — Arduino UA`);
+    } catch {
+      this.loadError.set(true);
+      this.titleService.setTitle('Сторінку не знайдено — Arduino UA');
+    }
   }
 }

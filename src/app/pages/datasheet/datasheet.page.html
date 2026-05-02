@@ -1,7 +1,12 @@
 <ui-page-shell>
   <app-site-header header></app-site-header>
   <article main class="datasheet-page" [class.datasheet-page--loading]="!datasheet()">
-    @if (datasheet(); as d) {
+    @if (loadError()) {
+    <header class="datasheet-page__not-found">
+      <h1>Datasheet не знайдено</h1>
+      <p>Можливо, посилання застаріле. <a routerLink="/">На головну</a>.</p>
+    </header>
+    } @else if (datasheet(); as d) {
     <header class="datasheet-page__title-block">
       <ui-heading [level]="1">{{ d.title }}</ui-heading>
       <p class="datasheet-page__meta">Виробник: {{ d.manufacturer }}</p>
