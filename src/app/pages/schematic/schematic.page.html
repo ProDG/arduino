@@ -1,0 +1,67 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <article main class="schematic-page" [class.schematic-page--loading]="!schematic()">
+    @if (schematic(); as s) {
+    <header class="schematic-page__title-block">
+      <ui-heading [level]="1">{{ s.title }}</ui-heading>
+    </header>
+
+    <figure class="schematic-page__figure schematic-page__figure--full-bleed">
+      <a
+        class="schematic-page__zoom-link"
+        [href]="s.schematicImage.src"
+        target="_blank"
+        rel="noopener"
+        aria-label="Відкрити схему повного розміру"
+      >
+        <img
+          [ngSrc]="s.schematicImage.src"
+          [width]="s.schematicImage.width"
+          [height]="s.schematicImage.height"
+          [alt]="s.schematicImage.alt"
+          priority
+        />
+      </a>
+    </figure>
+
+    <p class="schematic-page__download">
+      <a class="schematic-page__download-link" [href]="s.downloadUrl" download>
+        <span>Завантажити схему</span>
+        <svg
+          class="schematic-page__download-arrow"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden="true"
+        >
+          <path
+            d="M6 1v8m0 0L2 5m4 4l4-4M2 11h8"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+            stroke-linecap="round"
+          />
+        </svg>
+      </a>
+    </p>
+
+    <section class="schematic-page__explanation">
+      <ui-two-column>
+        <div body>
+          @for (block of explanationBlocks(); track $index) {
+          <app-block-renderer [block]="block"></app-block-renderer>
+          }
+        </div>
+        <div margin>
+          @for (sn of explanationSidenotes(); track sn.number) {
+          <ui-sidenote [number]="sn.number">
+            <span [innerHTML]="sn.html"></span>
+          </ui-sidenote>
+          }
+        </div>
+      </ui-two-column>
+    </section>
+    }
+  </article>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>

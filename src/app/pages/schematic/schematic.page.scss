@@ -1,0 +1,67 @@
+.schematic-page {
+  padding-block: var(--space-6);
+  padding-inline: var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .schematic-page {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .schematic-page {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.schematic-page__title-block {
+  margin-block-end: var(--page-section-gap);
+}
+
+.schematic-page__figure {
+  margin: 0 0 var(--space-4);
+}
+
+.schematic-page__figure--full-bleed {
+  @media (width >= 1200px) {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    max-width: none;
+  }
+}
+
+.schematic-page__zoom-link {
+  display: block;
+  cursor: zoom-in;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.schematic-page__download {
+  margin-block: var(--space-4) var(--page-section-gap);
+}
+
+.schematic-page__download-link {
+  color: var(--color-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-caption);
+  text-decoration: underline solid var(--color-accent) 0.04em;
+  text-underline-offset: 0.18em;
+
+  &:hover {
+    text-decoration-thickness: 0.12em;
+  }
+}
+
+.schematic-page__download-arrow {
+  color: var(--color-accent);
+}
