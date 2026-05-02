@@ -19,16 +19,22 @@
 
 .lesson-page__title-block {
   text-align: start;
-  margin-block-end: var(--page-section-gap);
+  margin-block-end: var(--space-7);
+}
+
+.lesson-page__title {
+  margin: 0;
 }
 
 .lesson-page__meta {
   font-size: var(--text-caption);
   color: var(--color-ink-muted);
-  margin-block: var(--space-2) var(--space-4);
+  margin-block: var(--space-3) var(--space-5);
 }
 
-// Mobile-only inline parts list: visible at <768px, hidden at ≥768px
+// Inline parts list: visible at <1200px (mobile + tablet), hidden at >=1200px
+// where it relocates to the margin rail. Aligns with the inline-vs-margin TOC
+// boundary just below.
 .lesson-page__parts-list-mobile {
   display: block;
   border-left: 3px solid var(--color-rule);
@@ -36,7 +42,7 @@
   margin-block-end: var(--space-6);
 }
 
-@media (width >= 768px) {
+@media (width >= 1200px) {
   .lesson-page__parts-list-mobile {
     display: none;
   }

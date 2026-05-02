@@ -10,7 +10,6 @@ import {
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import {
-  HeadingComponent,
   LedeComponent,
   PageShellComponent,
   SidenoteComponent,
@@ -34,7 +33,6 @@ import { SiteHeaderComponent } from '../../chrome/site-header.component';
     PageShellComponent,
     TwoColumnComponent,
     SidenoteComponent,
-    HeadingComponent,
     LedeComponent,
     SiteHeaderComponent,
     SiteFooterComponent,

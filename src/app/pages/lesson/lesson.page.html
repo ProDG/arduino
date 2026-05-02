@@ -3,7 +3,7 @@
   <article main class="lesson-page" [class.lesson-page--loading]="!lesson()">
     @if (lesson(); as l) {
     <header class="lesson-page__title-block">
-      <ui-heading [level]="1">{{ l.title }}</ui-heading>
+      <h1 class="lesson-page__title">{{ l.title }}</h1>
       <p class="lesson-page__meta">{{ metaLine() }}</p>
       <ui-lede>{{ l.deck }}</ui-lede>
     </header>
