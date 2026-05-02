@@ -8,32 +8,16 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      {
-        "name": "Плата Arduino Uno R3",
-        "quantity": 1
-      },
+      { "name": "Плата Arduino Uno R3", "quantity": 1 },
       {
         "name": "Потенціометр 10 кОм",
         "quantity": 1,
         "note": "лінійний, поворотний"
       },
-      {
-        "name": "Світлодіод",
-        "quantity": 1,
-        "note": "будь-якого кольору"
-      },
-      {
-        "name": "Резистор 220 Ом",
-        "quantity": 1
-      },
-      {
-        "name": "Макетна плата",
-        "quantity": 1
-      },
-      {
-        "name": "Дроти-перемички",
-        "quantity": 5
-      }
+      { "name": "Світлодіод", "quantity": 1, "note": "будь-якого кольору" },
+      { "name": "Резистор 220 Ом", "quantity": 1 },
+      { "name": "Макетна плата", "quantity": 1 },
+      { "name": "Дроти-перемички", "quantity": 5 }
     ]
   },
   "body": [
@@ -71,12 +55,7 @@
       "width": 800,
       "height": 500
     },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Код",
-      "id": "kod"
-    },
+    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
     {
       "type": "code",
       "language": "arduino",
@@ -94,7 +73,8 @@
           "line": 10,
           "html": "Функція <code>map()</code> лінійно масштабує діапазон. Тут — з 1024 рівнів АЦП у 256 рівнів ШІМ."
         }
-      ]
+      ],
+      "tokens": "<pre class=\"shiki arduino-paper\" style=\"background-color:#faf8f3;color:#1a1a1a\" tabindex=\"0\"><code><span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">const</span><span style=\"color:#1A1A1A;font-weight:bold\"> int</span><span style=\"color:#1A1A1A\"> POT_PIN </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A\"> A0;</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">const</span><span style=\"color:#1A1A1A;font-weight:bold\"> int</span><span style=\"color:#1A1A1A\"> LED_PIN </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A;font-style:italic\"> 9</span><span style=\"color:#1A1A1A\">;</span><span style=\"color:#1A1A1A;font-style:italic\">   //</span><span style=\"color:#5C5C5C;font-style:italic\"> має позначку ~ — підтримує analogWrite</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> setup() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  pinMode(LED_PIN, OUTPUT);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> loop() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">  int</span><span style=\"color:#1A1A1A\"> raw       </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A\"> analogRead(POT_PIN);</span><span style=\"color:#1A1A1A;font-style:italic\">          //</span><span style=\"color:#5C5C5C;font-style:italic\"> 0..1023</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">  int</span><span style=\"color:#1A1A1A\"> brightness </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A\"> map(raw, </span><span style=\"color:#1A1A1A;font-style:italic\">0</span><span style=\"color:#1A1A1A\">, </span><span style=\"color:#1A1A1A;font-style:italic\">1023</span><span style=\"color:#1A1A1A\">, </span><span style=\"color:#1A1A1A;font-style:italic\">0</span><span style=\"color:#1A1A1A\">, </span><span style=\"color:#1A1A1A;font-style:italic\">255</span><span style=\"color:#1A1A1A\">);</span><span style=\"color:#1A1A1A;font-style:italic\">   //</span><span style=\"color:#5C5C5C;font-style:italic\"> 0..255 для analogWrite</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  analogWrite(LED_PIN, brightness);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  delay(</span><span style=\"color:#1A1A1A;font-style:italic\">5</span><span style=\"color:#1A1A1A\">);</span><span style=\"color:#1A1A1A;font-style:italic\">                                     //</span><span style=\"color:#5C5C5C;font-style:italic\"> згладжуємо тремтіння АЦП</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span></code></pre>"
     },
     {
       "type": "aside",

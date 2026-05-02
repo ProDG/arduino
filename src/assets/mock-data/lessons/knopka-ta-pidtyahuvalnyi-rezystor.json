@@ -8,36 +8,17 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      {
-        "name": "Плата Arduino Uno R3",
-        "quantity": 1
-      },
-      {
-        "name": "Тактова кнопка",
-        "quantity": 1,
-        "note": "звичайна 4-пінова"
-      },
+      { "name": "Плата Arduino Uno R3", "quantity": 1 },
+      { "name": "Тактова кнопка", "quantity": 1, "note": "звичайна 4-пінова" },
       {
         "name": "Резистор 10 кОм",
         "quantity": 1,
         "note": "діапазон 4,7–22 кОм"
       },
-      {
-        "name": "Світлодіод",
-        "quantity": 1
-      },
-      {
-        "name": "Резистор 220 Ом",
-        "quantity": 1
-      },
-      {
-        "name": "Макетна плата",
-        "quantity": 1
-      },
-      {
-        "name": "Дроти-перемички",
-        "quantity": 5
-      }
+      { "name": "Світлодіод", "quantity": 1 },
+      { "name": "Резистор 220 Ом", "quantity": 1 },
+      { "name": "Макетна плата", "quantity": 1 },
+      { "name": "Дроти-перемички", "quantity": 5 }
     ]
   },
   "body": [
@@ -75,12 +56,7 @@
       "width": 800,
       "height": 500
     },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Код",
-      "id": "kod"
-    },
+    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
     {
       "type": "code",
       "language": "arduino",
@@ -98,7 +74,8 @@
           "line": 12,
           "html": "Тернарний вираз: при <code>LOW</code> вмикаємо діод, інакше гасимо. Коротше за <code>if/else</code>."
         }
-      ]
+      ],
+      "tokens": "<pre class=\"shiki arduino-paper\" style=\"background-color:#faf8f3;color:#1a1a1a\" tabindex=\"0\"><code><span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">const</span><span style=\"color:#1A1A1A;font-weight:bold\"> int</span><span style=\"color:#1A1A1A\"> BUTTON_PIN </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A;font-style:italic\"> 2</span><span style=\"color:#1A1A1A\">;</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">const</span><span style=\"color:#1A1A1A;font-weight:bold\"> int</span><span style=\"color:#1A1A1A\"> LED_PIN    </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A;font-style:italic\"> 13</span><span style=\"color:#1A1A1A\">;</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> setup() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  pinMode(BUTTON_PIN, INPUT);</span><span style=\"color:#1A1A1A;font-style:italic\">   //</span><span style=\"color:#5C5C5C;font-style:italic\"> зовнішній підтягувальний резистор 10 кОм</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  pinMode(LED_PIN,    OUTPUT);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> loop() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">  int</span><span style=\"color:#1A1A1A\"> state </span><span style=\"color:#1A1A1A;font-weight:bold\">=</span><span style=\"color:#1A1A1A\"> digitalRead(BUTTON_PIN);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-style:italic\">  //</span><span style=\"color:#5C5C5C;font-style:italic\"> натиск замикає вхід на землю -> читаємо LOW</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  digitalWrite(LED_PIN, state </span><span style=\"color:#1A1A1A;font-weight:bold\">==</span><span style=\"color:#1A1A1A\"> LOW </span><span style=\"color:#1A1A1A;font-weight:bold\">?</span><span style=\"color:#1A1A1A\"> HIGH </span><span style=\"color:#1A1A1A;font-weight:bold\">:</span><span style=\"color:#1A1A1A\"> LOW);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span></code></pre>"
     },
     {
       "type": "aside",

@@ -1,0 +1,42 @@
+{
+  "name": "arduino-paper",
+  "type": "light",
+  "colors": {
+    "editor.background": "#faf8f3",
+    "editor.foreground": "#1a1a1a"
+  },
+  "tokenColors": [
+    {
+      "scope": ["comment", "comment.line", "comment.block"],
+      "settings": { "foreground": "#5c5c5c", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["keyword", "storage.type", "storage.modifier"],
+      "settings": { "foreground": "#1a1a1a", "fontStyle": "bold" }
+    },
+    {
+      "scope": ["string", "string.quoted"],
+      "settings": { "foreground": "#1a1a1a" }
+    },
+    {
+      "scope": ["constant.numeric", "constant.language"],
+      "settings": { "foreground": "#1a1a1a", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["entity.name.type", "support.type"],
+      "settings": { "foreground": "#1a1a1a", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["entity.name.function"],
+      "settings": { "foreground": "#1a1a1a" }
+    },
+    {
+      "scope": ["variable", "variable.parameter"],
+      "settings": { "foreground": "#1a1a1a" }
+    },
+    {
+      "scope": ["punctuation", "meta.brace"],
+      "settings": { "foreground": "#1a1a1a" }
+    }
+  ]
+}

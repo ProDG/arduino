@@ -8,28 +8,15 @@
   "partsList": {
     "type": "parts-list",
     "items": [
-      {
-        "name": "Плата Arduino Uno R3",
-        "quantity": 1
-      },
-      {
-        "name": "Світлодіод",
-        "quantity": 1,
-        "note": "будь-якого кольору"
-      },
+      { "name": "Плата Arduino Uno R3", "quantity": 1 },
+      { "name": "Світлодіод", "quantity": 1, "note": "будь-якого кольору" },
       {
         "name": "Резистор 220 Ом",
         "quantity": 1,
         "note": "діапазон 220–330 Ом"
       },
-      {
-        "name": "Макетна плата",
-        "quantity": 1
-      },
-      {
-        "name": "Дроти-перемички",
-        "quantity": 2
-      }
+      { "name": "Макетна плата", "quantity": 1 },
+      { "name": "Дроти-перемички", "quantity": 2 }
     ]
   },
   "body": [
@@ -67,12 +54,7 @@
       "width": 800,
       "height": 500
     },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Код",
-      "id": "kod"
-    },
+    { "type": "heading", "level": 2, "text": "Код", "id": "kod" },
     {
       "type": "code",
       "language": "arduino",
@@ -90,7 +72,8 @@
           "line": 7,
           "html": "Затримка <code>1000 мс</code> — пауза в одну секунду між перемиканнями."
         }
-      ]
+      ],
+      "tokens": "<pre class=\"shiki arduino-paper\" style=\"background-color:#faf8f3;color:#1a1a1a\" tabindex=\"0\"><code><span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> setup() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  pinMode(LED_BUILTIN, OUTPUT);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#1A1A1A;font-weight:bold\">void</span><span style=\"color:#1A1A1A\"> loop() {</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  digitalWrite(LED_BUILTIN, HIGH);</span><span style=\"color:#1A1A1A;font-style:italic\">  //</span><span style=\"color:#5C5C5C;font-style:italic\"> блимаємо світлодіодом</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  delay(</span><span style=\"color:#1A1A1A;font-style:italic\">1000</span><span style=\"color:#1A1A1A\">);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  digitalWrite(LED_BUILTIN, LOW);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">  delay(</span><span style=\"color:#1A1A1A;font-style:italic\">1000</span><span style=\"color:#1A1A1A\">);</span></span>\n<span class=\"line\"><span style=\"color:#1A1A1A\">}</span></span>\n<span class=\"line\"></span></code></pre>"
     },
     {
       "type": "paragraph",

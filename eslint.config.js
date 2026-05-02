@@ -52,6 +52,29 @@ export default tseslint.config(
       'no-restricted-syntax': ['error', ...NO_BARE_LOCALE_FORMATTERS],
     },
   },
+  // PRIM-04 / D-SHIKI-04 — Shiki must NOT be imported from src/**. Build-time only.
+  // Tokenization happens in scripts/tokenize-fixtures.mjs; no Shiki bytes in the client bundle.
+  {
+    files: ['src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'shiki',
+              message:
+                'Shiki must NOT be imported from src/. Use scripts/tokenize-fixtures.mjs at build time. PRIM-04 prohibits client-side highlighting JS.',
+            },
+            {
+              name: '@shikijs/transformers',
+              message: 'See shiki rule — build-time only.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
