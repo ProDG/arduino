@@ -1,0 +1,46 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <article main class="datasheet-page" [class.datasheet-page--loading]="!datasheet()">
+    @if (datasheet(); as d) {
+    <header class="datasheet-page__title-block">
+      <ui-heading [level]="1">{{ d.title }}</ui-heading>
+      <p class="datasheet-page__meta">Виробник: {{ d.manufacturer }}</p>
+    </header>
+
+    <section class="datasheet-page__pinout">
+      <ui-pinout [src]="d.pinout.src" [alt]="d.pinout.alt" [pins]="d.pinout.pins"></ui-pinout>
+    </section>
+
+    <section class="datasheet-page__specs">
+      <h2>Характеристики</h2>
+      <dl class="datasheet-page__spec-list">
+        @for (spec of d.specifications; track spec.label) {
+        <div class="datasheet-page__spec-row">
+          <dt>{{ spec.label }}</dt>
+          <dd>{{ spec.value }}</dd>
+        </div>
+        }
+      </dl>
+    </section>
+
+    <section class="datasheet-page__peripheral">
+      <h2>Периферія</h2>
+      <ui-two-column>
+        <div body>
+          @for (block of peripheralBlocks(); track $index) {
+          <app-block-renderer [block]="block"></app-block-renderer>
+          }
+        </div>
+        <div margin>
+          @for (sn of peripheralSidenotes(); track sn.number) {
+          <ui-sidenote [number]="sn.number">
+            <span [innerHTML]="sn.html"></span>
+          </ui-sidenote>
+          }
+        </div>
+      </ui-two-column>
+    </section>
+    }
+  </article>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>
