@@ -1,0 +1,15 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <main main class="not-found-page">
+    <div class="not-found-page__inner">
+      <ui-heading [level]="1" class="not-found-page__numeral">404</ui-heading>
+      <hr class="not-found-page__rule" aria-hidden="true" />
+      <ui-lede>Цієї сторінки немає. Можливо, її ще не написано — або адреса змінилась.</ui-lede>
+      <p class="not-found-page__body">
+        Спробуй <a [routerLink]="['/lessons']">повернутися до уроків</a> або
+        <a [routerLink]="['/']">на головну</a>.
+      </p>
+    </div>
+  </main>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>

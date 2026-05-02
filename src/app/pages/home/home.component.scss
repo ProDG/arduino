@@ -1,5 +1,111 @@
-.home {
-  min-height: 100vh;
+.home-page {
+  padding: var(--space-6) var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .home-page {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .home-page {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.home-page__hero {
+  margin-block-end: var(--page-section-gap);
+}
+
+.home-page__section {
+  margin-block-end: var(--page-section-gap);
+}
+
+.home-page__section-heading {
+  font-size: var(--text-h2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-block-end: var(--space-5);
+}
+
+.home-page__toc {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lesson-row-gap);
+  max-width: var(--measure-prose);
+}
+
+.home-page__row {
   display: grid;
-  place-content: center;
+  grid-template-areas:
+    'num title'
+    '. meta';
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-3);
+  padding-block-start: var(--space-3);
+  border-block-start: 1px solid var(--color-rule);
+}
+
+.home-page__row:first-child {
+  border-block-start: none;
+  padding-block-start: 0;
+}
+
+.home-page__num {
+  grid-area: num;
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--text-h3);
+  line-height: 1;
+}
+
+.home-page__title {
+  grid-area: title;
+  font-size: var(--text-h3);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-decoration: underline solid var(--color-accent) 0.04em;
+  text-underline-offset: 0.18em;
+}
+
+.home-page__title:hover {
+  text-decoration-thickness: 0.12em;
+}
+
+.home-page__meta {
+  grid-area: meta;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+.home-page__all-link {
+  margin-block-start: var(--space-4);
+  font-size: var(--text-caption);
+  max-width: var(--measure-prose);
+}
+
+.home-page__all-link a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.home-page__all-link a:hover {
+  text-decoration: underline;
+}
+
+.home-page__entry-points {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  max-width: var(--measure-prose);
+  margin: 0;
 }

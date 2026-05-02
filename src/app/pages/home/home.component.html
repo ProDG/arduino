@@ -1,12 +1,54 @@
-<article class="home">
-  <h1>Arduino UA</h1>
-  <p class="lede">Українська онлайн-книга про Arduino. У розробці.</p>
-  <p>
-    Фундамент готовий: типографіка, шрифти, локаль, токени. Подальші розділи з'являться у наступних
-    фазах.
-  </p>
-  <p>
-    Перевірка типографіки та кириличного покриття:
-    <a href="/dev/glyph-audit">/dev/glyph-audit</a>.
-  </p>
-</article>
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <main main class="home-page">
+    <header class="home-page__hero">
+      <ui-heading [level]="1">Arduino UA</ui-heading>
+      <ui-lede
+        >Українська онлайн-книга про Arduino. Лекції, статті, схеми та довідники — у книжковій
+        верстці.</ui-lede
+      >
+    </header>
+
+    <section class="home-page__section">
+      <h2 class="home-page__section-heading">Останні уроки</h2>
+      <ol class="home-page__toc">
+        @for (lesson of recentLessons(); track lesson.slug; let i = $index) {
+          <li class="home-page__row">
+            <span class="home-page__num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+            <a class="home-page__title" [routerLink]="['/lessons', lesson.slug]">{{
+              lesson.title
+            }}</a>
+            <p class="home-page__meta">
+              {{ labelDifficulty(lesson.difficulty) }} · ≈
+              {{ labelMinutes(lesson.estimatedMinutes) }} хв
+            </p>
+          </li>
+        }
+      </ol>
+      <p class="home-page__all-link">
+        <a [routerLink]="['/lessons']">Усі уроки →</a>
+      </p>
+    </section>
+
+    <section class="home-page__section">
+      <h2 class="home-page__section-heading">Статті</h2>
+      <ol class="home-page__toc">
+        @for (article of recentArticles(); track article.slug; let i = $index) {
+          <li class="home-page__row">
+            <span class="home-page__num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+            <a class="home-page__title" [routerLink]="['/articles', article.slug]">{{
+              article.title
+            }}</a>
+            <p class="home-page__meta">{{ labelDate(article.publishedAt) }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <p class="home-page__entry-points">
+      Почни з <a [routerLink]="['/lessons']">Уроки</a> або прочитай
+      <a [routerLink]="['/about']">про проєкт</a>.
+    </p>
+  </main>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>

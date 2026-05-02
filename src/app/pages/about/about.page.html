@@ -1,0 +1,15 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <article main class="about-page">
+    <header class="about-page__title-block">
+      <ui-heading [level]="1">Про проєкт</ui-heading>
+      <ui-lede>Чому існує цей сайт, як він зроблений і куди рухається.</ui-lede>
+    </header>
+    <div class="about-page__body">
+      @for (p of prose; track $index) {
+      <p class="about-page__para" [innerHTML]="p.html"></p>
+      }
+    </div>
+  </article>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>

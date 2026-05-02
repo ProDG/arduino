@@ -1,0 +1,37 @@
+.not-found-page {
+  min-height: calc(100vh - 200px);
+  display: grid;
+  place-content: center;
+  padding-inline: var(--container-pad-mobile);
+}
+
+@media (width >= 768px) {
+  .not-found-page {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .not-found-page {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.not-found-page__inner {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+.not-found-page__rule {
+  border: 0;
+  border-block-start: 2px solid var(--color-accent);
+  margin-block: var(--space-3) var(--space-5);
+  width: 100%;
+}
+
+.not-found-page__body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  margin: 0;
+  margin-block-start: var(--space-4);
+}
