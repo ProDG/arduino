@@ -11,6 +11,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { computeSidenoteStack } from '../two-column/measure';
 
 type CopyState = 'rest' | 'copied' | 'failed';
@@ -32,8 +33,8 @@ interface Line {
         <figcaption class="code-block__filename">{{ fn }}</figcaption>
       }
       <div class="code-block__frame" [attr.data-mode]="mode()">
-        @if (tokens()) {
-          <div class="code-block__shiki" [innerHTML]="tokens()"></div>
+        @if (tokensSafe()) {
+          <div class="code-block__shiki" [innerHTML]="tokensSafe()"></div>
         } @else {
           <pre
             class="code-block__pre"
@@ -133,9 +134,19 @@ export class CodeBlockComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly copyState = signal<CopyState>('rest');
   readonly mode = signal<Mode>('mobile');
+
+  // Shiki tokens contain inline `style="color:#..."` on every span, which
+  // Angular's HTML sanitizer strips by default — so colors disappear when
+  // injected via [innerHTML]. Tokens are produced at build time by our own
+  // tokenize-fixtures.mjs script, so bypassing sanitization is safe.
+  readonly tokensSafe = computed<SafeHtml | undefined>(() => {
+    const t = this.tokens();
+    return t ? this.sanitizer.bypassSecurityTrustHtml(t) : undefined;
+  });
 
   readonly copyLabel = computed(() => {
     switch (this.copyState()) {
