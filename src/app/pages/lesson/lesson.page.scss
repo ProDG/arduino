@@ -1,0 +1,202 @@
+.lesson-page {
+  padding-block: var(--space-6);
+  padding-inline: var(--container-pad-mobile);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+@media (width >= 768px) {
+  .lesson-page {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (width >= 1200px) {
+  .lesson-page {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.lesson-page__title-block {
+  text-align: start;
+  margin-block-end: var(--page-section-gap);
+}
+
+.lesson-page__meta {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  margin-block: var(--space-2) var(--space-4);
+}
+
+// Mobile-only inline parts list: visible at <768px, hidden at ≥768px
+.lesson-page__parts-list-mobile {
+  display: block;
+  border-left: 3px solid var(--color-rule);
+  padding: var(--space-3) var(--space-4);
+  margin-block-end: var(--space-6);
+}
+
+@media (width >= 768px) {
+  .lesson-page__parts-list-mobile {
+    display: none;
+  }
+}
+
+.lesson-page__parts-list-heading {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  font-weight: 600;
+  font-family: var(--font-ui);
+  margin: 0 0 var(--space-2);
+}
+
+.lesson-page__parts-list-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lesson-page__parts-list-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+
+.lesson-page__parts-qty {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.lesson-page__parts-name {
+  color: var(--color-ink);
+}
+
+.lesson-page__parts-note {
+  display: block;
+  width: 100%;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  margin-block-start: var(--space-1);
+}
+
+// Margin variant parts list (desktop, inside margin slot)
+.lesson-page__parts-list {
+  margin-block-end: var(--space-7);
+}
+
+// Inline TOC: visible at <1200px, hidden at ≥1200px
+.lesson-page__toc-inline {
+  display: block;
+  margin-block-end: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-rule);
+}
+
+@media (width >= 1200px) {
+  .lesson-page__toc-inline {
+    display: none;
+  }
+}
+
+// Margin TOC: hidden at <1200px (belt-and-braces; TwoColumn collapses the margin slot anyway)
+.lesson-page__toc-margin {
+  display: none;
+  margin-block-start: var(--space-7);
+}
+
+@media (width >= 1200px) {
+  .lesson-page__toc-margin {
+    display: block;
+  }
+}
+
+.lesson-page__toc-heading {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  font-weight: 600;
+  font-family: var(--font-ui);
+  margin: 0 0 var(--space-2);
+}
+
+.lesson-page__toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.lesson-page__toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+
+  a {
+    color: var(--color-ink-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-accent);
+    }
+  }
+}
+
+.lesson-page__toc-num {
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+// Prev/next navigation row
+.lesson-page__prev-next {
+  margin-block-start: var(--page-section-gap);
+  padding-block-start: var(--space-6);
+  border-top: 1px solid var(--color-rule);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (width >= 768px) {
+  .lesson-page__prev-next {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lesson-page__nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-decoration: none;
+}
+
+.lesson-page__nav-link--next {
+  text-align: end;
+}
+
+.lesson-page__nav-label {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+}
+
+.lesson-page__nav-title {
+  font-size: var(--text-body);
+  color: var(--color-ink);
+  text-decoration: underline solid var(--color-accent) 0.04em;
+  text-underline-offset: 0.18em;
+}
+
+.lesson-page__nav-link:hover .lesson-page__nav-title {
+  text-decoration-thickness: 0.12em;
+}

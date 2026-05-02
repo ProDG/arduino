@@ -1,0 +1,109 @@
+<ui-page-shell>
+  <app-site-header header></app-site-header>
+  <article main class="lesson-page" [class.lesson-page--loading]="!lesson()">
+    @if (lesson(); as l) {
+    <header class="lesson-page__title-block">
+      <ui-heading [level]="1">{{ l.title }}</ui-heading>
+      <p class="lesson-page__meta">{{ metaLine() }}</p>
+      <ui-lede>{{ l.deck }}</ui-lede>
+    </header>
+
+    @if (partsList()) {
+    <aside class="lesson-page__parts-list-mobile" aria-label="Що знадобиться">
+      <h2 class="lesson-page__parts-list-heading">Що знадобиться</h2>
+      <ul role="list" class="lesson-page__parts-list-items">
+        @for (item of partsList()!.items; track item.name) {
+        <li class="lesson-page__parts-list-item">
+          <span class="lesson-page__parts-qty">{{ item.quantity }}×</span>
+          <span class="lesson-page__parts-name">{{ item.name }}</span>
+          @if (item.note) {
+          <span class="lesson-page__parts-note">{{ item.note }}</span>
+          }
+        </li>
+        }
+      </ul>
+    </aside>
+    }
+
+    <ui-two-column class="lesson-page__body-section">
+      <div body class="lesson-page__body">
+        @if (headingToc().length > 0) {
+        <nav aria-label="Зміст" class="lesson-page__toc-inline">
+          <p class="lesson-page__toc-heading">Зміст</p>
+          <ol class="lesson-page__toc-list">
+            @for (entry of headingToc(); track entry.id; let i = $index) {
+            <li class="lesson-page__toc-item">
+              <span class="lesson-page__toc-num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+              <a [href]="'#' + entry.id">{{ entry.text }}</a>
+            </li>
+            }
+          </ol>
+        </nav>
+        } @for (block of bodyBlocks(); track $index; let i = $index) {
+        <app-block-renderer
+          [block]="block"
+          [isFirstFigure]="block.type === 'figure' && firstFigureIndex() === i"
+        ></app-block-renderer>
+        }
+      </div>
+
+      <div margin class="lesson-page__margin">
+        @if (partsList()) {
+        <section class="lesson-page__parts-list" aria-labelledby="parts-list-heading">
+          <h2 id="parts-list-heading" class="lesson-page__parts-list-heading">Що знадобиться</h2>
+          <ul role="list" class="lesson-page__parts-list-items">
+            @for (item of partsList()!.items; track item.name) {
+            <li class="lesson-page__parts-list-item">
+              <span class="lesson-page__parts-qty">{{ item.quantity }}×</span>
+              <span class="lesson-page__parts-name">{{ item.name }}</span>
+              @if (item.note) {
+              <span class="lesson-page__parts-note">{{ item.note }}</span>
+              }
+            </li>
+            }
+          </ul>
+        </section>
+        } @if (headingToc().length > 0) {
+        <nav aria-label="Зміст" class="lesson-page__toc-margin">
+          <p class="lesson-page__toc-heading">Зміст</p>
+          <ol class="lesson-page__toc-list">
+            @for (entry of headingToc(); track entry.id; let i = $index) {
+            <li class="lesson-page__toc-item">
+              <span class="lesson-page__toc-num">{{ (i + 1).toString().padStart(2, '0') }}.</span>
+              <a [href]="'#' + entry.id">{{ entry.text }}</a>
+            </li>
+            }
+          </ol>
+        </nav>
+        } @for (sn of sidenotes(); track sn.number) {
+        <ui-sidenote [number]="sn.number">
+          <span [innerHTML]="sn.html"></span>
+        </ui-sidenote>
+        }
+      </div>
+    </ui-two-column>
+
+    @if (l.prevSlug || l.nextSlug) {
+    <nav class="lesson-page__prev-next" aria-label="Навігація між уроками">
+      @if (l.prevSlug) {
+      <a
+        class="lesson-page__nav-link lesson-page__nav-link--prev"
+        [routerLink]="['/lessons', l.prevSlug]"
+      >
+        <span class="lesson-page__nav-label">← Попередній урок</span>
+        <span class="lesson-page__nav-title">{{ prevLessonTitle() }}</span>
+      </a>
+      } @if (l.nextSlug) {
+      <a
+        class="lesson-page__nav-link lesson-page__nav-link--next"
+        [routerLink]="['/lessons', l.nextSlug]"
+      >
+        <span class="lesson-page__nav-label">Наступний урок →</span>
+        <span class="lesson-page__nav-title">{{ nextLessonTitle() }}</span>
+      </a>
+      }
+    </nav>
+    } }
+  </article>
+  <app-site-footer footer></app-site-footer>
+</ui-page-shell>
