@@ -2,18 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_closed_with_debt
-last_updated: "2026-05-02T09:30:00.000Z"
+status: planning
+last_updated: "2026-05-02T10:07:27.990Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 22
   completed_plans: 22
   percent: 100
-known_debt:
-  count: 5
-  blocks_milestone_exit: true
-  ids: [KD-01, KD-02, KD-03, KD-04, KD-05]
 ---
 
 # State: Arduino Learning Hub (Ukrainian)
@@ -207,7 +203,7 @@ These items were explicitly accepted at Phase 3 close (option C). They MUST be r
 
 ## Session Continuity
 
-- **Last session:** 2026-05-02T09:18:39.724Z
+- **Last session:** --stopped-at
 - **Files just written:** `03-03-SUMMARY.md`, `vitest.config.ts`, `vitest.setup.ts`, `src/lib/difficulty.ts`, `src/app/blocks/block-renderer/block-renderer.component.ts`
 - **Next action:** Execute Plan 03-04 — LessonPage template.
 
