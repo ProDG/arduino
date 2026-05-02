@@ -75,6 +75,28 @@
   background: var(--color-highlight);
 }
 
+/* Shiki-tokenized path: injected <pre class="shiki"> inherits base pre styles
+   but we override font, bg, and keyword weight for editorial consistency.
+   ::ng-deep pierces Angular's view encapsulation to reach [innerHTML] content. */
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+.code-block__shiki ::ng-deep .shiki {
+  font-family: var(--font-mono);
+  background-color: var(--color-paper) !important;
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-1);
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+/* Keyword weight: TM bold = font-weight:700; editorial spec wants 600. */
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+.code-block__shiki ::ng-deep .shiki span[style*='font-weight: bold'],
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+.code-block__shiki ::ng-deep .shiki span[style*='font-weight:bold'] {
+  font-weight: 600;
+}
+
 .code-block__copy {
   position: absolute;
   top: var(--space-2);

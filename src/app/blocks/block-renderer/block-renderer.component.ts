@@ -79,6 +79,8 @@ import type { Block } from '../../../content/models/block';
         <ui-pinout
           [src]="$any(block()).src"
           [alt]="$any(block()).alt"
+          [width]="$any(block()).width"
+          [height]="$any(block()).height"
           [pins]="$any(block()).pins"
         ></ui-pinout>
       }

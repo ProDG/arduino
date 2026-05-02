@@ -32,16 +32,20 @@ interface Line {
         <figcaption class="code-block__filename">{{ fn }}</figcaption>
       }
       <div class="code-block__frame" [attr.data-mode]="mode()">
-        <pre
-          class="code-block__pre"
-          [class.code-block__pre--no-gutter]="!showLineNumbers()"
-        ><code>@for (line of lines(); track line.num) {<span
-              class="code-line"
-              [class.code-line--added]="line.kind === 'added'"
-              [class.code-line--removed]="line.kind === 'removed'"
-              [class.code-line--highlighted]="isHighlighted(line.num)"
-            >@if (showLineNumbers()) {<span class="code-line__num">{{ line.num }}</span>}@if (line.kind === 'added') {<span class="code-line__diff-glyph code-line__diff-glyph--add">+</span>} @else if (line.kind === 'removed') {<span class="code-line__diff-glyph code-line__diff-glyph--remove">−</span>}<span class="code-line__content">{{ line.content }}
+        @if (tokens()) {
+          <div class="code-block__shiki" [innerHTML]="tokens()"></div>
+        } @else {
+          <pre
+            class="code-block__pre"
+            [class.code-block__pre--no-gutter]="!showLineNumbers()"
+          ><code>@for (line of lines(); track line.num) {<span
+                class="code-line"
+                [class.code-line--added]="line.kind === 'added'"
+                [class.code-line--removed]="line.kind === 'removed'"
+                [class.code-line--highlighted]="isHighlighted(line.num)"
+              >@if (showLineNumbers()) {<span class="code-line__num">{{ line.num }}</span>}@if (line.kind === 'added') {<span class="code-line__diff-glyph code-line__diff-glyph--add">+</span>} @else if (line.kind === 'removed') {<span class="code-line__diff-glyph code-line__diff-glyph--remove">−</span>}<span class="code-line__content">{{ line.content }}
 </span></span>}</code></pre>
+        }
         <button
           type="button"
           class="code-block__copy"

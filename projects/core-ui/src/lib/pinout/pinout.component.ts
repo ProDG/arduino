@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 interface Pin {
@@ -10,10 +11,10 @@ interface Pin {
 @Component({
   selector: 'ui-pinout',
   standalone: true,
-  imports: [],
+  imports: [NgOptimizedImage],
   template: `
     <figure class="ui-pinout">
-      <img [src]="src()" [alt]="alt()" />
+      <img [ngSrc]="src()" [width]="width()" [height]="height()" [alt]="alt()" [loading]="'lazy'" />
       <ul class="ui-pinout__legend">
         @for (pin of pins(); track pin.label; let i = $index) {
           <li>
@@ -31,5 +32,7 @@ interface Pin {
 export class PinoutComponent {
   src = input.required<string>();
   alt = input.required<string>();
+  width = input<number>(0);
+  height = input<number>(0);
   pins = input<Pin[]>([]);
 }
