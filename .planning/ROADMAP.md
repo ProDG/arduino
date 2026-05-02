@@ -90,7 +90,15 @@
   5. Setting an environment flag flips `MockContentApi` → `WagtailContentApi` and the FE built in Phase 3 renders the same lesson identically (or with documented intentional differences) from Wagtail.
   6. Day-zero security is enforced: `.env` is gitignored, `gitleaks` pre-commit blocks secret commits, `DEBUG = False` in production settings, `ALLOWED_HOSTS` is explicit, `LANGUAGE_CODE = 'uk'`, `TIME_ZONE = 'Europe/Kyiv'`, `USE_TZ = True`; force-en audit passes for any new admin-rendered strings. MinIO credentials and Postgres password come from environment, not committed files.
   7. `docker compose -f compose.yml -f compose.dev.yml up -d` brings up the full BE stack on a fresh laptop; FE dev runs on the host (`pnpm start`) and reaches Wagtail at `http://localhost:8000` via the published Traefik route or a direct dev-only port.
-**Plans**: TBD
+**Plans**: 8 plans
+  - [ ] 04-01-PLAN.md — Backend scaffold (uv project, multi-stage Dockerfile, Django settings split, locale lock, .env.example, pre-commit Ruff/mypy, Compose base+dev with Traefik+Wagtail+Postgres)
+  - [ ] 04-02-PLAN.md — MinIO + django-storages[s3] + mc bootstrap sidecar; image upload smoke (originals private, images/ public-read)
+  - [ ] 04-03-PLAN.md — StreamField blocks (note→html, image_src→src renames per spike) + 4 Page models with api_fields; [BLOCKING] makemigrations + migrate
+  - [ ] 04-04-PLAN.md — apps/contract/ seed_fixtures management command; idempotent seed of all 7 CONTRACT-04 fixtures as published pages
+  - [ ] 04-05-PLAN.md — WagtailContentApi + WagtailContentSource + env-driven provideContentApi factory (FE contract immutable)
+  - [ ] 04-06-PLAN.md — scripts/contract-diff.mjs with D-CONTRACT-02 allowlist; iterate to 7/7 PASS
+  - [ ] 04-07-PLAN.md — wagtail-headless-preview wired (HeadlessPreviewMixin + page_preview endpoint + preview-stub data fetch); manual editor walkthrough
+  - [ ] 04-08-PLAN.md — Phase-exit: gitleaks synthetic trigger; force-en audit P4 row; ROADMAP amendment for D-BUMP-01 (7.4 deferred); fresh-laptop walkthrough; success-criteria mapping
 
 ### Phase 5: Single-VPS Deployment (Docker Compose)
 **Goal**: The full stack runs on a single Ubuntu 24.04 VPS under Docker Compose with Traefik auto-TLS, daily off-site backups for both Postgres and MinIO proven by a restore drill, and a reproducible deploy script — before a single piece of real content gets published. **No Node SSR. No bare-metal Wagtail/gunicorn. No local-filesystem media.**
@@ -124,7 +132,7 @@
 | 1. Foundation & Typography Gate | 6/6 | **Complete** | 2026-05-01 |
 | 2. Primitives, Two-Column Layout & Page-Model Contract | 6/6 | **Complete** | 2026-05-01 |
 | 3. Page Templates, Routing & Static Build | 0/10 | Planned, ready to execute (`/gsd-execute-phase 3`) | - |
-| 4. Wagtail Backend Skeleton & Contract Match | 0/0 | Unblocked (Wagtail 7.3 in use; bump to 7.4 LTS on 2026-05-04) | - |
+| 4. Wagtail Backend Skeleton & Contract Match | 0/8 | Planned, ready to execute (`/gsd-execute-phase 4`) | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
 | 6. Content Migration, Differentiators & Editorial Polish | 0/0 | Not started | - |
 
