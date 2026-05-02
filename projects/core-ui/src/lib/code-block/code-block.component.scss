@@ -77,16 +77,19 @@
 
 /* Shiki-tokenized path: injected <pre class="shiki"> inherits base pre styles
    but we override font, bg, and keyword weight for editorial consistency.
+   The github-light theme ships with calm, muted hues that distinguish keywords
+   / strings / comments / types without overwhelming the page.
    ::ng-deep pierces Angular's view encapsulation to reach [innerHTML] content. */
 /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
 .code-block__shiki ::ng-deep .shiki {
   font-family: var(--font-mono);
   background-color: var(--color-paper) !important;
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-4) 0;
   border-radius: var(--radius-1);
   overflow-x: auto;
   tab-size: 2;
+  counter-reset: code-line;
 }
 
 /* Keyword weight: TM bold = font-weight:700; editorial spec wants 600. */
@@ -95,6 +98,28 @@
 /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
 .code-block__shiki ::ng-deep .shiki span[style*='font-weight:bold'] {
   font-weight: 600;
+}
+
+/* Line numbers — built-time transformer adds .line-numbered + data-line on
+   each <span class="line">. CSS counter renders the gutter via ::before. */
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+.code-block__shiki ::ng-deep .shiki .line.line-numbered {
+  counter-increment: code-line;
+  display: inline-block;
+  width: 100%;
+}
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+.code-block__shiki ::ng-deep .shiki .line.line-numbered::before {
+  content: counter(code-line);
+  display: inline-block;
+  width: 3ch;
+  margin-right: var(--space-3);
+  padding-right: var(--space-2);
+  text-align: right;
+  color: var(--color-ink-muted);
+  font-size: 0.85em;
+  user-select: none;
+  border-right: 1px solid var(--color-rule);
 }
 
 .code-block__copy {

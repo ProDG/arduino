@@ -15,18 +15,39 @@ import { format, resolveConfig } from 'prettier';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
 const FIXTURE_ROOT = join(REPO_ROOT, 'src', 'assets', 'mock-data');
-const THEME_PATH = join(REPO_ROOT, 'src', 'assets', 'shiki', 'arduino-paper.json');
 
-const theme = JSON.parse(await readFile(THEME_PATH, 'utf8'));
+// `github-light` ships with Shiki — calm, muted, editorial-feeling palette
+// that still distinguishes keywords / strings / comments / types. Keeps the
+// "zero chromatic alarm" intent of arduino-paper while being actually
+// readable. See D-SHIKI-01..05 in 03-CONTEXT.md.
+const SHIKI_THEME = 'github-light';
+
 const highlighter = await createHighlighter({
-  themes: [theme],
+  themes: [SHIKI_THEME],
   langs: ['cpp', 'plaintext', 'diff'],
 });
+
+// Adds data-line="N" + class="line-numbered" to each <span class="line">.
+// CSS uses CSS counters to render the gutter — see code-block.component.scss.
+const lineNumberTransformer = {
+  name: 'line-numbers',
+  line(node, lineIndex) {
+    node.properties = node.properties ?? {};
+    node.properties['data-line'] = String(lineIndex);
+    node.properties.class =
+      ((node.properties.class ?? '') + ' line-numbered').trim();
+    return node;
+  },
+};
 
 function tokenize(code, language) {
   const lang = language === 'arduino' ? 'cpp' : (language || 'plaintext');
   const safeLang = highlighter.getLoadedLanguages().includes(lang) ? lang : 'plaintext';
-  return highlighter.codeToHtml(code, { lang: safeLang, theme: 'arduino-paper' });
+  return highlighter.codeToHtml(code, {
+    lang: safeLang,
+    theme: SHIKI_THEME,
+    transformers: [lineNumberTransformer],
+  });
 }
 
 function visit(node, mutated) {
