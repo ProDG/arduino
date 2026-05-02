@@ -172,14 +172,18 @@
 }
 
 @media (width >= 1200px) {
-  /* Desktop: place the annotations slot to the right of the frame using grid on the figure */
+  /* Desktop: the figure breaks out of the body column to span body + rail-gap + rail.
+     Negative margin-right extends the figure's trailing edge by exactly the gap+rail
+     so the inner 3-column grid lines up with the page-level margin rail. */
   .code-block {
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--margin-rail-gap) var(--margin-rail-width);
+    margin-right: calc(-1 * (var(--margin-rail-gap) + var(--margin-rail-width)));
   }
   .code-block__filename,
   .code-block__frame {
     grid-column: 1;
+    min-width: 0;
   }
   .code-block__annotations {
     grid-column: 3;
