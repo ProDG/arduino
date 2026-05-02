@@ -96,13 +96,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Build & Performance
 
-- [ ] **PERF-01**: Angular 21.2.x with zoneless change detection (default), Signal Forms, Vitest as test runner, `@angular/ssr` configured for `outputMode: "static"`
-- [ ] **PERF-02**: All public routes prerendered at build time (`getPrerenderParams()` for `/lessons/:slug` etc.); no Node SSR runtime in v1
-- [ ] **PERF-03**: `/preview/<contentType>/<token>` route runs CSR-only (Angular client-side render of preview JSON from authenticated Wagtail endpoint)
+- [x] **PERF-01
+**: Angular 21.2.x with zoneless change detection (default), Signal Forms, Vitest as test runner, `@angular/ssr` configured for `outputMode: "static"`
+- [x] **PERF-02
+**: All public routes prerendered at build time (`getPrerenderParams()` for `/lessons/:slug` etc.); no Node SSR runtime in v1
+- [x] **PERF-03
+**: `/preview/<contentType>/<token>` route runs CSR-only (Angular client-side render of preview JSON from authenticated Wagtail endpoint)
 - [ ] **PERF-04**: Lighthouse gates met on a representative lesson page: LCP < 2.5s, CLS < 0.1, INP < 200ms
 - [x] **PERF-05
 **: All in-page imagery uses NgOptimizedImage; figures enforce explicit dimensions
-- [ ] **PERF-06**: Static build deploys as a folder of HTML/JS/CSS/woff2 — no runtime Node dependency
+- [x] **PERF-06
+**: Static build deploys as a folder of HTML/JS/CSS/woff2 — no runtime Node dependency
 
 ### Wagtail Backend (Wagtail 7.3 → bump to 7.4 LTS on 2026-05-04 release)
 
