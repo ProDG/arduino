@@ -1,15 +1,49 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
+import {
+  listArticleSlugs,
+  listDatasheetSlugs,
+  listLessonSlugs,
+  listSchematicSlugs,
+} from '../content/api/fixture-loader';
 
-// Every route is prerendered to static HTML at build time. There is no Node
-// SSR runtime — `outputMode: "static"` strips the server bundle from dist.
+// Every public route is prerendered to static HTML at build time. There is no
+// Node SSR runtime — `outputMode: "static"` strips the server bundle from dist.
 //
-// `/dev/primitives` is the developer showcase surface. It is excluded from
-// the public prerender (D-WIRE-02) so the static bundle does NOT emit a
-// crawlable HTML file with showcase content; the route ships as RenderMode.Client
-// (a thin CSR shell) and renders only when reached in a dev/preview build.
-// RenderMode.Client does NOT introduce a Node SSR runtime — it just opts the
-// route out of build-time prerendering.
+// RenderMode.Client opts a route out of prerender and ships a CSR shell. It
+// does NOT introduce a Node runtime. /preview/* (P3) and /dev/primitives (P2)
+// both use this mode.
 export const serverRoutes: ServerRoute[] = [
+  { path: 'preview/:contentType/:token', renderMode: RenderMode.Client },
   { path: 'dev/primitives', renderMode: RenderMode.Client },
+
+  {
+    path: 'lessons/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return (await listLessonSlugs()).map((slug: string) => ({ slug }));
+    },
+  },
+  {
+    path: 'articles/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return (await listArticleSlugs()).map((slug: string) => ({ slug }));
+    },
+  },
+  {
+    path: 'datasheets/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return (await listDatasheetSlugs()).map((slug: string) => ({ slug }));
+    },
+  },
+  {
+    path: 'schematics/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return (await listSchematicSlugs()).map((slug: string) => ({ slug }));
+    },
+  },
+
   { path: '**', renderMode: RenderMode.Prerender },
 ];

@@ -12,7 +12,8 @@ const SERVER_ROUTES = readFileSync(resolve(__dirname, 'app.routes.server.ts'), '
 
 describe('app.routes.ts contract', () => {
   it('Test 1: has 11+ lazy loadComponent entries for all P3 routes', () => {
-    const matches = ROUTES.match(/loadComponent: \(\) => import/g);
+    // Match `loadComponent:` regardless of whether Prettier wraps the arrow to next line
+    const matches = ROUTES.match(/loadComponent:/g);
     expect(matches).not.toBeNull();
     expect(matches!.length).toBeGreaterThanOrEqual(11);
   });

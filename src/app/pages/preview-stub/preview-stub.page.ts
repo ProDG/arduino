@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import {
   AsideComponent,
   HeadingComponent,
@@ -15,7 +14,6 @@ import { SiteHeaderComponent } from '../../chrome/site-header.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     PageShellComponent,
     HeadingComponent,
     LedeComponent,
