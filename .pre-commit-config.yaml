@@ -30,3 +30,22 @@ repos:
         language: system
         files: '\.scss$'
         pass_filenames: true
+
+      - id: ruff
+        name: ruff (backend)
+        entry: bash -c 'cd backend && uv run ruff check'
+        language: system
+        files: '^backend/.*\.py$'
+        pass_filenames: false
+      - id: ruff-format
+        name: ruff-format (backend)
+        entry: bash -c 'cd backend && uv run ruff format --check'
+        language: system
+        files: '^backend/.*\.py$'
+        pass_filenames: false
+      - id: mypy
+        name: mypy (backend)
+        entry: bash -c 'cd backend && uv run mypy wagtail_arduino apps'
+        language: system
+        files: '^backend/.*\.py$'
+        pass_filenames: false

@@ -1,0 +1,30 @@
+[project]
+name = "wagtail-arduino"
+version = "0.1.0"
+requires-python = "==3.13.*"
+dependencies = [
+  "wagtail~=7.3.0",
+  "django~=5.2.0",
+  "psycopg[binary]~=3.2",
+  "wagtail-headless-preview~=0.8",
+  "django-storages[s3]~=1.14",
+  "gunicorn~=23.0",
+]
+
+[dependency-groups]
+dev = [
+  "ruff~=0.11",
+  "mypy~=1.13",
+  "pytest~=8.3",
+  "pytest-django~=4.9",
+  "ipython",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.mypy]
+python_version = "3.13"
+strict = false
+ignore_missing_imports = true
