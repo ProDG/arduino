@@ -6,6 +6,8 @@ from wagtail.models import Page
 
 from apps.blocks.code import CodeBlock, DiffBlock
 from apps.blocks.image import FigureBlock
+from wagtail_headless_preview.models import HeadlessPreviewMixin
+
 from apps.blocks.parts import SpecBlock
 from apps.blocks.pinout import PinoutBlock
 from apps.blocks.text import (
@@ -34,7 +36,7 @@ SPECIFICATION_BLOCKS = [("spec", SpecBlock())]
 PINOUT_BLOCKS = [("pinout", PinoutBlock())]
 
 
-class DatasheetPage(Page):
+class DatasheetPage(HeadlessPreviewMixin, Page):
     manufacturer = models.CharField(max_length=200, blank=True)
 
     pinout = StreamField(
@@ -68,3 +70,6 @@ class DatasheetPage(Page):
         FieldPanel("specifications"),
         FieldPanel("peripheral_notes"),
     ]
+
+    def get_preview_url(self, request, token):
+        return f"{self.get_client_root_url(request).rstrip('/')}/preview/datasheet/{token}/"

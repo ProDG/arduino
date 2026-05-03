@@ -4,6 +4,8 @@ from wagtail.api import APIField
 from wagtail.fields import StreamField
 from wagtail.models import Page
 
+from wagtail_headless_preview.models import HeadlessPreviewMixin
+
 from apps.blocks.code import CodeBlock, DiffBlock
 from apps.blocks.image import FigureBlock
 from apps.blocks.text import (
@@ -30,7 +32,7 @@ EXPLANATION_BLOCKS = [
 ]
 
 
-class SchematicPage(Page):
+class SchematicPage(HeadlessPreviewMixin, Page):
     schematic_image = StreamField(
         SCHEMATIC_IMAGE_BLOCKS, min_num=1, max_num=1, use_json_field=True
     )
@@ -60,3 +62,6 @@ class SchematicPage(Page):
         FieldPanel("download_url"),
         FieldPanel("explanation"),
     ]
+
+    def get_preview_url(self, request, token):
+        return f"{self.get_client_root_url(request).rstrip('/')}/preview/schematic/{token}/"

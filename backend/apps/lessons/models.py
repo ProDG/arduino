@@ -4,6 +4,8 @@ from wagtail.api import APIField
 from wagtail.fields import StreamField
 from wagtail.models import Page
 
+from wagtail_headless_preview.models import HeadlessPreviewMixin
+
 from apps.blocks.code import CodeBlock, DiffBlock
 from apps.blocks.image import FigureBlock
 from apps.blocks.parts import PartsListBlock
@@ -37,7 +39,7 @@ DIFFICULTY_CHOICES = [
 ]
 
 
-class LessonPage(Page):
+class LessonPage(HeadlessPreviewMixin, Page):
     deck = models.CharField(max_length=600, blank=True)
     difficulty = models.CharField(
         max_length=20, choices=DIFFICULTY_CHOICES, default="beginner"
@@ -79,3 +81,6 @@ class LessonPage(Page):
         FieldPanel("parts_list"),
         FieldPanel("body"),
     ]
+
+    def get_preview_url(self, request, token):
+        return f"{self.get_client_root_url(request).rstrip('/')}/preview/lesson/{token}/"
