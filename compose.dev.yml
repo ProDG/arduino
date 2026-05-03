@@ -6,6 +6,7 @@ services:
       DJANGO_SETTINGS_MODULE: wagtail_arduino.settings.dev
     volumes:
       - ./backend:/app
+      - ./src/assets:/repo/src/assets:ro
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
   postgres:

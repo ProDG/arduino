@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "apps.articles",
     "apps.datasheets",
     "apps.schematics",
+    "apps.contract",
 ]
 
 MIDDLEWARE = [
