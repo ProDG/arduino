@@ -1,0 +1,13 @@
+services:
+  wagtail:
+    build:
+      target: dev
+    environment:
+      DJANGO_SETTINGS_MODULE: wagtail_arduino.settings.dev
+    volumes:
+      - ./backend:/app
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  postgres:
+    ports:
+      - "5432:5432"

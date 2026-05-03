@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [arduino]
+
+  wagtail:
+    build:
+      context: ./backend
+      target: ${BUILD_TARGET:-prod}
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [arduino]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wagtail.rule=Host(`arduino.localhost`) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/preview-data`) || PathPrefix(`/django-static`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`))"
+      - "traefik.http.routers.wagtail.entrypoints=web"
+      - "traefik.http.routers.wagtail.priority=100"
+      - "traefik.http.services.wagtail.loadbalancer.server.port=8000"
+
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [arduino]
+
+  fe-router:
+    image: traefik/whoami:latest
+    networks: [arduino]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fe.rule=Host(`arduino.localhost`)"
+      - "traefik.http.routers.fe.entrypoints=web"
+      - "traefik.http.routers.fe.priority=1"
+      - "traefik.http.services.fe.loadbalancer.server.url=http://host.docker.internal:4200"
+
+networks:
+  arduino:
+    driver: bridge
+
+volumes:
+  postgres-data:
