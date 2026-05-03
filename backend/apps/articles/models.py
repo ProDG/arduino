@@ -4,6 +4,8 @@ from wagtail.api import APIField
 from wagtail.fields import StreamField
 from wagtail.models import Page
 
+from wagtail_headless_preview.models import HeadlessPreviewMixin
+
 from apps.blocks.code import CodeBlock, DiffBlock
 from apps.blocks.image import FigureBlock
 from apps.blocks.text import (
@@ -29,7 +31,7 @@ ARTICLE_BODY_BLOCKS = [
 ]
 
 
-class ArticlePage(Page):
+class ArticlePage(HeadlessPreviewMixin, Page):
     deck = models.CharField(max_length=600, blank=True)
     body = StreamField(ARTICLE_BODY_BLOCKS, use_json_field=True)
 
@@ -52,3 +54,6 @@ class ArticlePage(Page):
         FieldPanel("deck"),
         FieldPanel("body"),
     ]
+
+    def get_preview_url(self, request, token):
+        return f"{self.get_client_root_url(request).rstrip('/')}/preview/article/{token}/"

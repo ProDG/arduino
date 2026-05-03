@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Strategy: source-file contract tests (readFileSync on .ts + .html + .scss).
-// PreviewStubPage is CSR-only: reads contentType + token from route inputs, renders
-// diagnostic panel — does NOT inject CONTENT_API.
+// PreviewStubPage is CSR-only: reads contentType + token from route inputs and
+// fetches preview data via WagtailContentApi (Plan 04-07, WAGTAIL-05). No SSR.
 
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -26,23 +26,35 @@ describe('PreviewStubPage source-file contract', () => {
     expect(TS).toMatch(/robots.*noindex|noindex.*robots/);
   });
 
-  it('Test 3: does NOT inject CONTENT_API', () => {
-    expect(TS).not.toMatch(/CONTENT_API/);
-    expect(TS).not.toMatch(/inject\(.*ContentApi/);
+  it('Test 3: injects CONTENT_API and uses WagtailContentApi preview methods', () => {
+    expect(TS).toMatch(/inject\(CONTENT_API\)/);
+    expect(TS).toMatch(/WagtailContentApi/);
+    expect(TS).toMatch(/getLessonPreview/);
+    expect(TS).toMatch(/getArticlePreview/);
+    expect(TS).toMatch(/getDatasheetPreview/);
+    expect(TS).toMatch(/getSchematicPreview/);
   });
 
   it('Test 4: app.config.ts includes withComponentInputBinding()', () => {
     expect(CONFIG_TS).toMatch(/withComponentInputBinding\(\)/);
   });
 
-  it('Test 5: HTML has ui-aside with locked Ukrainian copy', () => {
-    expect(HTML).toMatch(/Wagtail не підключений/);
-    expect(HTML).toMatch(/ui-aside/);
+  it('Test 5: maps short content-type segments to Wagtail content_type strings', () => {
+    expect(TS).toMatch(/lessons\.LessonPage/);
+    expect(TS).toMatch(/articles\.ArticlePage/);
+    expect(TS).toMatch(/datasheets\.DatasheetPage/);
+    expect(TS).toMatch(/schematics\.SchematicPage/);
   });
 
   it('Test 6: HTML echoes contentType and token in <pre>', () => {
     expect(HTML).toMatch(/contentType\(\)/);
     expect(HTML).toMatch(/token\(\)/);
     expect(HTML).toMatch(/<pre/);
+  });
+
+  it('Test 7: HTML renders fetched content title and an error fallback', () => {
+    expect(HTML).toMatch(/c\.title/);
+    expect(HTML).toMatch(/error\(\)/);
+    expect(HTML).toMatch(/content\(\)/);
   });
 });

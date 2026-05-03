@@ -5,14 +5,27 @@
       <ui-heading [level]="1">Попередній перегляд</ui-heading>
       <ui-lede>Ця сторінка показує чернетку матеріалу до публікації.</ui-lede>
     </header>
-    <ui-aside variant="note">
-      Поки що Wagtail не підключений — попередній перегляд активується у наступній фазі (P4). Сама
-      маршрутизація вже працює: токен у URL отримано, але контент звідки взяти ще немає.
-    </ui-aside>
-    <pre class="preview-stub-page__params" aria-label="Отримані параметри маршруту">
+
+    @if (error(); as e) {
+      <ui-aside variant="note">
+        Не вдалося завантажити попередній перегляд: {{ e }}
+      </ui-aside>
+    } @else if (content(); as c) {
+      <article class="preview-stub-page__content">
+        <ui-heading [level]="2">{{ c.title }}</ui-heading>
+        <pre class="preview-stub-page__params" aria-label="Завантажений вміст">
 contentType: {{ contentType() }}
-token: {{ token() }}</pre
-    >
+token: {{ token() }}
+slug: {{ c.slug }}</pre>
+      </article>
+    } @else {
+      <ui-aside variant="note">
+        Завантаження…
+      </ui-aside>
+      <pre class="preview-stub-page__params" aria-label="Отримані параметри маршруту">
+contentType: {{ contentType() }}
+token: {{ token() }}</pre>
+    }
   </main>
   <app-site-footer footer></app-site-footer>
 </ui-page-shell>

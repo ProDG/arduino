@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "wagtail_headless_preview",
     "apps.blocks",
     "apps.lessons",
     "apps.articles",
@@ -117,3 +118,14 @@ AWS_QUERYSTRING_AUTH = False              # unsigned URLs; bucket policy gates p
 # Wagtail Image storage uploads to <bucket>/originals/; renditions go to <bucket>/images/.
 # These prefixes are conventional Wagtail behavior when using a single S3 backend; the
 # default-storage-with-prefix-policy pattern (D-MINIO-01) handles the public/private split.
+
+# --- Headless preview (D-PREVIEW-01..04, WAGTAIL-05) ---
+# Pitfall 1: only the namespaced WAGTAIL_HEADLESS_PREVIEW dict is supported in 0.8.x.
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {
+        "default": os.environ.get("WAGTAIL_BASE_URL", "http://arduino.localhost"),
+    },
+    "SERVE_BASE_URL": None,
+    "REDIRECT_ON_PREVIEW": True,
+    "ENFORCE_TRAILING_SLASH": True,
+}
