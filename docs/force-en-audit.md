@@ -118,9 +118,58 @@ Add checklist items as page templates land.
 
 Add checklist items as page templates land.
 
-## Phase 4 scope (placeholder)
+## Phase 4 scope — Wagtail backend + headless preview
 
-Wagtail content surfaces here.
+Phase: 04 — wagtail-backend-skeleton-contract-match-dockerized.
+Surfaces in scope:
+
+- Wagtail admin at `http://arduino.localhost/admin/login/` and `/admin/`
+  page-tree views (after login).
+- REST API responses at `/api/v2/pages/?type=lessons.LessonPage&fields=*`
+  for each page kind (lessons, articles, datasheets, schematics).
+- `/preview/<kind>/<token>` rendered draft pages (CSR-only — no Node SSR
+  ever, per locked constraint).
+
+### P4 force-en checklist
+
+Procedure: bring the Docker stack up (`docker compose -f compose.yml -f
+compose.dev.yml up -d`); seed fixtures (`docker compose exec wagtail
+python manage.py seed_fixtures`); load each surface in Chrome with
+DevTools → Sensors → Locale = `en-US`. Verify:
+
+- [ ] Wagtail admin login page (`/admin/login/`) — UI labels stay
+  Ukrainian; `LANGUAGE_CODE='uk'` in `settings/base.py` is server-side
+  (Wagtail does NOT follow `Accept-Language` for admin UI by default).
+  Any residual upstream-Wagtail English strings (e.g., button labels not
+  yet translated by upstream) are noted as Phase 6 polish, NOT a P4
+  blocker per `04-CONTEXT.md` `<deferred>`.
+- [ ] Wagtail admin page-tree (`/admin/pages/`) and a representative
+  page-edit view stay Ukrainian for project-defined labels (page types,
+  StreamField block names that we control).
+- [ ] `/api/v2/pages/?type=lessons.LessonPage&slug=pershyi-blymayuchyi-svitlodiod&fields=*`
+  response — search the JSON body for English month names
+  (`January..December`), English day names, English locale strings:
+  none present. Dates serialize as ISO-8601 (`first_published_at`,
+  `last_published_at` — both timezone-aware, `Europe/Kyiv`). Content
+  fields (`title`, `lede`, body StreamField text) are Ukrainian.
+- [ ] Repeat the API check for one ArticlePage, one DatasheetPage, one
+  SchematicPage slug.
+- [ ] `/preview/lesson/<token>` — view source contains `<html lang="uk">`
+  (preserved from `index.html` shell). Rendered Ukrainian content
+  identical to published view; no English month/day leakage from any
+  preview-token loading state copy.
+- [ ] `pnpm contract:diff` — exit 0 with `7/7 PASS`. (Implicit force-en
+  check: contract-diff normalizes both BE + FE to canonical TS shape;
+  any locale-sensitive serialization drift would surface as a field
+  mismatch.)
+
+### P4 result row
+
+| Phase | Date | Result | Notes |
+| ----- | ---- | ------ | ----- |
+| 04 | _pending_ | _pending live verification_ | Static gates verified in Plan 04-08 (gitleaks blocks synthetic AKIA + ghp_* fixtures with `commit_exit=1`; `.env` gitignored; `DEBUG=False` in prod settings; `LANGUAGE_CODE='uk'` + `TIME_ZONE='Europe/Kyiv'` in base.py). Live browser-side walk (admin + API + `/preview/*` under DevTools force-en) deferred to Docker-enabled host (Compose stack does not run in the executor sandbox). User runs the bring-up walkthrough on the dev laptop and ticks the boxes above before phase verifier signs off. |
+
+## Phase 5 / 6 scope (placeholder)
 
 ## Phase 5 / 6 scope (placeholder)
 

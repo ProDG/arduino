@@ -11,7 +11,7 @@
 - [x] **Phase 1: Foundation & Typography Gate** — Day-zero locale + secrets discipline; self-hosted Cyrillic-complete font stack; SCSS token system; Ukrainian glyph audit harness page; light-only-v1 commitment. **CLOSED 2026-05-01.**
 - [x] **Phase 2: Primitives, Two-Column Layout & Page-Model Contract** — `core-ui` primitives (Heading, Body, Aside, Sidenote, Figure, CodeBlock with diff/annotations, Pinout, PageShell, TwoColumn, MarginRail); three-breakpoint sidenote behavior; TypeScript content models locked; `ContentApi` interface + `MockContentApi` with real Ukrainian fixtures. **CLOSED 2026-05-01** (user-approved).
 - [x] **Phase 3: Page Templates, Routing & Static Build** — All page templates built; routing wired; CONTRACT-02 Wagtail spike PASS (FE Block model immutable across P3→P4). **CLOSED 2026-05-02 with known debt (option C)** — KD-01..05 in STATE.md must be remediated before milestone v1.0 ships: SSG meaningful-prerender (async ngOnInit not awaited), `<ui-heading>` projection bug, Lighthouse runner not built, P3 audit doc rows missing.
-- [ ] **Phase 4: Wagtail Backend Skeleton & Contract Match** — Wagtail 7.3 conforms 1:1 to FE contract; DRF v2 with server-side `expand_db_html`; `wagtail-headless-preview` wired; `WagtailContentApi` flips mock→real. Plan a one-line bump to Wagtail 7.4 LTS on its 2026-05-04 release.
+- [x] **Phase 4: Wagtail Backend Skeleton & Contract Match** — Wagtail 7.3 conforms 1:1 to FE contract; DRF v2 with server-side `expand_db_html`; `wagtail-headless-preview` wired; `WagtailContentApi` flips mock→real. **Note (amended at P4 phase exit per D-BUMP-01):** the 7.3→7.4 LTS bump was deferred out of Phase 4 entirely; P4 ships and exits on Wagtail 7.3.x. The bump is tracked as a follow-up effort under proposed Phase 4.1 (single-task: pin bump + re-run P4 verification gates per D-BUMP-02). **CLOSED 2026-05-09 with deferred live verification** — static gates verified in Plan 04-08; live Docker-stack walkthrough (fresh-laptop bring-up, `pnpm contract:diff` 7/7, admin Ukrainian under force-en, editor preview click-through) deferred to a Docker-enabled host run by the user before the verifier can sign off.
 - [ ] **Phase 5: Single-VPS Deployment** — Caddy + gunicorn + systemd + PostgreSQL 17 on Ubuntu 24.04; auto-TLS; off-site backups with tested restore drill before any content publishes; `ufw` lockdown; reproducible `deploy.sh`.
 - [ ] **Phase 6: Content Migration, Differentiators & Editorial Polish** — All initial content in Wagtail; drop caps; glossary tooltips; pin/peripheral references; numbered figure cross-refs; pinout hover hotspots; SEO/JSON-LD; RSS feed; print stylesheet; full WCAG AA pass; final force-en locale audit.
 
@@ -80,7 +80,7 @@
 
 ### Phase 4: Wagtail Backend Skeleton & Contract Match (Dockerized)
 **Goal**: Wagtail 7.3 is the source of truth for content, runs in Docker against Postgres + MinIO, conforms 1:1 to the FE-locked contract, and the editor can preview unpublished drafts via the Angular `/preview/*` route (CSR). The mock→real swap is one DI configuration change.
-**Depends on**: Phase 3 (FE contract locked + spike validated). Wagtail 7.3 is built against immediately; the 7.4 LTS bump (2026-05-04) is a one-line version pin update + re-validation step inside this phase.
+**Depends on**: Phase 3 (FE contract locked + spike validated). Wagtail 7.3 is built against immediately. **Amended at P4 phase exit per D-BUMP-01:** the 7.3→7.4 LTS bump was deferred out of P4 entirely (rationale: bundling a major-version bump into the contract-locking phase concentrated two large risk surfaces; deferral isolates them). The bump is tracked as proposed Phase 4.1 below.
 **Requirements**: WAGTAIL-01, WAGTAIL-02, WAGTAIL-03, WAGTAIL-04, WAGTAIL-05, WAGTAIL-06, WAGTAIL-07, WAGTAIL-08, WAGTAIL-09, WAGTAIL-10
 **Success Criteria** (what must be TRUE):
   1. Wagtail 7.3 + Django 5.2 LTS + Python 3.13 + PostgreSQL 17 + psycopg 3.2 is up inside Docker Compose (services: `wagtail`, `postgres`, `minio`); `uv` + `Ruff` manage Python tooling inside the wagtail image; page models for `Lesson`, `Article`, `Datasheet`, `Schematic` exist with field names matching `content/models/*.ts` exactly.
@@ -99,6 +99,13 @@
   - [ ] 04-06-PLAN.md — scripts/contract-diff.mjs with D-CONTRACT-02 allowlist; iterate to 7/7 PASS
   - [ ] 04-07-PLAN.md — wagtail-headless-preview wired (HeadlessPreviewMixin + page_preview endpoint + preview-stub data fetch); manual editor walkthrough
   - [ ] 04-08-PLAN.md — Phase-exit: gitleaks synthetic trigger; force-en audit P4 row; ROADMAP amendment for D-BUMP-01 (7.4 deferred); fresh-laptop walkthrough; success-criteria mapping
+
+### Phase 4.1: Wagtail 7.4 LTS Bump (deferred from P4 per D-BUMP-01)
+**Goal**: Pin Wagtail to 7.4 LTS; re-run all P4 verification gates per D-BUMP-02; rollback strategy per D-BUMP-03.
+**Depends on**: Phase 4 closed clean (live Docker-stack gates ticked off by user).
+**Requirements**: (none new — all WAGTAIL-* IDs were closed in P4)
+**Success Criteria** (from D-BUMP-02): full P4 verification re-run = `pnpm contract:diff` 7/7 PASS + editor preview flow walkthrough + MinIO upload smoke + force-en audit row clean (Phase 4.1 row appended) + manual Wagtail admin smoke load.
+**Plans**: TBD (single-task plan likely — `backend/pyproject.toml` pin + uv.lock refresh + re-verification log).
 
 ### Phase 5: Single-VPS Deployment (Docker Compose)
 **Goal**: The full stack runs on a single Ubuntu 24.04 VPS under Docker Compose with Traefik auto-TLS, daily off-site backups for both Postgres and MinIO proven by a restore drill, and a reproducible deploy script — before a single piece of real content gets published. **No Node SSR. No bare-metal Wagtail/gunicorn. No local-filesystem media.**
@@ -132,7 +139,8 @@
 | 1. Foundation & Typography Gate | 6/6 | **Complete** | 2026-05-01 |
 | 2. Primitives, Two-Column Layout & Page-Model Contract | 6/6 | **Complete** | 2026-05-01 |
 | 3. Page Templates, Routing & Static Build | 0/10 | Planned, ready to execute (`/gsd-execute-phase 3`) | - |
-| 4. Wagtail Backend Skeleton & Contract Match | 0/8 | Planned, ready to execute (`/gsd-execute-phase 4`) | - |
+| 4. Wagtail Backend Skeleton & Contract Match | 7/8 | **Static-complete; live Docker gates pending user walkthrough** (Plan 04-08 closed static parts; live gates ticked off the laptop run) | 2026-05-09 (static) |
+| 4.1. Wagtail 7.4 LTS Bump (deferred from P4 per D-BUMP-01) | 0/1 | Not started | - |
 | 5. Single-VPS Deployment | 0/0 | Not started | - |
 | 6. Content Migration, Differentiators & Editorial Polish | 0/0 | Not started | - |
 
