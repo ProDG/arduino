@@ -68,7 +68,6 @@ services:
       - :80
       - --to
       - host.docker.internal:4200
-      - --change-host-header
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.fe.rule=Host(`arduino.localhost`)'

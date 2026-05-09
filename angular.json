@@ -73,6 +73,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["arduino.localhost"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "arduino-hub:build:production"
