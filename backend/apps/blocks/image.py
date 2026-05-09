@@ -27,20 +27,42 @@ class ImageChooserBlock(BaseImageChooserBlock):
 
 
 class FigureBlock(blocks.StructBlock):
-    image = ImageChooserBlock()
+    image = ImageChooserBlock(required=False)
+    # `src_override` and `alt_override` are escape hatches used by the contract
+    # seed_fixtures command: in v1 the fixture-set references SVG paths that
+    # are not real Wagtail Images (they live in src/assets/mock-data/figures/),
+    # so the seed pre-populates these fields with the FE-shaped src/alt strings
+    # instead of uploading placeholder images. When non-empty, the API rep
+    # emits these strings; otherwise it falls back to the ImageChooserBlock
+    # rendition URL + Image.default_alt_text. Editor authoring uses the image
+    # chooser; contract-test authoring uses the override.
+    src_override = blocks.CharBlock(required=False, max_length=500)
+    alt_override = blocks.CharBlock(required=False, max_length=500)
+    width_override = blocks.IntegerBlock(required=False)
+    height_override = blocks.IntegerBlock(required=False)
     captionHtml = blocks.RichTextBlock(required=False)
     number = blocks.IntegerBlock(required=False)
     fullBleed = blocks.BooleanBlock(required=False, default=False)
 
     def get_api_representation(self, value, context=None):
-        img = ImageChooserBlock().get_api_representation(value["image"])
-        out = {
-            "src": img["src"] if img else None,
-            "alt": img["alt"] if img else "",
-            "width": img["width"] if img else None,
-            "height": img["height"] if img else None,
-            "fullBleed": bool(value.get("fullBleed", False)),
-        }
+        src_override = value.get("src_override") or ""
+        if src_override:
+            out = {
+                "src": src_override,
+                "alt": value.get("alt_override") or "",
+                "width": int(value["width_override"]) if value.get("width_override") else None,
+                "height": int(value["height_override"]) if value.get("height_override") else None,
+                "fullBleed": bool(value.get("fullBleed", False)),
+            }
+        else:
+            img = ImageChooserBlock().get_api_representation(value.get("image"))
+            out = {
+                "src": img["src"] if img else None,
+                "alt": img["alt"] if img else "",
+                "width": img["width"] if img else None,
+                "height": img["height"] if img else None,
+                "fullBleed": bool(value.get("fullBleed", False)),
+            }
         if value.get("captionHtml"):
             out["captionHtml"] = expand_db_html(value["captionHtml"].source)
         if value.get("number") is not None:

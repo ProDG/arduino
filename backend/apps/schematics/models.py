@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework import serializers as drf_serializers
 from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 from wagtail.fields import StreamField
@@ -7,6 +8,11 @@ from wagtail.models import Page
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blocks.code import CodeBlock, DiffBlock
+from apps.blocks.flat_stream_serializer import (
+    ConstantField,
+    FlatStreamField,
+    SingleBlockField,
+)
 from apps.blocks.image import FigureBlock
 from apps.blocks.text import (
     AsideBlock,
@@ -38,7 +44,18 @@ class SchematicPage(HeadlessPreviewMixin, Page):
     explanation = StreamField(EXPLANATION_BLOCKS, use_json_field=True, blank=True)
 
     api_fields = [
+        APIField("type", serializer=ConstantField("schematic")),
         APIField("slug"),
+        APIField("title"),
+        APIField(
+            "schematicImage",
+            serializer=SingleBlockField(source="schematic_image"),
+        ),
+        APIField("explanation", serializer=FlatStreamField()),
+        APIField(
+            "downloadUrl",
+            serializer=drf_serializers.CharField(source="download_url"),
+        ),
         APIField(
             "publishedAt",
             serializer=IsoDateTimeField(source="first_published_at"),
@@ -47,10 +64,6 @@ class SchematicPage(HeadlessPreviewMixin, Page):
             "updatedAt",
             serializer=IsoDateTimeField(source="last_published_at"),
         ),
-        APIField("title"),
-        APIField("schematicImage"),
-        APIField("downloadUrl"),
-        APIField("explanation"),
     ]
 
     content_panels = Page.content_panels + [
@@ -58,14 +71,6 @@ class SchematicPage(HeadlessPreviewMixin, Page):
         FieldPanel("download_url"),
         FieldPanel("explanation"),
     ]
-
-    @property
-    def schematicImage(self):
-        return self.schematic_image
-
-    @property
-    def downloadUrl(self):
-        return self.download_url
 
     def get_preview_url(self, request, token):
         return f"{self.get_client_root_url(request).rstrip('/')}/preview/schematic/{token}/"

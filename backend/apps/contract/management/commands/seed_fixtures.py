@@ -20,6 +20,7 @@ from typing import Any
 
 from django.core.files.images import ImageFile
 from django.core.management.base import BaseCommand
+from django.utils.dateparse import parse_datetime
 from PIL import Image as PIL
 from wagtail.images.models import Image
 from wagtail.models import Page, Site
@@ -66,10 +67,28 @@ def _wrap(block_type: str, value: Any) -> dict:
     return {"type": block_type, "value": value}
 
 
-def _norm_coord(v: Any) -> float:
-    """Pin coords in fixtures are 0-100; PinBlock requires 0.0-1.0."""
-    f = float(v)
-    return f / 100.0 if f > 1.0 else f
+def _stamp_publish_dates(page, fixture: dict) -> None:
+    """Force first_published_at + last_published_at to match fixture timestamps.
+
+    Wagtail assigns these on publish() to ``timezone.now()``; the contract diff
+    requires byte-equal timestamps with mock fixtures (publishedAt / updatedAt
+    baked into JSON). We update the saved page row in place after publish.
+    """
+    pub = parse_datetime(fixture["publishedAt"]) if fixture.get("publishedAt") else None
+    upd = parse_datetime(fixture["updatedAt"]) if fixture.get("updatedAt") else pub
+    if pub is None and upd is None:
+        return
+    fields = {}
+    if pub is not None:
+        fields["first_published_at"] = pub
+    if upd is not None:
+        fields["last_published_at"] = upd
+    type(page).objects.filter(pk=page.pk).update(**fields)
+
+
+def _norm_coord(v: Any) -> int:
+    """Pin coords in fixtures are integers in pixel-space; pass through unchanged."""
+    return int(v)
 
 
 def _highlight_lines_to_csv(lines: Any) -> str:
@@ -87,15 +106,15 @@ def _annotations_listblock(annotations: list[dict]) -> list[dict]:
 
 def _figure_value(fe: dict) -> dict:
     """FE flat figure {src, alt, width, height, captionHtml?, number?, fullBleed?}
-    → BE FigureBlock value {image: ID, captionHtml?, number?, fullBleed}."""
-    alt = fe.get("alt") or "placeholder"
-    img = _placeholder_image(
-        title=f"seed-{alt[:80]}",
-        w=fe.get("width") or 800,
-        h=fe.get("height") or 600,
-    )
+    → BE FigureBlock value using src_override/alt_override fields so the
+    on-disk fixture URL ('/assets/mock-data/figures/...svg') round-trips
+    byte-equal through the API. Avoids creating real Wagtail Images for
+    contract-test fixtures (the SVG paths don't correspond to uploaded files)."""
     out: dict[str, Any] = {
-        "image": img.id,
+        "src_override": fe.get("src") or "",
+        "alt_override": fe.get("alt") or "",
+        "width_override": int(fe["width"]) if fe.get("width") is not None else None,
+        "height_override": int(fe["height"]) if fe.get("height") is not None else None,
         "fullBleed": bool(fe.get("fullBleed", False)),
     }
     if fe.get("captionHtml"):
@@ -106,17 +125,13 @@ def _figure_value(fe: dict) -> dict:
 
 
 def _pinout_value(fe: dict) -> dict:
-    """FE flat pinout {src, alt, pins: [{x,y,label,role}], width, height}
-    → BE PinoutBlock value {image: ID, alt, pins}."""
-    alt = fe.get("alt") or "pinout"
-    img = _placeholder_image(
-        title=f"seed-{alt[:80]}",
-        w=fe.get("width") or 800,
-        h=fe.get("height") or 600,
-    )
+    """FE flat pinout {src, alt, pins, width, height}
+    → BE PinoutBlock value using src_override field (see _figure_value)."""
     return {
-        "image": img.id,
-        "alt": alt,
+        "src_override": fe.get("src") or "",
+        "width_override": int(fe["width"]) if fe.get("width") is not None else None,
+        "height_override": int(fe["height"]) if fe.get("height") is not None else None,
+        "alt": fe.get("alt") or "pinout",
         "pins": [
             {
                 "x": _norm_coord(p["x"]),
@@ -228,6 +243,7 @@ class Command(BaseCommand):
         # numchild stale. fix_tree() reconciles numchild/depth/path metadata so
         # subsequent root.add_child() calls don't hit "_inc_path on NoneType".
         Page.fix_tree(destructive=False)
+        root = Page.objects.get(pk=root.pk)
 
         self._seed_lessons(root)
         self._seed_articles(root)
@@ -271,6 +287,7 @@ class Command(BaseCommand):
                 lesson.lede = json.dumps([_block_from_fe(b) for b in lede_blocks])
             root.add_child(instance=lesson)
             lesson.save_revision().publish()
+            _stamp_publish_dates(lesson, data)
             self.stdout.write(f"  seeded LessonPage: {lesson.slug}")
 
     def _seed_articles(self, root: Page) -> None:
@@ -286,6 +303,7 @@ class Command(BaseCommand):
             )
             root.add_child(instance=article)
             article.save_revision().publish()
+            _stamp_publish_dates(article, data)
             self.stdout.write(f"  seeded ArticlePage: {article.slug}")
 
     def _seed_datasheets(self, root: Page) -> None:
@@ -310,6 +328,7 @@ class Command(BaseCommand):
             )
             root.add_child(instance=ds)
             ds.save_revision().publish()
+            _stamp_publish_dates(ds, data)
             self.stdout.write(f"  seeded DatasheetPage: {ds.slug}")
 
     def _seed_schematics(self, root: Page) -> None:
@@ -327,4 +346,5 @@ class Command(BaseCommand):
             )
             root.add_child(instance=sch)
             sch.save_revision().publish()
+            _stamp_publish_dates(sch, data)
             self.stdout.write(f"  seeded SchematicPage: {sch.slug}")

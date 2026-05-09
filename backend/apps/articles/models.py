@@ -7,6 +7,7 @@ from wagtail.models import Page
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blocks.code import CodeBlock, DiffBlock
+from apps.blocks.flat_stream_serializer import ConstantField, FlatStreamField
 from apps.blocks.image import FigureBlock
 from apps.blocks.text import (
     AsideBlock,
@@ -36,7 +37,11 @@ class ArticlePage(HeadlessPreviewMixin, Page):
     body = StreamField(ARTICLE_BODY_BLOCKS, use_json_field=True)
 
     api_fields = [
+        APIField("type", serializer=ConstantField("article")),
         APIField("slug"),
+        APIField("title"),
+        APIField("deck"),
+        APIField("body", serializer=FlatStreamField()),
         APIField(
             "publishedAt",
             serializer=IsoDateTimeField(source="first_published_at"),
@@ -45,9 +50,6 @@ class ArticlePage(HeadlessPreviewMixin, Page):
             "updatedAt",
             serializer=IsoDateTimeField(source="last_published_at"),
         ),
-        APIField("title"),
-        APIField("deck"),
-        APIField("body"),
     ]
 
     content_panels = Page.content_panels + [
