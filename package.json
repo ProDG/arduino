@@ -6,8 +6,8 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "dev": "ng serve",
+    "start": "ng serve --host 0.0.0.0",
+    "dev": "ng serve --host 0.0.0.0",
     "tokenize": "node scripts/tokenize-fixtures.mjs",
     "contract:diff": "node scripts/contract-diff.mjs",
     "prebuild": "node scripts/tokenize-fixtures.mjs",

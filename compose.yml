@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -26,11 +26,11 @@ services:
         condition: service_healthy
     networks: [arduino]
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wagtail.rule=Host(`arduino.localhost`) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/preview-data`) || PathPrefix(`/django-static`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`))"
-      - "traefik.http.routers.wagtail.entrypoints=web"
-      - "traefik.http.routers.wagtail.priority=100"
-      - "traefik.http.services.wagtail.loadbalancer.server.port=8000"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.wagtail.rule=Host(`arduino.localhost`) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/preview-data`) || PathPrefix(`/django-static`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`))'
+      - 'traefik.http.routers.wagtail.entrypoints=web'
+      - 'traefik.http.routers.wagtail.priority=100'
+      - 'traefik.http.services.wagtail.loadbalancer.server.port=8000'
 
   traefik:
     image: traefik:v3.2
@@ -40,23 +40,41 @@ services:
       - --entrypoints.web.address=:80
       - --api.insecure=true
     ports:
-      - "80:80"
-      - "8080:8080"
+      - '80:80'
+      - '8080:8080'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     networks: [arduino]
 
+  # Reverse-proxies arduino.localhost FE traffic to the host's Angular dev server
+  # (pnpm start on :4200). FE is NOT containerized in dev — caddy is just the
+  # bridge between Docker's network and the host process. Catch-all priority=1
+  # so wagtail (PathPrefix /admin /api /preview-data ...) and minio (/media)
+  # take precedence at priority>=90.
+  #
+  # In dev: ensure `pnpm start` is running on the host. Without it, this
+  # container will return 502 on every request.
   fe-router:
-    image: traefik/whoami:latest
+    image: caddy:2-alpine
     networks: [arduino]
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    command:
+      - caddy
+      - reverse-proxy
+      - --from
+      - :80
+      - --to
+      - host.docker.internal:4200
+      - --change-host-header
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fe.rule=Host(`arduino.localhost`)"
-      - "traefik.http.routers.fe.entrypoints=web"
-      - "traefik.http.routers.fe.priority=1"
-      - "traefik.http.services.fe.loadbalancer.server.url=http://host.docker.internal:4200"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.fe.rule=Host(`arduino.localhost`)'
+      - 'traefik.http.routers.fe.entrypoints=web'
+      - 'traefik.http.routers.fe.priority=1'
+      - 'traefik.http.services.fe.loadbalancer.server.port=80'
 
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z
@@ -67,19 +85,19 @@ services:
     volumes:
       - minio-data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 5s
       timeout: 3s
       retries: 10
     networks: [arduino]
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.minio.rule=Host(`arduino.localhost`) && PathPrefix(`/media`)"
-      - "traefik.http.routers.minio.entrypoints=web"
-      - "traefik.http.routers.minio.priority=90"
-      - "traefik.http.services.minio.loadbalancer.server.port=9000"
-      - "traefik.http.middlewares.media-stripprefix.stripprefix.prefixes=/media"
-      - "traefik.http.routers.minio.middlewares=media-stripprefix"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.minio.rule=Host(`arduino.localhost`) && PathPrefix(`/media`)'
+      - 'traefik.http.routers.minio.entrypoints=web'
+      - 'traefik.http.routers.minio.priority=90'
+      - 'traefik.http.services.minio.loadbalancer.server.port=9000'
+      - 'traefik.http.middlewares.media-stripprefix.stripprefix.prefixes=/media'
+      - 'traefik.http.routers.minio.middlewares=media-stripprefix'
 
   mc:
     image: minio/mc:RELEASE.2025-04-08T15-39-49Z
@@ -90,7 +108,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     networks: [arduino]
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         set -e
@@ -98,7 +116,7 @@ services:
         mc mb --ignore-existing local/arduino-media
         mc anonymous set download local/arduino-media/images
         echo "MinIO bootstrap complete: arduino-media bucket; public-read on images/ only."
-    restart: "no"
+    restart: 'no'
 
 networks:
   arduino:
