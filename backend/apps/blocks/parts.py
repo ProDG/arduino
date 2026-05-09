@@ -18,10 +18,7 @@ class PartsListBlock(blocks.StructBlock):
 
     def get_api_representation(self, value, context=None):
         return {
-            "items": [
-                PartItemBlock().get_api_representation(it)
-                for it in value.get("items", [])
-            ],
+            "items": [PartItemBlock().get_api_representation(it) for it in value.get("items", [])],
         }
 
 

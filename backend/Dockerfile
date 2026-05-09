@@ -28,6 +28,9 @@ FROM builder AS dev
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
+ENV PATH=/opt/venv/bin:$PATH \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 EXPOSE 8000
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 

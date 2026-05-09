@@ -33,13 +33,9 @@ EXPLANATION_BLOCKS = [
 
 
 class SchematicPage(HeadlessPreviewMixin, Page):
-    schematic_image = StreamField(
-        SCHEMATIC_IMAGE_BLOCKS, min_num=1, max_num=1, use_json_field=True
-    )
-    download_url = models.URLField(max_length=500, blank=True)
-    explanation = StreamField(
-        EXPLANATION_BLOCKS, use_json_field=True, blank=True
-    )
+    schematic_image = StreamField(SCHEMATIC_IMAGE_BLOCKS, min_num=1, max_num=1, use_json_field=True)
+    download_url = models.CharField(max_length=500, blank=True)
+    explanation = StreamField(EXPLANATION_BLOCKS, use_json_field=True, blank=True)
 
     api_fields = [
         APIField("slug"),
@@ -52,8 +48,8 @@ class SchematicPage(HeadlessPreviewMixin, Page):
             serializer=IsoDateTimeField(source="last_published_at"),
         ),
         APIField("title"),
-        APIField("schematicImage", source="schematic_image"),
-        APIField("downloadUrl", source="download_url"),
+        APIField("schematicImage"),
+        APIField("downloadUrl"),
         APIField("explanation"),
     ]
 
@@ -62,6 +58,14 @@ class SchematicPage(HeadlessPreviewMixin, Page):
         FieldPanel("download_url"),
         FieldPanel("explanation"),
     ]
+
+    @property
+    def schematicImage(self):
+        return self.schematic_image
+
+    @property
+    def downloadUrl(self):
+        return self.download_url
 
     def get_preview_url(self, request, token):
         return f"{self.get_client_root_url(request).rstrip('/')}/preview/schematic/{token}/"

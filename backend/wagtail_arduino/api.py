@@ -8,9 +8,7 @@ from wagtail_headless_preview.models import PagePreview
 
 
 class PagePreviewAPIViewSet(PagesAPIViewSet):
-    known_query_parameters = PagesAPIViewSet.known_query_parameters.union(
-        ["content_type", "token"]
-    )
+    known_query_parameters = PagesAPIViewSet.known_query_parameters.union(["content_type", "token"])
 
     def listing_view(self, request):
         self.action = "detail_view"

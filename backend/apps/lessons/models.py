@@ -41,17 +41,11 @@ DIFFICULTY_CHOICES = [
 
 class LessonPage(HeadlessPreviewMixin, Page):
     deck = models.CharField(max_length=600, blank=True)
-    difficulty = models.CharField(
-        max_length=20, choices=DIFFICULTY_CHOICES, default="beginner"
-    )
+    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default="beginner")
     estimated_minutes = models.PositiveSmallIntegerField(default=10)
 
-    lede = StreamField(
-        LEDE_BLOCKS, min_num=0, max_num=1, use_json_field=True, blank=True
-    )
-    parts_list = StreamField(
-        PARTS_LIST_BLOCKS, min_num=1, max_num=1, use_json_field=True
-    )
+    lede = StreamField(LEDE_BLOCKS, min_num=0, max_num=1, use_json_field=True, blank=True)
+    parts_list = StreamField(PARTS_LIST_BLOCKS, min_num=1, max_num=1, use_json_field=True)
     body = StreamField(LESSON_BODY_BLOCKS, use_json_field=True)
 
     api_fields = [
@@ -67,9 +61,9 @@ class LessonPage(HeadlessPreviewMixin, Page):
         APIField("title"),
         APIField("deck"),
         APIField("difficulty"),
-        APIField("estimatedMinutes", source="estimated_minutes"),
+        APIField("estimatedMinutes"),
         APIField("lede"),
-        APIField("partsList", source="parts_list"),
+        APIField("partsList"),
         APIField("body"),
     ]
 
@@ -81,6 +75,14 @@ class LessonPage(HeadlessPreviewMixin, Page):
         FieldPanel("parts_list"),
         FieldPanel("body"),
     ]
+
+    @property
+    def estimatedMinutes(self):
+        return self.estimated_minutes
+
+    @property
+    def partsList(self):
+        return self.parts_list
 
     def get_preview_url(self, request, token):
         return f"{self.get_client_root_url(request).rstrip('/')}/preview/lesson/{token}/"

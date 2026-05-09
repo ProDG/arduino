@@ -58,9 +58,7 @@ def _placeholder_image(title: str, w: int = 800, h: int = 600) -> Image:
     buf = io.BytesIO()
     PIL.new("RGB", (int(w), int(h)), color=(220, 220, 220)).save(buf, format="PNG")
     buf.seek(0)
-    return Image.objects.create(
-        title=title, file=ImageFile(buf, name=f"{title}.png")
-    )
+    return Image.objects.create(title=title, file=ImageFile(buf, name=f"{title}.png"))
 
 
 def _wrap(block_type: str, value: Any) -> dict:
@@ -84,10 +82,7 @@ def _highlight_lines_to_csv(lines: Any) -> str:
 
 def _annotations_listblock(annotations: list[dict]) -> list[dict]:
     """StructBlock items inside a ListBlock are stored as plain dicts (no envelope)."""
-    return [
-        {"line": int(a["line"]), "html": a["html"]}
-        for a in annotations or []
-    ]
+    return [{"line": int(a["line"]), "html": a["html"]} for a in annotations or []]
 
 
 def _figure_value(fe: dict) -> dict:
@@ -221,17 +216,18 @@ class Command(BaseCommand):
         site = Site.objects.get(is_default_site=True)
         root: Page = site.root_page
 
-        all_slugs = (
-            LESSON_SLUGS | ARTICLE_SLUGS | DATASHEET_SLUGS | SCHEMATIC_SLUGS
-        )
+        all_slugs = LESSON_SLUGS | ARTICLE_SLUGS | DATASHEET_SLUGS | SCHEMATIC_SLUGS
         for model in (LessonPage, ArticlePage, DatasheetPage, SchematicPage):
             qs = model.objects.filter(slug__in=all_slugs)
             count = qs.count()
             if count:
                 qs.delete()
-                self.stdout.write(
-                    f"  cleared {count} prior {model.__name__} fixture pages"
-                )
+                self.stdout.write(f"  cleared {count} prior {model.__name__} fixture pages")
+
+        # qs.delete() bypasses treebeard's per-node cleanup, leaving the parent's
+        # numchild stale. fix_tree() reconciles numchild/depth/path metadata so
+        # subsequent root.add_child() calls don't hit "_inc_path on NoneType".
+        Page.fix_tree(destructive=False)
 
         self._seed_lessons(root)
         self._seed_articles(root)
@@ -262,11 +258,7 @@ class Command(BaseCommand):
                                     {
                                         "name": it["name"],
                                         "quantity": int(it["quantity"]),
-                                        **(
-                                            {"note": it["note"]}
-                                            if it.get("note")
-                                            else {}
-                                        ),
+                                        **({"note": it["note"]} if it.get("note") else {}),
                                     }
                                     for it in data["partsList"]["items"]
                                 ]
@@ -276,9 +268,7 @@ class Command(BaseCommand):
                 ),
             )
             if lede_blocks:
-                lesson.lede = json.dumps(
-                    [_block_from_fe(b) for b in lede_blocks]
-                )
+                lesson.lede = json.dumps([_block_from_fe(b) for b in lede_blocks])
             root.add_child(instance=lesson)
             lesson.save_revision().publish()
             self.stdout.write(f"  seeded LessonPage: {lesson.slug}")
@@ -292,9 +282,7 @@ class Command(BaseCommand):
                 title=data["title"],
                 slug=data["slug"],
                 deck=data.get("deck", ""),
-                body=json.dumps(
-                    [_block_from_fe(b) for b in data.get("body", [])]
-                ),
+                body=json.dumps([_block_from_fe(b) for b in data.get("body", [])]),
             )
             root.add_child(instance=article)
             article.save_revision().publish()
@@ -333,13 +321,9 @@ class Command(BaseCommand):
             sch = SchematicPage(
                 title=data["title"],
                 slug=data["slug"],
-                schematic_image=json.dumps(
-                    [_wrap("figure", _figure_value(schematic_image_fe))]
-                ),
+                schematic_image=json.dumps([_wrap("figure", _figure_value(schematic_image_fe))]),
                 download_url=data.get("downloadUrl", ""),
-                explanation=json.dumps(
-                    [_block_from_fe(b) for b in data.get("explanation", [])]
-                ),
+                explanation=json.dumps([_block_from_fe(b) for b in data.get("explanation", [])]),
             )
             root.add_child(instance=sch)
             sch.save_revision().publish()

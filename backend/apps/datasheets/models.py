@@ -39,13 +39,9 @@ PINOUT_BLOCKS = [("pinout", PinoutBlock())]
 class DatasheetPage(HeadlessPreviewMixin, Page):
     manufacturer = models.CharField(max_length=200, blank=True)
 
-    pinout = StreamField(
-        PINOUT_BLOCKS, min_num=1, max_num=1, use_json_field=True
-    )
+    pinout = StreamField(PINOUT_BLOCKS, min_num=1, max_num=1, use_json_field=True)
     specifications = StreamField(SPECIFICATION_BLOCKS, use_json_field=True)
-    peripheral_notes = StreamField(
-        DATASHEET_NOTES_BLOCKS, use_json_field=True, blank=True
-    )
+    peripheral_notes = StreamField(DATASHEET_NOTES_BLOCKS, use_json_field=True, blank=True)
 
     api_fields = [
         APIField("slug"),
@@ -61,7 +57,7 @@ class DatasheetPage(HeadlessPreviewMixin, Page):
         APIField("manufacturer"),
         APIField("pinout"),
         APIField("specifications"),
-        APIField("peripheralNotes", source="peripheral_notes"),
+        APIField("peripheralNotes"),
     ]
 
     content_panels = Page.content_panels + [
@@ -70,6 +66,10 @@ class DatasheetPage(HeadlessPreviewMixin, Page):
         FieldPanel("specifications"),
         FieldPanel("peripheral_notes"),
     ]
+
+    @property
+    def peripheralNotes(self):
+        return self.peripheral_notes
 
     def get_preview_url(self, request, token):
         return f"{self.get_client_root_url(request).rstrip('/')}/preview/datasheet/{token}/"
