@@ -222,7 +222,7 @@ This proves the full headless-preview round-trip: FE route param → `WagtailCon
 | KD4-02 | low | `FigureBlock` / `PinoutBlock` `*_override` fields exist for contract-fixture seeding only. Real editor authoring should leave them empty (chooser fallback handles the typical case). | P6 — hide override fields in admin panels for non-fixture pages |
 | KD4-03 | low | `_NeighborSlugField` runs `LessonPage.objects.live().order_by(...)` per request per field (2 queries per lesson detail). Fine at 7 fixtures, becomes a hot path at scale. | P5 — replace with a list-endpoint-driven prev/next denormalization |
 | KD4-04 | low | `_stamp_publish_dates` writes directly to the page row, bypassing Wagtail's `PageRevision`. Acceptable for contract seeding; inappropriate for real authoring (which already uses Wagtail's revision tracking — this only affects fixture seed). | n/a — fixture-seed-only by design; flag if anyone reuses the helper outside seed_fixtures |
-| KD4-05 | low | Live-gate **browser force-en walk** of `/admin/login/`, REST API responses, and `/preview/*` is **deferred to user run** (the executor sandbox lacks a browser; the static parts of the audit row in `docs/force-en-audit.md` are populated, the live-PASS row is `_pending live verification_`). | P4.1 or next time the user is at the keyboard with the stack up |
+| KD4-05 | ~~low~~ | ~~Live-gate browser force-en walk deferred to user run.~~ **RESOLVED 2026-05-09:** user walked admin under DevTools Sensors `en-US` (Ukrainian PASS, residual upstream-Wagtail strings deferred to P6 per CONTEXT.md); programmatic scan of all 4 REST endpoints zero English month/day literals; `/preview/<token>/` view source has `<html lang="uk">`; FE homepage Ukrainian. Audit row in `docs/force-en-audit.md` updated to `**ALL PASS**`. | n/a — closed |
 | KD4-06 | low | Wagtail 7.4 LTS bump (D-BUMP-01..03) carried out of P4 entirely per ROADMAP amendment. Single-task plan TBD. | P4.1 |
 
 ### Live-gate scoreboard (final)
@@ -238,7 +238,7 @@ This proves the full headless-preview round-trip: FE route param → `WagtailCon
 | `curl /` → 200 (Angular FE homepage proxied via fe-router) | ✓ PASS |
 | `pnpm contract:diff` → `7/7 PASS` | ✓ PASS |
 | Editor preview round-trip via programmatically-minted token | ✓ PASS |
-| Browser force-en walk (admin + preview + API + DevTools sensors) | ⏳ DEFERRED — KD4-05 |
+| Browser force-en walk (admin + preview + API + DevTools sensors) | ✓ PASS — admin Ukrainian (upstream defaults to P6), API zero English literals, `<html lang="uk">` on FE + preview |
 
 ### Verdict
 

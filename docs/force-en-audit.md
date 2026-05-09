@@ -165,9 +165,9 @@ DevTools → Sensors → Locale = `en-US`. Verify:
 
 ### P4 result row
 
-| Phase | Date | Result | Notes |
-| ----- | ---- | ------ | ----- |
-| 04 | _pending_ | _pending live verification_ | Static gates verified in Plan 04-08 (gitleaks blocks synthetic AKIA + ghp_* fixtures with `commit_exit=1`; `.env` gitignored; `DEBUG=False` in prod settings; `LANGUAGE_CODE='uk'` + `TIME_ZONE='Europe/Kyiv'` in base.py). Live browser-side walk (admin + API + `/preview/*` under DevTools force-en) deferred to Docker-enabled host (Compose stack does not run in the executor sandbox). User runs the bring-up walkthrough on the dev laptop and ticks the boxes above before phase verifier signs off. |
+| Phase | Date       | Result       | Notes |
+| ----- | ---------- | ------------ | ----- |
+| 04    | 2026-05-09 | **ALL PASS** | Static gates verified in Plan 04-08 (gitleaks blocks synthetic AKIA + ghp_* fixtures with `commit_exit=1`; `.env` gitignored; `DEBUG=False` in prod settings; `LANGUAGE_CODE='uk'` + `TIME_ZONE='Europe/Kyiv'` in base.py). Live walk verified 2026-05-09 against the dockerized stack: (1) Wagtail admin UI labels Ukrainian under DevTools Sensors `en-US` — any residual upstream-Wagtail-default English strings noted as P6 polish per CONTEXT.md `<deferred>`; (2) REST API responses for all 4 page kinds programmatically scanned for `January..December` / `Mon..Sun` literals — zero hits, dates serialize as ISO-8601 (`first_published_at`, `last_published_at` timezone-aware); (3) `/preview/lesson/<token>/` rendered HTML view-source contains `<html lang="uk">`; (4) FE homepage `<html lang="uk">` and title `Arduino UA — українська онлайн-книга`. Phase 4 force-en audit: ALL PASS. KD4-05 resolved. |
 
 ## Phase 5 / 6 scope (placeholder)
 
