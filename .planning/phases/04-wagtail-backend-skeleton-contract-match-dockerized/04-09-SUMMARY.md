@@ -166,3 +166,86 @@ None — surface introduced (override CharBlock/IntegerBlock fields on FigureBlo
 - FOUND: commit 3ad9f2a in `git log`
 - VERIFIED: `pnpm contract:diff` → `7/7 PASS`, exit 0
 - VERIFIED: `git diff src/ scripts/` → empty
+
+---
+
+## Phase 4 closure addendum (2026-05-09)
+
+After the contract-diff executor finished, the user ran the live-gate browser walkthrough. That surfaced **four additional Plan 04-01/07 defects** distinct from the contract-shape issues handled above. All four were fixed inline (no further executor); the bugs and fixes follow.
+
+### Bug 8 — fe-router was `traefik/whoami` debug stub, not a proxy [Plan 04-01]
+
+`compose.yml` defined `fe-router` with `image: traefik/whoami:latest` and a Traefik `services.fe.loadbalancer.server.url=http://host.docker.internal:4200` label. Two problems:
+1. `traefik/whoami` is a debug echo — it ignores any backend, just prints request headers.
+2. `services.X.loadbalancer.server.url` is a **file-provider-only** label; the Docker provider only honors `services.X.loadbalancer.server.port`. So even if the image were a proxy, Traefik wasn't pointing it anywhere meaningful.
+
+Result: every FE route on `arduino.localhost` (homepage, lessons, `/preview/*`) hit the whoami stub and rendered as `Hostname: <container-id>` text.
+
+**Fix (commit `07bcf4b`):** replaced `fe-router` with `caddy:2-alpine` running `caddy reverse-proxy --from :80 --to host.docker.internal:4200`. Caddy actually proxies; Traefik routes `Host(arduino.localhost)` priority=1 (catch-all) → fe-router :80 → host's `pnpm start` on :4200.
+
+### Bug 9 — `ng serve` bound to localhost only [package.json / dev workflow]
+
+Angular CLI's `ng serve` defaults to `127.0.0.1:4200` (or `[::1]:4200`). Caddy in the fe-router container reaches the host via `host.docker.internal` (Docker Desktop's host gateway, ~192.168.5.2) — that's a non-loopback address and gets `connection refused`.
+
+**Fix (commit `07bcf4b`):** `package.json` `"start"` and `"dev"` scripts use `ng serve --host 0.0.0.0`. Caveat: also exposes the dev server to the LAN — acceptable for local dev, lock down behind the host firewall if hostile networks matter.
+
+### Bug 10 — Angular dev-server Host check rejected proxied requests [angular.json]
+
+After Bugs 8/9, the next failure: `Blocked request. This host ("host.docker.internal") is not allowed.` Initial caddy config used `--change-host-header`, rewriting `Host: arduino.localhost` → `Host: host.docker.internal:4200` for the upstream. Angular's dev-server host check refuses unknown hosts.
+
+**Fix (commit `3415b67`):** dropped `--change-host-header` from the caddy command so the original `Host: arduino.localhost` flows end-to-end; added `"allowedHosts": ["arduino.localhost"]` to `angular.json` `serve.options`. This is the more correct pattern — a transparent reverse proxy preserves the Host header, and the upstream explicitly accepts the public-facing hostname.
+
+### Bug 11 — `useWagtailContentApi: false` blocked the preview-stub [environment.development.ts]
+
+The FE preview-stub component refuses to load if `useWagtailContentApi` is `false` (a deliberate safety toggle from Plan 04-05 keeping the FE on `MockContentApi` until contract parity was proven). With contract-diff now 7/7 PASS, the toggle can flip.
+
+**Fix (commit `d7d92cb`):** `environment.development.ts` `useWagtailContentApi: true`. The dev FE now talks to Wagtail directly for both list/detail pages and the preview-stub.
+
+### Round-trip verification
+
+After all four fixes, the user pasted a programmatically-minted preview URL — `http://arduino.localhost/preview/lesson/id=46:1wLe6M:NTmORzjkb_aCAjVhnneeVVJOj6r-2Crguuq6qoXAPhk/` — into Chrome. The page rendered with the draft slug shown in the FE preview-stub component:
+
+```
+Ця сторінка показує чернетку матеріалу до публікації.
+contentType: lesson
+token: id=46:1wLe6M:NTmORzjkb_aCAjVhnneeVVJOj6r-2Crguuq6qoXAPhk
+slug: pershyi-blymayuchyi-svitlodiod
+```
+
+This proves the full headless-preview round-trip: FE route param → `WagtailContentApi.getLessonPreview()` → `/api/v2/page_preview/?content_type=…&token=…` → Wagtail's `PagePreviewAPIViewSet.detail_view()` → `PagePreview.objects.get(token=…)` → `as_page()` → serialized → FE renders.
+
+### Known Debt — carried into Phase 4 close (option C, mirroring P3)
+
+| ID | Severity | Description | Tracked for |
+|----|----------|-------------|-------------|
+| KD4-01 | low | Wagtail admin's **inline preview pane** uses `Page.get_url()` → `/<slug>/` (the published URL), bypassing the headless-preview redirect. Editors must use the standalone "Open preview in new tab" button instead, which calls `serve_preview()` → mints a token → redirects to `/preview/<kind>/<token>/`. The inline-pane fix requires a Wagtail admin template/JS override — out of scope for P4. | P6 editorial polish |
+| KD4-02 | low | `FigureBlock` / `PinoutBlock` `*_override` fields exist for contract-fixture seeding only. Real editor authoring should leave them empty (chooser fallback handles the typical case). | P6 — hide override fields in admin panels for non-fixture pages |
+| KD4-03 | low | `_NeighborSlugField` runs `LessonPage.objects.live().order_by(...)` per request per field (2 queries per lesson detail). Fine at 7 fixtures, becomes a hot path at scale. | P5 — replace with a list-endpoint-driven prev/next denormalization |
+| KD4-04 | low | `_stamp_publish_dates` writes directly to the page row, bypassing Wagtail's `PageRevision`. Acceptable for contract seeding; inappropriate for real authoring (which already uses Wagtail's revision tracking — this only affects fixture seed). | n/a — fixture-seed-only by design; flag if anyone reuses the helper outside seed_fixtures |
+| KD4-05 | low | Live-gate **browser force-en walk** of `/admin/login/`, REST API responses, and `/preview/*` is **deferred to user run** (the executor sandbox lacks a browser; the static parts of the audit row in `docs/force-en-audit.md` are populated, the live-PASS row is `_pending live verification_`). | P4.1 or next time the user is at the keyboard with the stack up |
+| KD4-06 | low | Wagtail 7.4 LTS bump (D-BUMP-01..03) carried out of P4 entirely per ROADMAP amendment. Single-task plan TBD. | P4.1 |
+
+### Live-gate scoreboard (final)
+
+| Gate | Status |
+|------|--------|
+| `docker compose up -d --build` clean from a fresh checkout | ✓ PASS |
+| All 6 services healthy (postgres/wagtail/minio Up; mc Exited 0) | ✓ PASS |
+| `migrate --noinput` applies all migrations | ✓ PASS |
+| `seed_fixtures` creates 7 published pages | ✓ PASS |
+| `curl /admin/login/` → 200 | ✓ PASS |
+| `curl /api/v2/pages/` → 200 | ✓ PASS |
+| `curl /` → 200 (Angular FE homepage proxied via fe-router) | ✓ PASS |
+| `pnpm contract:diff` → `7/7 PASS` | ✓ PASS |
+| Editor preview round-trip via programmatically-minted token | ✓ PASS |
+| Browser force-en walk (admin + preview + API + DevTools sensors) | ⏳ DEFERRED — KD4-05 |
+
+### Verdict
+
+Phase 4 **closes 2026-05-09 with known debt (option C, mirroring P3 closure pattern).** Six items KD4-01..06 carried for tracking; none blocking the move to Phase 5 deployment work. Wagtail backend conforms 1:1 to the FE TS contract for all 7 fixture pages; preview round-trip operational; gitleaks gate enforcing; locale lock verified statically; live browser walks are the only remaining unfinished item and are tracked.
+
+### Commits added in this addendum
+
+- `07bcf4b` — `fix(04-09): replace fe-router whoami stub with caddy reverse-proxy; bind ng serve to 0.0.0.0`
+- `3415b67` — `fix(04-09): preserve Host header end-to-end (drop --change-host-header; allow arduino.localhost in ng serve)`
+- `d7d92cb` — `fix(04-09): flip useWagtailContentApi: true in dev env`

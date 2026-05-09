@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-05-02T10:07:27.990Z"
+last_updated: "2026-05-09T11:50:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 3
-  total_plans: 22
-  completed_plans: 22
+  completed_phases: 4
+  total_plans: 31
+  completed_plans: 31
   percent: 100
 ---
 
@@ -28,15 +28,16 @@ progress:
 
 ## Current Position
 
-Phase: 03 (page-templates-routing-static-build) — **CLOSED WITH KNOWN DEBT** (option C)
+Phase: 04 (wagtail-backend-skeleton-contract-match-dockerized) — **CLOSED WITH KNOWN DEBT** (option C)
 Plan: None active
 
 - **Milestone:** v1 (initial release)
-- **Phase:** 03 — Page Templates, Routing & Static Build — **CLOSED 2026-05-02 with known-debt disclaimer**
-- **Next phase:** Phase 4 — Wagtail backend (Docker)
+- **Phase:** 04 — Wagtail Backend Skeleton & Contract Match — **CLOSED 2026-05-09 with known-debt disclaimer (option C, mirroring P3)**
+- **Next phase:** Phase 4.1 (Wagtail 7.4 LTS bump) OR Phase 5 (Single-VPS Deployment) — user decides ordering
 - **Plan:** None active
-- **Status:** Phase 3 closed; ready to plan Phase 4
-- **Progress:** [█████░░░░░] 3/6 phases
+- **Status:** Phase 4 closed; live-gate browser walks deferred (KD4-05); ready to plan Phase 4.1 or Phase 5
+- **Progress:** [██████░░░░] 4/6 phases (5/6 if you count P4.1 as closure of P4)
+- **Phase 4 known debt (option C):** KD4-01..06 in `.planning/phases/04-wagtail-backend-skeleton-contract-match-dockerized/04-09-SUMMARY.md`. Must be remediated (or explicitly accepted) before milestone v1.0 ships.
 
 ```
 [███▒▒▒] 3/6 phases
