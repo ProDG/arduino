@@ -105,7 +105,8 @@
 **Depends on**: Phase 4 closed clean (live Docker-stack gates ticked off by user).
 **Requirements**: (none new — all WAGTAIL-* IDs were closed in P4)
 **Success Criteria** (from D-BUMP-02): full P4 verification re-run = `pnpm contract:diff` 7/7 PASS + editor preview flow walkthrough + MinIO upload smoke + force-en audit row clean (Phase 4.1 row appended) + manual Wagtail admin smoke load.
-**Plans**: TBD (single-task plan likely — `backend/pyproject.toml` pin + uv.lock refresh + re-verification log).
+**Plans**: 1 plan
+  - [ ] 04.1-01-PLAN.md — Wagtail 7.4 LTS pin + uv.lock refresh + Docker rebuild + 5 D-BUMP-02 gates re-run + force-en row + KD4-06 closure (single-plan multi-task per D-PLAN-01)
 
 ### Phase 5: Single-VPS Deployment (Docker Compose)
 **Goal**: The full stack runs on a single Ubuntu 24.04 VPS under Docker Compose with Traefik auto-TLS, daily off-site backups for both Postgres and MinIO proven by a restore drill, and a reproducible deploy script — before a single piece of real content gets published. **No Node SSR. No bare-metal Wagtail/gunicorn. No local-filesystem media.**
